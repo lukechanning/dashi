@@ -1,6 +1,7 @@
 class Todo < ApplicationRecord
   belongs_to :user
   belongs_to :project, optional: true
+  has_many :notes, as: :notable, dependent: :destroy
 
   validates :title, presence: true
 

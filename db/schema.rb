@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_18_182041) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_18_182442) do
+  create_table "daily_pages", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "date", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id", "date"], name: "index_daily_pages_on_user_id_and_date", unique: true
+    t.index ["user_id"], name: "index_daily_pages_on_user_id"
+  end
+
   create_table "goals", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -20,6 +29,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_18_182041) do
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_goals_on_user_id"
+  end
+
+  create_table "invitations", force: :cascade do |t|
+    t.datetime "accepted_at"
+    t.datetime "created_at", null: false
+    t.string "email"
+    t.integer "invited_by_id", null: false
+    t.string "token"
+    t.datetime "updated_at", null: false
+    t.index ["invited_by_id"], name: "index_invitations_on_invited_by_id"
+    t.index ["token"], name: "index_invitations_on_token", unique: true
+  end
+
+  create_table "notes", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.integer "notable_id", null: false
+    t.string "notable_type", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["notable_type", "notable_id"], name: "index_notes_on_notable"
+    t.index ["user_id"], name: "index_notes_on_user_id"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -60,7 +91,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_18_182041) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "daily_pages", "users"
   add_foreign_key "goals", "users"
+  add_foreign_key "invitations", "users", column: "invited_by_id"
+  add_foreign_key "notes", "users"
   add_foreign_key "projects", "goals"
   add_foreign_key "projects", "users"
   add_foreign_key "todos", "projects"
