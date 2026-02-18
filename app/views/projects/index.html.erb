@@ -1,0 +1,31 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold">Projects</h1>
+  <%= link_to "New project", new_project_path, class: "bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700" %>
+</div>
+
+<% if @projects.any? %>
+  <div class="space-y-3">
+    <% @projects.each do |project| %>
+      <%= link_to project_path(project), class: "block bg-white rounded-lg border border-gray-200 p-4 hover:border-gray-300 transition" do %>
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-semibold text-gray-900"><%= project.title %></h2>
+            <% if project.goal %>
+              <p class="text-xs text-gray-400 mt-1"><%= project.goal.title %></p>
+            <% end %>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-24 bg-gray-200 rounded-full h-2">
+              <div class="bg-blue-600 h-2 rounded-full" style="width: <%= project.progress %>%"></div>
+            </div>
+            <span class="text-xs text-gray-500"><%= project.progress %>%</span>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-12 text-gray-500">
+    <p>No projects yet. Create one to get started.</p>
+  </div>
+<% end %>

@@ -1,0 +1,31 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold">Goals</h1>
+  <%= link_to "New goal", new_goal_path, class: "bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700" %>
+</div>
+
+<% if @goals.any? %>
+  <div class="space-y-3">
+    <% @goals.each do |goal| %>
+      <%= link_to goal_path(goal), class: "block bg-white rounded-lg border border-gray-200 p-4 hover:border-gray-300 transition" do %>
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-semibold text-gray-900"><%= goal.title %></h2>
+            <% if goal.description.present? %>
+              <p class="text-sm text-gray-500 mt-1"><%= truncate(goal.description, length: 100) %></p>
+            <% end %>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs px-2 py-1 rounded-full <%= goal.active? ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' %>">
+              <%= goal.status.capitalize %>
+            </span>
+            <span class="text-sm text-gray-400"><%= goal.projects.count %> projects</span>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-12 text-gray-500">
+    <p>No goals yet. Create one to get started.</p>
+  </div>
+<% end %>

@@ -1,0 +1,63 @@
+<div class="mb-6">
+  <% if @project.goal %>
+    <p class="text-sm text-gray-500 mb-1">
+      <%= link_to @project.goal.title, goal_path(@project.goal), class: "hover:text-gray-700" %>
+    </p>
+  <% end %>
+
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold"><%= @project.title %></h1>
+    <div class="flex items-center gap-2">
+      <%= link_to "Edit", edit_project_path(@project), class: "text-sm text-gray-600 hover:text-gray-900" %>
+      <%= button_to "Delete", project_path(@project), method: :delete,
+          data: { turbo_confirm: "Delete this project and all its todos?" },
+          class: "text-sm text-red-600 hover:text-red-800 cursor-pointer" %>
+    </div>
+  </div>
+
+  <% if @project.description.present? %>
+    <p class="text-gray-600 mt-2"><%= @project.description %></p>
+  <% end %>
+
+  <div class="flex items-center gap-3 mt-3">
+    <div class="w-32 bg-gray-200 rounded-full h-2">
+      <div class="bg-blue-600 h-2 rounded-full" style="width: <%= @project.progress %>%"></div>
+    </div>
+    <span class="text-sm text-gray-500"><%= @project.progress %>% complete</span>
+  </div>
+</div>
+
+<div class="flex items-center justify-between mb-4">
+  <h2 class="text-lg font-semibold">Todos</h2>
+  <%= link_to "Add todo", new_todo_path(project_id: @project.id), class: "text-sm text-blue-600 hover:text-blue-800" %>
+</div>
+
+<% if @todos.any? %>
+  <div class="space-y-2">
+    <% @todos.each do |todo| %>
+      <div class="flex items-center gap-3 bg-white rounded-lg border border-gray-200 p-3">
+        <%= button_to toggle_todo_path(todo), method: :patch, class: "flex-shrink-0" do %>
+          <div class="w-5 h-5 rounded border-2 flex items-center justify-center cursor-pointer
+            <%= todo.complete? ? 'bg-blue-600 border-blue-600' : 'border-gray-300 hover:border-gray-400' %>">
+            <% if todo.complete? %>
+              <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            <% end %>
+          </div>
+        <% end %>
+        <span class="flex-1 <%= todo.complete? ? 'line-through text-gray-400' : 'text-gray-900' %>">
+          <%= todo.title %>
+        </span>
+        <% if todo.due_date %>
+          <span class="text-xs text-gray-400"><%= todo.due_date.strftime("%b %-d") %></span>
+        <% end %>
+        <%= link_to "Edit", edit_todo_path(todo), class: "text-xs text-gray-400 hover:text-gray-600" %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-8 text-gray-500 text-sm">
+    <p>No todos yet.</p>
+  </div>
+<% end %>
