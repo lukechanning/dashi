@@ -5,6 +5,7 @@ RSpec.describe Project, type: :model do
     it { should belong_to(:user) }
     it { should belong_to(:goal).optional }
     it { should have_many(:todos).dependent(:destroy) }
+    it { should have_many(:notes).dependent(:destroy) }
   end
 
   describe "validations" do

@@ -5,6 +5,9 @@ RSpec.describe User, type: :model do
     it { should have_many(:goals).dependent(:destroy) }
     it { should have_many(:projects).dependent(:destroy) }
     it { should have_many(:todos).dependent(:destroy) }
+    it { should have_many(:daily_pages).dependent(:destroy) }
+    it { should have_many(:notes).dependent(:destroy) }
+    it { should have_many(:invitations).dependent(:destroy) }
   end
 
   describe "validations" do

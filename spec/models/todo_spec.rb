@@ -4,6 +4,7 @@ RSpec.describe Todo, type: :model do
   describe "associations" do
     it { should belong_to(:user) }
     it { should belong_to(:project).optional }
+    it { should have_many(:notes).dependent(:destroy) }
   end
 
   describe "validations" do

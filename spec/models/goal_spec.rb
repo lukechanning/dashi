@@ -4,6 +4,7 @@ RSpec.describe Goal, type: :model do
   describe "associations" do
     it { should belong_to(:user) }
     it { should have_many(:projects).dependent(:destroy) }
+    it { should have_many(:notes).dependent(:destroy) }
   end
 
   describe "validations" do
