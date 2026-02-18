@@ -3,14 +3,24 @@ Rails.application.routes.draw do
   resource :session, only: [:new, :create, :destroy]
   get "auth/verify", to: "sessions#verify", as: :verify_session
 
-  # Core resources
-  resources :goals
-  resources :projects
-  resources :todos, except: [:index, :show] do
+  # Invitations
+  resources :invitations, only: [:index, :new, :create]
+  get "invitations/:token/accept", to: "invitations#accept", as: :accept_invitation
+  post "invitations/:token/register", to: "invitations#register", as: :register_invitation
+
+  # Core resources with nested notes
+  concern :notable do
+    resources :notes, only: [:create, :edit, :update, :destroy]
+  end
+
+  resources :goals, concerns: :notable
+  resources :projects, concerns: :notable
+  resources :todos, except: [:index, :show], concerns: :notable do
     member do
       patch :toggle
     end
   end
+  resources :daily_pages, only: [], concerns: :notable
 
   # Daily page
   root "daily#show"

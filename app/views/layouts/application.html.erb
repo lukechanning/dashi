@@ -17,6 +17,9 @@
           <%= link_to "Today", root_path, class: "text-gray-600 hover:text-gray-900" %>
           <%= link_to "Goals", goals_path, class: "text-gray-600 hover:text-gray-900" %>
           <%= link_to "Projects", projects_path, class: "text-gray-600 hover:text-gray-900" %>
+          <% if current_user.admin? %>
+            <%= link_to "Invitations", invitations_path, class: "text-gray-600 hover:text-gray-900" %>
+          <% end %>
           <span class="text-gray-400">|</span>
           <span class="text-gray-500"><%= current_user.name %></span>
           <%= button_to "Sign out", session_path, method: :delete, class: "text-gray-400 hover:text-gray-600 cursor-pointer" %>

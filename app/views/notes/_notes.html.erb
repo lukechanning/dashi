@@ -1,0 +1,28 @@
+<div class="mt-6">
+  <h3 class="text-sm font-semibold text-gray-700 mb-3">Notes</h3>
+
+  <% if notable.notes.any? %>
+    <div class="space-y-3 mb-4">
+      <% notable.notes.ordered.each do |note| %>
+        <div class="bg-gray-50 rounded-lg p-3 text-sm">
+          <p class="text-gray-700 whitespace-pre-wrap"><%= note.body %></p>
+          <div class="flex items-center justify-between mt-2">
+            <span class="text-xs text-gray-400"><%= note.created_at.strftime("%b %-d, %Y at %-I:%M %p") %></span>
+            <div class="flex items-center gap-2">
+              <%= link_to "Edit", edit_polymorphic_path([notable, note]), class: "text-xs text-gray-400 hover:text-gray-600" %>
+              <%= button_to "Delete", polymorphic_path([notable, note]), method: :delete,
+                  data: { turbo_confirm: "Delete this note?" },
+                  class: "text-xs text-red-400 hover:text-red-600 cursor-pointer" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= form_with model: [notable, Note.new], class: "flex gap-2" do |f| %>
+    <%= f.text_area :body, rows: 2, placeholder: "Add a note...",
+        class: "flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+    <%= f.submit "Add", class: "self-end bg-gray-200 text-gray-700 rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-300 cursor-pointer" %>
+  <% end %>
+</div>
