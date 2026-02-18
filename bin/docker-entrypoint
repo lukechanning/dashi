@@ -19,6 +19,9 @@ fi
 
 # If Litestream is configured, run it as a wrapper so it replicates in the background
 if [ -n "${LITESTREAM_ENDPOINT}" ]; then
+  # Unset LITESTREAM_REPLICA_URL — Fly/Tigris auto-sets this, but it conflicts
+  # with -config flag. We use the config file to replicate multiple databases.
+  unset LITESTREAM_REPLICA_URL
   exec litestream replicate -config /rails/config/litestream.yml -exec "${@}"
 else
   exec "${@}"
