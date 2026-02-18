@@ -1,1 +1,35 @@
 @import "tailwindcss";
+
+@theme {
+  /* Stat card backgrounds */
+  --color-stat-lavender: #ede9fe;
+  --color-stat-yellow: #fef3c7;
+  --color-stat-mint: #d1fae5;
+  --color-stat-rose: #ffe4e6;
+
+  /* Stat card icon/accent colors */
+  --color-stat-lavender-accent: #7c3aed;
+  --color-stat-yellow-accent: #d97706;
+  --color-stat-mint-accent: #059669;
+  --color-stat-rose-accent: #e11d48;
+
+  /* Pastel card palette (for goals/projects) */
+  --color-card-1: #ede9fe;
+  --color-card-2: #fce7f3;
+  --color-card-3: #dbeafe;
+  --color-card-4: #fef3c7;
+  --color-card-5: #dcfce7;
+  --color-card-6: #ffedd5;
+
+  /* Card text colors */
+  --color-card-text-1: #5b21b6;
+  --color-card-text-2: #9d174d;
+  --color-card-text-3: #1e40af;
+  --color-card-text-4: #92400e;
+  --color-card-text-5: #166534;
+  --color-card-text-6: #9a3412;
+
+  /* Warm background */
+  --color-warm-bg: #faf9f7;
+  --color-warm-text: #44403c;
+}

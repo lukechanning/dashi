@@ -28,7 +28,7 @@ RSpec.describe "Daily", type: :request do
       create(:todo, user: user, title: "Overdue task", due_date: 2.days.ago.to_date)
       get root_path
       expect(response.body).to include("Overdue task")
-      expect(response.body).to include("Carried over")
+      expect(response.body).to include("Carried Over")
     end
 
     it "creates a daily page for the user" do

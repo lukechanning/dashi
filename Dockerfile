@@ -14,11 +14,18 @@ FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 # Rails app lives here
 WORKDIR /rails
 
-# Install base packages
+# Install base packages including Litestream
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libjemalloc2 sqlite3 && \
     ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Install Litestream
+ARG LITESTREAM_VERSION=0.3.13
+RUN ARCH=$(dpkg --print-architecture) && \
+    curl -fsSL "https://github.com/benbjohnson/litestream/releases/download/v${LITESTREAM_VERSION}/litestream-v${LITESTREAM_VERSION}-linux-${ARCH}.deb" -o /tmp/litestream.deb && \
+    dpkg -i /tmp/litestream.deb && \
+    rm /tmp/litestream.deb
 
 # Set production environment variables and enable jemalloc for reduced memory usage and latency.
 ENV RAILS_ENV="production" \

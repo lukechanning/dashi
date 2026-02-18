@@ -4,7 +4,7 @@ Personal project management app for tracking daily todos, medium-term projects, 
 
 ## Tech Stack
 
-- **Framework:** Rails 8 (Ruby 3.3)
+- **Framework:** Rails 8.1 (Ruby 3.4)
 - **Frontend:** Hotwire (Turbo + Stimulus) + Tailwind CSS (custom components, no component library)
 - **Database:** SQLite with Litestream for continuous backups to S3/Tigris
 - **Auth:** Magic link (passwordless) via Resend, invite-only registration
@@ -98,16 +98,33 @@ bundle exec rspec spec/requests/     # Request/controller specs
 ### Environment Variables
 - `SECRET_KEY_BASE` — Rails secret
 - `RESEND_API_KEY` — for sending magic link emails
+- `APP_HOST` — production hostname (e.g., `dashi.fly.dev`)
 - `LITESTREAM_ACCESS_KEY_ID` — S3/Tigris access key
 - `LITESTREAM_SECRET_ACCESS_KEY` — S3/Tigris secret key
 - `LITESTREAM_BUCKET` — backup bucket name
 - `LITESTREAM_ENDPOINT` — S3-compatible endpoint (e.g., Tigris)
 
-### Deploy
+### First Deploy
+```bash
+fly launch                                           # Create app (skip db, use existing fly.toml)
+fly volumes create dashi_storage --region iad --size 1  # 1GB persistent volume
+fly secrets set SECRET_KEY_BASE=$(bin/rails secret)
+fly secrets set RESEND_API_KEY=re_xxxxx
+fly secrets set APP_HOST=dashi.fly.dev
+fly secrets set LITESTREAM_ACCESS_KEY_ID=xxxxx
+fly secrets set LITESTREAM_SECRET_ACCESS_KEY=xxxxx
+fly secrets set LITESTREAM_BUCKET=dashi-backups
+fly secrets set LITESTREAM_ENDPOINT=https://fly.storage.tigris.dev
+fly deploy
+fly ssh console -C "/rails/bin/rails 'users:create_admin EMAIL=you@example.com NAME=YourName'"
+```
+
+### Ongoing
 ```bash
 fly deploy           # Deploy to Fly.io
 fly ssh console      # SSH into the running machine
 fly logs             # Tail logs
 ```
 
-SQLite database lives at `./storage/production.sqlite3`. Litestream continuously replicates the WAL to object storage. On machine restart, Litestream restores from the latest backup before Rails boots.
+### How it works
+SQLite databases live in `/rails/storage/` on a persistent Fly volume. Litestream continuously replicates the WAL to object storage. On machine restart, `bin/docker-entrypoint` restores from the latest backup before Rails boots. The entrypoint then runs Litestream as a wrapper process that replicates in the background while Rails serves requests.
