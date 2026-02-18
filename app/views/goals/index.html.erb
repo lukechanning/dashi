@@ -18,7 +18,10 @@
             <span class="text-xs px-2 py-1 rounded-full <%= goal.active? ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' %>">
               <%= goal.status.capitalize %>
             </span>
-            <span class="text-sm text-gray-400"><%= goal.projects.count %> projects</span>
+            <div class="w-24 bg-gray-200 rounded-full h-2">
+              <div class="bg-blue-600 h-2 rounded-full" style="width: <%= goal.progress %>%"></div>
+            </div>
+            <span class="text-xs text-gray-500"><%= goal.progress %>%</span>
           </div>
         </div>
       <% end %>
