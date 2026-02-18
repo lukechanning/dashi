@@ -16,7 +16,7 @@ Goals and projects can be shared with other users, with todos assignable to spec
 
 ## Tech Stack
 
-- Ruby on Rails 8 (Ruby 3.3)
+- Ruby on Rails 8 (Ruby 3.3+)
 - Hotwire (Turbo + Stimulus) for interactive UI
 - Tailwind CSS for styling
 - SQLite + Litestream for database with continuous backups
