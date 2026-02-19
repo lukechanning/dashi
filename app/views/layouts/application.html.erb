@@ -60,6 +60,13 @@
       <div class="sm:hidden">
         <%= render "shared/app_bar" %>
       </div>
+
+      <%# Floating action button (desktop only) %>
+      <%= link_to new_todo_path, class: "hidden sm:flex items-center justify-center fixed bottom-6 right-6 w-14 h-14 bg-violet-600 hover:bg-violet-700 active:bg-violet-800 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-150 z-50", title: "New todo" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+      <% end %>
     <% end %>
   </body>
 </html>
