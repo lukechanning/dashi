@@ -3,6 +3,8 @@ class Project < ApplicationRecord
   belongs_to :goal, optional: true
   has_many :todos, dependent: :destroy
   has_many :notes, as: :notable, dependent: :destroy
+  has_many :memberships, as: :memberable, dependent: :destroy
+  has_many :members, through: :memberships, source: :user
 
   enum :status, { active: 0, completed: 1, archived: 2 }
 
