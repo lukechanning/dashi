@@ -1,0 +1,15 @@
+<%
+  px      = local_assigns[:size] == :lg ? 48 : 28
+  grad_id = "dashi-g-#{px}"
+%>
+<svg width="<%= px %>" height="<%= px %>" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="28" height="28" rx="7" fill="url(#<%= grad_id %>)"/>
+  <%# Stylised "D": left bar + cubic-bezier right curve with rounded corners %>
+  <path d="M8 7 L11 7 C23 7 23 21 11 21 L8 21 Q6 21 6 19 L6 9 Q6 7 8 7Z" fill="white"/>
+  <defs>
+    <linearGradient id="<%= grad_id %>" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+</svg>
