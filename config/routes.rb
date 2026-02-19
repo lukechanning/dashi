@@ -25,6 +25,9 @@ Rails.application.routes.draw do
   # Daily page
   root "daily#show"
 
+  # User preferences
+  patch "user/timezone", to: "users#update_timezone"
+
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 end

@@ -1,0 +1,11 @@
+<% weekly = record.weekly_activity(12) %>
+<% max_val = [weekly.max, 1].max %>
+<% points = weekly.each_with_index.map { |c, i|
+  x = (i.to_f / (weekly.length - 1) * 80).round
+  y = (24 - (c.to_f / max_val * 22) - 1).round
+  "#{x},#{y}"
+}.join(" ") %>
+<svg width="80" height="24" viewBox="0 0 80 24" xmlns="http://www.w3.org/2000/svg">
+  <polyline fill="none" stroke="#4ade80" stroke-width="1.5"
+            stroke-linejoin="round" stroke-linecap="round" points="<%= points %>"/>
+</svg>

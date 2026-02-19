@@ -31,6 +31,22 @@ bin/dev              # Start dev server
 bundle exec rspec    # Run tests
 ```
 
+### Logging in locally
+
+The app uses magic link auth, so there's no password. To sign in as the seed user in development:
+
+```bash
+bin/rails console
+```
+
+```ruby
+user = User.find_by(email: "admin@example.com")
+token = user.generate_magic_token!
+puts "http://localhost:3000/auth/verify?token=#{token}"
+```
+
+Paste the printed URL into your browser and you're in.
+
 ## Deployment
 
 Dashi runs on a single Fly.io machine with SQLite. Litestream continuously backs up the database to S3-compatible object storage.

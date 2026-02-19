@@ -17,10 +17,9 @@
     <span class="text-xs px-2 py-1 rounded-full <%= @goal.active? ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' %>">
       <%= @goal.status.capitalize %>
     </span>
-    <div class="w-32 bg-gray-200 rounded-full h-2">
-      <div class="bg-blue-600 h-2 rounded-full" style="width: <%= @goal.progress %>%"></div>
-    </div>
-    <span class="text-sm text-gray-500"><%= @goal.progress %>% complete</span>
+  </div>
+  <div class="mt-4">
+    <%= render "shared/contribution_graph", record: @goal %>
   </div>
 </div>
 
@@ -36,10 +35,7 @@
         <div class="flex items-center justify-between">
           <h3 class="font-medium text-gray-900"><%= project.title %></h3>
           <div class="flex items-center gap-3">
-            <div class="w-24 bg-gray-200 rounded-full h-2">
-              <div class="bg-blue-600 h-2 rounded-full" style="width: <%= project.progress %>%"></div>
-            </div>
-            <span class="text-xs text-gray-500"><%= project.progress %>%</span>
+            <%= render "shared/momentum", record: project %>
           </div>
         </div>
       <% end %>
