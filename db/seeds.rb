@@ -1,12 +1,12 @@
-# Create the initial admin user
-admin = User.find_or_create_by!(email: "admin@example.com") do |user|
-  user.name = "Gandalf"
-  user.admin = true
-end
-
-puts "Admin user: #{admin.email} (admin: #{admin.admin?})"
-
 if Rails.env.development?
+  # Create the initial admin user
+  admin = User.find_or_create_by!(email: "admin@example.com") do |user|
+    user.name = "Gandalf"
+    user.admin = true
+  end
+
+  puts "Admin user: #{admin.email} (admin: #{admin.admin?})"
+
   # --- Goal: Destroy the One Ring ---
   ring_goal = Goal.find_or_create_by!(user: admin, title: "Destroy the One Ring") do |g|
     g.description = "Cast the One Ring into the fires of Mount Doom and end Sauron's dominion over Middle-earth."
