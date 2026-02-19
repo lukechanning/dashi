@@ -1,0 +1,136 @@
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-stone-800">Hello <%= current_user.name %>,</h1>
+  <p class="text-stone-500 mt-1">
+    <%= Date.current.strftime("%A, %B %-d") %> &mdash;
+    <% today_count = @todos.count { |t| !t.complete? } %>
+    <% if today_count > 0 %>
+      You have <span class="font-medium text-stone-700"><%= pluralize(today_count, "task") %></span> today
+    <% else %>
+      No tasks today
+    <% end %>
+  </p>
+</div>
+
+<%# Stat cards %>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+  <div class="bg-stat-lavender rounded-2xl p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <svg class="w-5 h-5 text-stat-lavender-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span class="text-sm font-medium text-stat-lavender-accent">Today</span>
+    </div>
+    <span class="text-3xl font-bold text-stat-lavender-accent"><%= today_count %></span>
+  </div>
+
+  <div class="bg-stat-yellow rounded-2xl p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <svg class="w-5 h-5 text-stat-yellow-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+      <span class="text-sm font-medium text-stat-yellow-accent">Scheduled</span>
+    </div>
+    <span class="text-3xl font-bold text-stat-yellow-accent"><%= @scheduled_count %></span>
+  </div>
+
+  <div class="bg-stat-mint rounded-2xl p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <svg class="w-5 h-5 text-stat-mint-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+      <span class="text-sm font-medium text-stat-mint-accent">All</span>
+    </div>
+    <span class="text-3xl font-bold text-stat-mint-accent"><%= @all_count %></span>
+  </div>
+
+  <div class="bg-stat-rose rounded-2xl p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <svg class="w-5 h-5 text-stat-rose-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <span class="text-sm font-medium text-stat-rose-accent">Overdue</span>
+    </div>
+    <span class="text-3xl font-bold text-stat-rose-accent"><%= @overdue_todos.count %></span>
+  </div>
+</div>
+
+<%# Carried over section %>
+<% if @overdue_todos.any? %>
+  <div class="mb-8">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-sm font-semibold text-amber-700 uppercase tracking-wide">Carried Over</h2>
+    </div>
+    <div class="space-y-2">
+      <% @overdue_todos.each do |todo| %>
+        <div class="flex items-center gap-3 bg-amber-50/80 rounded-xl border border-amber-200/60 p-3">
+          <%= button_to toggle_todo_path(todo), method: :patch, class: "flex-shrink-0" do %>
+            <div class="w-6 h-6 rounded-full border-2 border-amber-400 hover:border-amber-500 cursor-pointer transition-colors"></div>
+          <% end %>
+          <div class="flex-1 min-w-0">
+            <span class="text-stone-800"><%= todo.title %></span>
+            <% if todo.project %>
+              <span class="inline-flex items-center text-xs bg-amber-100 text-amber-700 rounded-full px-2 py-0.5 ml-2"><%= todo.project.title %></span>
+            <% end %>
+          </div>
+          <span class="text-xs font-medium text-amber-600 bg-amber-100 rounded-full px-2 py-0.5 flex-shrink-0"><%= todo.due_date.strftime("%b %-d") %></span>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <%= button_to "Today", todo_path(todo), method: :patch,
+                params: { todo: { due_date: Date.current } },
+                class: "text-xs font-medium text-blue-600 hover:text-blue-800 cursor-pointer transition-colors" %>
+            <%= link_to "Edit", edit_todo_path(todo), class: "text-xs text-stone-400 hover:text-stone-600 transition-colors" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<%# Today's todos %>
+<div class="flex items-center justify-between mb-3">
+  <h2 class="text-sm font-semibold text-stone-500 uppercase tracking-wide">Today's Tasks</h2>
+  <%= link_to new_todo_path(due_date: Date.current), class: "inline-flex items-center gap-1 text-sm font-medium text-violet-600 hover:text-violet-800 transition-colors" do %>
+    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+    </svg>
+    Add task
+  <% end %>
+</div>
+
+<% if @todos.any? %>
+  <div class="space-y-2">
+    <% @todos.each do |todo| %>
+      <div class="flex items-center gap-3 bg-white rounded-xl border border-stone-200/60 p-3 shadow-sm hover:shadow transition-shadow">
+        <%= button_to toggle_todo_path(todo), method: :patch, class: "flex-shrink-0" do %>
+          <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors
+            <%= todo.complete? ? 'bg-violet-500 border-violet-500' : 'border-stone-300 hover:border-violet-400' %>">
+            <% if todo.complete? %>
+              <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            <% end %>
+          </div>
+        <% end %>
+        <div class="flex-1 min-w-0">
+          <span class="<%= todo.complete? ? 'line-through text-stone-400' : 'text-stone-800' %>">
+            <%= todo.title %>
+          </span>
+          <% if todo.project %>
+            <span class="inline-flex items-center text-xs bg-stone-100 text-stone-500 rounded-full px-2 py-0.5 ml-2"><%= todo.project.title %></span>
+          <% end %>
+        </div>
+        <% if todo.due_date %>
+          <span class="text-xs text-stone-400 flex-shrink-0"><%= todo.due_date.strftime("%b %-d") %></span>
+        <% end %>
+        <%= link_to "Edit", edit_todo_path(todo), class: "text-xs text-stone-400 hover:text-stone-600 transition-colors flex-shrink-0" %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <% unless @overdue_todos.any? %>
+    <div class="text-center py-12 text-stone-400">
+      <p class="text-lg">Nothing on the list for today. Enjoy your day!</p>
+    </div>
+  <% end %>
+<% end %>
+
+<%= render "notes/notes", notable: @daily_page %>

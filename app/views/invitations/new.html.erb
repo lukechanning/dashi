@@ -1,0 +1,22 @@
+<h1 class="text-2xl font-bold mb-6">Invite someone</h1>
+
+<%= form_with model: @invitation, url: invitations_path, class: "space-y-4 max-w-sm" do |f| %>
+  <% if @invitation.errors.any? %>
+    <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-3 text-sm">
+      <% @invitation.errors.full_messages.each do |msg| %>
+        <p><%= msg %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :email, "Email address", class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.email_field :email, required: true, autofocus: true, placeholder: "friend@example.com",
+        class: "w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit "Send invitation", class: "bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700 cursor-pointer" %>
+    <%= link_to "Cancel", invitations_path, class: "text-sm text-gray-600 hover:text-gray-900" %>
+  </div>
+<% end %>

@@ -1,0 +1,13 @@
+<h1 class="text-2xl font-bold mb-6">Edit note</h1>
+
+<%= form_with model: [@notable, @note], class: "space-y-4 max-w-lg" do |f| %>
+  <div>
+    <%= f.text_area :body, rows: 4, autofocus: true,
+        class: "w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit "Save", class: "bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700 cursor-pointer" %>
+    <%= link_to "Cancel", :back, class: "text-sm text-gray-600 hover:text-gray-900" %>
+  </div>
+<% end %>

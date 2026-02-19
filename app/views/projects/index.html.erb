@@ -1,0 +1,62 @@
+<% pastel_cards = %w[bg-card-3 bg-card-6 bg-card-1 bg-card-5 bg-card-2 bg-card-4] %>
+<% card_texts = %w[text-card-text-3 text-card-text-6 text-card-text-1 text-card-text-5 text-card-text-2 text-card-text-4] %>
+
+<div class="flex items-center justify-between mb-8">
+  <h1 class="text-3xl font-bold text-stone-800">Projects</h1>
+  <%= link_to "New project", new_project_path, class: "inline-flex items-center gap-1 bg-violet-600 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-violet-700 transition-colors" %>
+</div>
+
+<% if @projects.any? %>
+  <div class="relative">
+    <% @projects.each_with_index do |project, i| %>
+      <% card_bg = pastel_cards[i % pastel_cards.length] %>
+      <% card_text = card_texts[i % card_texts.length] %>
+      <%= link_to project_path(project), class: "group block #{card_bg} rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 #{i > 0 ? '-mt-3' : ''} relative", style: "z-index: #{i + 1}" do %>
+        <div class="flex items-center justify-between">
+          <div class="flex-1 min-w-0">
+            <h2 class="font-bold text-lg text-stone-800"><%= project.title %></h2>
+            <div class="flex items-center gap-2 mt-1">
+              <% if project.goal %>
+                <span class="text-xs bg-white/50 rounded-full px-2 py-0.5 text-stone-600"><%= project.goal.title %></span>
+              <% end %>
+              <% total = project.todos.count %>
+              <% completed = project.todos.where.not(completed_at: nil).count %>
+              <% if total > 0 %>
+                <span class="text-xs bg-white/50 rounded-full px-2 py-0.5 text-stone-600"><%= completed %>/<%= total %> todos</span>
+              <% end %>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="text-right hidden sm:block">
+              <span class="text-sm font-semibold <%= card_text %>"><%= project.progress %>%</span>
+            </div>
+            <svg class="w-5 h-5 text-stone-400 group-hover:text-stone-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
+
+        <%# Expand on hover %>
+        <div class="max-h-0 overflow-hidden group-hover:max-h-40 transition-all duration-300 ease-in-out">
+          <div class="pt-3 mt-3 border-t border-white/40">
+            <% if project.description.present? %>
+              <p class="text-sm text-stone-600 mb-2"><%= truncate(project.description, length: 120) %></p>
+            <% end %>
+            <div class="flex items-center gap-4">
+              <div class="flex-1">
+                <div class="w-full bg-white/50 rounded-full h-2">
+                  <div class="bg-stone-600/40 h-2 rounded-full transition-all" style="width: <%= project.progress %>%"></div>
+                </div>
+              </div>
+              <span class="text-xs text-stone-500"><%= project.progress %>% complete</span>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-12 text-stone-400">
+    <p class="text-lg">No projects yet. Create one to get started.</p>
+  </div>
+<% end %>

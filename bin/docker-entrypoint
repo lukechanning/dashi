@@ -1,0 +1,28 @@
+#!/bin/bash -e
+
+# Restore databases from Litestream backup if configured and no local DB exists
+if [ -n "${LITESTREAM_ENDPOINT}" ]; then
+  if [ ! -f /rails/storage/production.sqlite3 ]; then
+    echo "Restoring database from Litestream backup..."
+    litestream restore -config /rails/config/litestream.yml -if-replica-exists /rails/storage/production.sqlite3
+    litestream restore -config /rails/config/litestream.yml -if-replica-exists /rails/storage/production_cache.sqlite3
+    litestream restore -config /rails/config/litestream.yml -if-replica-exists /rails/storage/production_queue.sqlite3
+    litestream restore -config /rails/config/litestream.yml -if-replica-exists /rails/storage/production_cable.sqlite3
+    echo "Restore complete."
+  fi
+fi
+
+# If running the rails server then create or migrate existing database
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  ./bin/rails db:prepare
+fi
+
+# If Litestream is configured, run it as a wrapper so it replicates in the background
+if [ -n "${LITESTREAM_ENDPOINT}" ]; then
+  # Strip LITESTREAM_REPLICA_URL — Fly/Tigris injects this at the machine level,
+  # which conflicts with -config. env -u removes it from the child process
+  # environment regardless of where it was set (secrets, extension, machine config).
+  exec env -u LITESTREAM_REPLICA_URL litestream replicate -config /rails/config/litestream.yml -exec "$*"
+else
+  exec "${@}"
+fi

@@ -1,0 +1,24 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold">Invitations</h1>
+  <%= link_to "Invite someone", new_invitation_path, class: "bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700" %>
+</div>
+
+<% if @invitations.any? %>
+  <div class="bg-white rounded-lg border border-gray-200 divide-y divide-gray-100">
+    <% @invitations.each do |invitation| %>
+      <div class="flex items-center justify-between p-4">
+        <div>
+          <span class="text-gray-900"><%= invitation.email %></span>
+          <span class="text-xs text-gray-400 ml-2">invited <%= time_ago_in_words(invitation.created_at) %> ago</span>
+        </div>
+        <span class="text-xs px-2 py-1 rounded-full <%= invitation.accepted? ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' %>">
+          <%= invitation.accepted? ? "Accepted" : "Pending" %>
+        </span>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-12 text-gray-500">
+    <p>No invitations sent yet.</p>
+  </div>
+<% end %>
