@@ -14,10 +14,10 @@
       <%= link_to project_path(project), class: "group block #{card_bg} rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 #{i > 0 ? '-mt-3' : ''} relative", style: "z-index: #{i + 1}" do %>
         <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
-            <h2 class="font-bold text-lg text-stone-800"><%= project.title %></h2>
+            <h2 class="font-bold text-lg text-stone-800"><%= [project.emoji, project.title].compact.join(" ") %></h2>
             <div class="flex items-center gap-2 mt-1">
               <% if project.goal %>
-                <span class="text-xs bg-white/50 rounded-full px-2 py-0.5 text-stone-600"><%= project.goal.title %></span>
+                <span class="text-xs bg-white/50 rounded-full px-2 py-0.5 text-stone-600"><%= [project.goal.emoji, project.goal.title].compact.join(" ") %></span>
               <% end %>
               <% total = project.todos.count %>
               <% completed = project.todos.where.not(completed_at: nil).count %>
@@ -27,6 +27,10 @@
             </div>
           </div>
           <div class="flex items-center gap-3">
+            <% project_members = ([project.user] + project.members.to_a).uniq %>
+            <% if project_members.size > 1 %>
+              <%= avatar_stack(project_members, size: :xs, max: 3) %>
+            <% end %>
             <div class="hidden sm:block">
               <%= render "shared/momentum", record: project %>
             </div>
