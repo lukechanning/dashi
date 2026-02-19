@@ -34,7 +34,7 @@
       <span class="text-3xl font-bold text-stat-lavender-accent"><%= today_count %></span>
     </div>
 
-    <div class="bg-stat-yellow rounded-2xl p-4">
+    <%= link_to upcoming_path, class: "bg-stat-yellow rounded-2xl p-4 block hover:opacity-90 transition-opacity" do %>
       <div class="flex items-center gap-2 mb-2">
         <svg class="w-5 h-5 text-stat-yellow-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -42,7 +42,7 @@
         <span class="text-sm font-medium text-stat-yellow-accent">Upcoming</span>
       </div>
       <span class="text-3xl font-bold text-stat-yellow-accent"><%= @upcoming_count %></span>
-    </div>
+    <% end %>
 
     <div class="bg-stat-mint rounded-2xl p-4">
       <div class="flex items-center gap-2 mb-2">

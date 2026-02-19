@@ -27,6 +27,7 @@ Rails.application.routes.draw do
   resources :daily_pages, only: [], concerns: :notable
 
   # Daily page
+  get "upcoming", to: "upcoming#index", as: :upcoming
   root "daily#show"
 
   # User preferences

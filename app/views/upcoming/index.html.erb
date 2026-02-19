@@ -1,0 +1,53 @@
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-stone-800">Upcoming</h1>
+  <p class="text-stone-500 mt-1">
+    <%= link_to "Back to today", root_path, class: "text-violet-600 hover:text-violet-800 font-medium" %>
+  </p>
+</div>
+
+<% if @todos_by_date.any? %>
+  <div class="space-y-6">
+    <% @todos_by_date.each do |date, todos| %>
+      <div>
+        <h2 class="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-3">
+          <%
+            tomorrow = Date.current + 1
+            if date == tomorrow
+              day_label = "Tomorrow · #{date.strftime("%b %-d")}"
+            elsif date < Date.current + 7
+              day_label = "#{date.strftime("%A")} · #{date.strftime("%b %-d")}"
+            else
+              day_label = date.strftime("%B %-d")
+            end
+          %>
+          <%= day_label %>
+        </h2>
+        <div class="space-y-2">
+          <% todos.each do |todo| %>
+            <div class="flex items-center gap-3 bg-white rounded-xl border border-stone-200/60 p-3 shadow-sm hover:shadow transition-shadow">
+              <%= button_to toggle_todo_path(todo), method: :patch, class: "flex-shrink-0" do %>
+                <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors border-stone-300 hover:border-violet-400">
+                </div>
+              <% end %>
+              <div class="flex-1 min-w-0">
+                <span class="text-stone-800"><%= todo.title %></span>
+                <% if todo.project %>
+                  <span class="inline-flex items-center text-xs bg-stone-100 text-stone-500 rounded-full px-2 py-0.5 ml-2"><%= [todo.project.emoji, todo.project.title].compact.join(" ") %></span>
+                <% end %>
+              </div>
+              <% if todo.project && todo.project.members.any? %>
+                <% todo_members = ([todo.project.user] + todo.project.members.to_a).uniq %>
+                <%= avatar_stack(todo_members, size: :xs, max: 3) %>
+              <% end %>
+              <%= link_to "Edit", edit_todo_path(todo), class: "text-xs text-stone-400 hover:text-stone-600 transition-colors flex-shrink-0" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-12 text-stone-400">
+    <p class="text-lg">No upcoming tasks scheduled.</p>
+  </div>
+<% end %>
