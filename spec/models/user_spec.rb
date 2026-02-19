@@ -77,6 +77,35 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe "#activity_weeks" do
+    let(:user) { create(:user) }
+
+    it "returns 16 columns of 7 cells each" do
+      result = user.activity_weeks
+      expect(result[:columns].length).to eq(16)
+      expect(result[:columns].first.length).to eq(7)
+    end
+
+    it "aggregates todos across all user projects for today's cell" do
+      project1 = create(:project, user: user)
+      project2 = create(:project, user: user)
+      today = Date.current
+      create_list(:todo, 2, :completed, user: user, project: project1,
+                  completed_at: today.beginning_of_day + 1.hour)
+      create(:todo, :completed, user: user, project: project2,
+             completed_at: today.beginning_of_day + 2.hours)
+      result = user.activity_weeks
+      today_cell = result[:columns].flatten.find { |c| c[:date] == today }
+      expect(today_cell[:count]).to eq(3)
+    end
+
+    it "marks future cells with future: true" do
+      result = user.activity_weeks
+      future_cells = result[:columns].flatten.select { |c| c[:future] }
+      expect(future_cells).to all(include(future: true))
+    end
+  end
+
   describe ".find_by_magic_token" do
     it "returns user with a valid token" do
       user = create(:user)

@@ -54,6 +54,14 @@
   </div>
 </div>
 
+<%# Activity graph %>
+<div class="mb-8">
+  <h2 class="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-3">Activity</h2>
+  <div class="bg-white rounded-2xl p-5 shadow-sm">
+    <%= render "shared/contribution_graph", record: current_user %>
+  </div>
+</div>
+
 <%# Carried over section %>
 <% if @overdue_todos.any? %>
   <div class="mb-8">

@@ -29,8 +29,8 @@
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <div class="text-right hidden sm:block">
-              <span class="text-sm font-semibold <%= card_text %>"><%= goal.progress %>%</span>
+            <div class="hidden sm:block">
+              <%= render "shared/momentum", record: goal %>
             </div>
             <svg class="w-5 h-5 text-stone-400 group-hover:text-stone-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
@@ -44,13 +44,9 @@
             <% if goal.description.present? %>
               <p class="text-sm text-stone-600 mb-2"><%= truncate(goal.description, length: 120) %></p>
             <% end %>
-            <div class="flex items-center gap-4">
-              <div class="flex-1">
-                <div class="w-full bg-white/50 rounded-full h-2">
-                  <div class="bg-stone-600/40 h-2 rounded-full transition-all" style="width: <%= goal.progress %>%"></div>
-                </div>
-              </div>
+            <div class="flex items-center justify-between mt-1">
               <span class="text-xs text-stone-500"><%= pluralize(goal.projects.count, "project") %></span>
+              <%= render "shared/sparkline", record: goal %>
             </div>
           </div>
         </div>

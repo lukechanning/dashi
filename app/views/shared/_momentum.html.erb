@@ -1,0 +1,10 @@
+<% dot_class, text_class, label = case record.momentum
+  when :hot  then ["bg-emerald-400", "text-emerald-700", "Active"]
+  when :warm then ["bg-amber-400",   "text-amber-700",   "In progress"]
+  when :cool then ["bg-stone-400",   "text-stone-600",   "Gone quiet"]
+  when :new  then ["bg-violet-400",  "text-violet-700",  "Just started"]
+  end %>
+<div class="flex items-center gap-1.5">
+  <span class="w-2 h-2 rounded-full <%= dot_class %> inline-block"></span>
+  <span class="text-xs <%= text_class %>"><%= label %></span>
+</div>

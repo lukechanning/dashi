@@ -1,0 +1,55 @@
+<% weeks_count = local_assigns[:weeks] || 48 %>
+<% graph = record.activity_weeks(weeks_count) %>
+<% columns = graph[:columns] %>
+<% month_labels = graph[:month_labels] %>
+<div class="overflow-x-auto">
+  <div data-controller="heatmap" class="relative inline-block min-w-full">
+    <%# Month labels row %>
+    <div class="flex mb-1 ml-7">
+      <div class="flex gap-0.5">
+        <% columns.each_with_index do |_week, wi| %>
+          <div class="w-3.5 text-[9px] text-stone-400 overflow-visible whitespace-nowrap">
+            <%= month_labels[wi] || "" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="flex">
+      <%# Day labels — sticky so they stay visible when scrolling on mobile %>
+      <div class="flex flex-col mr-1 text-right w-6 shrink-0">
+        <% [["Mon", false], ["", true], ["Wed", false], ["", true], ["Fri", false], ["", true], ["", true]].each do |label, hidden| %>
+          <div class="<%= hidden ? 'invisible' : '' %> text-[9px] text-stone-400 flex items-center justify-end" style="height: 18px;">
+            <%= label %>
+          </div>
+        <% end %>
+      </div>
+
+      <%# Week columns %>
+      <div class="flex gap-0.5">
+        <% columns.each do |week| %>
+          <div class="flex flex-col gap-0.5">
+            <% week.each do |cell| %>
+              <% if cell[:future] %>
+                <div class="w-3.5 h-3.5 rounded-sm bg-stone-100 shrink-0"></div>
+              <% else %>
+                <% count = cell[:count] %>
+                <% color = count >= 6 ? "bg-emerald-600" : count >= 3 ? "bg-emerald-400" : count >= 1 ? "bg-emerald-200" : "bg-stone-200" %>
+                <div
+                  data-heatmap-target="square"
+                  data-date="<%= cell[:date].strftime('%a %b %-d') %>"
+                  data-count="<%= count %>"
+                  class="w-3.5 h-3.5 rounded-sm <%= color %> cursor-default shrink-0"
+                ></div>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div data-heatmap-target="tooltip"
+         class="hidden absolute -top-8 left-0 bg-stone-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap pointer-events-none z-10">
+    </div>
+  </div>
+</div>
