@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include ActivityTrackable
+
   MAGIC_TOKEN_TTL = 15.minutes
 
   has_many :goals, dependent: :destroy
@@ -40,31 +42,4 @@ class User < ApplicationRecord
     user if user&.magic_token_valid?
   end
 
-  def activity_weeks(weeks = 16)
-    today = Date.current
-    days_since_monday = today.wday == 0 ? 6 : today.wday - 1
-    oldest_monday = today - days_since_monday - (weeks - 1).weeks
-
-    counts = todos
-      .where(completed_at: oldest_monday.beginning_of_day..)
-      .group("DATE(completed_at)")
-      .count
-
-    columns = (0...weeks).map do |w|
-      (0...7).map do |d|
-        date = oldest_monday + (w * 7) + d
-        { date: date, count: counts[date.to_s] || 0, future: date > today }
-      end
-    end
-
-    month_labels = {}
-    columns.each_with_index do |week, wi|
-      monday = week[0][:date]
-      if wi == 0 || monday.month != columns[wi - 1][0][:date].month
-        month_labels[wi] = monday.strftime("%b")
-      end
-    end
-
-    { columns: columns, month_labels: month_labels }
-  end
 end

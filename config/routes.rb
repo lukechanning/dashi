@@ -13,8 +13,12 @@ Rails.application.routes.draw do
     resources :notes, only: [:create, :edit, :update, :destroy]
   end
 
-  resources :goals, concerns: :notable
-  resources :projects, concerns: :notable
+  resources :goals, concerns: :notable do
+    resources :memberships, only: [:create, :destroy]
+  end
+  resources :projects, concerns: :notable do
+    resources :memberships, only: [:create, :destroy]
+  end
   resources :todos, except: [:index, :show], concerns: :notable do
     member do
       patch :toggle
@@ -23,10 +27,14 @@ Rails.application.routes.draw do
   resources :daily_pages, only: [], concerns: :notable
 
   # Daily page
+  get "upcoming", to: "upcoming#index", as: :upcoming
   root "daily#show"
 
   # User preferences
   patch "user/timezone", to: "users#update_timezone"
+
+  # Account
+  get "account", to: "account#show", as: :account
 
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check

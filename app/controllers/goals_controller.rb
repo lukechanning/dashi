@@ -2,7 +2,7 @@ class GoalsController < ApplicationController
   before_action :set_goal, only: [:show, :edit, :update, :destroy]
 
   def index
-    @goals = current_user.goals.ordered
+    @goals = current_user.goals.ordered.includes(:members)
   end
 
   def show
@@ -46,6 +46,6 @@ class GoalsController < ApplicationController
   end
 
   def goal_params
-    params.require(:goal).permit(:title, :description, :status, :position)
+    params.require(:goal).permit(:title, :description, :emoji, :status, :position)
   end
 end

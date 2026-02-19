@@ -1,0 +1,10 @@
+{
+  "ignored_warnings": [
+    {
+      "fingerprint": "a07ed554cd189bda1087269a4493291fb7495eecff2fc1292743bc0bd521c5bc",
+      "note": "False positive: tz_str is derived from Time.zone.utc_offset (an integer), not user input"
+    }
+  ],
+  "updated": "2026-02-20 11:55:00 +1300",
+  "brakeman_version": "8.0.2"
+}

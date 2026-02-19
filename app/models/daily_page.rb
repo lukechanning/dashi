@@ -15,4 +15,5 @@ class DailyPage < ApplicationRecord
   def overdue_todos
     user.todos.overdue(date)
   end
+
 end
