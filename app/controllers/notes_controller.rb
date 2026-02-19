@@ -1,4 +1,6 @@
 class NotesController < ApplicationController
+  include PolymorphicParent
+
   before_action :set_notable
   before_action :set_note, only: [:edit, :update, :destroy]
 
@@ -31,15 +33,7 @@ class NotesController < ApplicationController
   private
 
   def set_notable
-    if params[:goal_id]
-      @notable = current_user.goals.find(params[:goal_id])
-    elsif params[:project_id]
-      @notable = current_user.projects.find(params[:project_id])
-    elsif params[:todo_id]
-      @notable = current_user.todos.find(params[:todo_id])
-    elsif params[:daily_page_id]
-      @notable = current_user.daily_pages.find(params[:daily_page_id])
-    end
+    @notable = find_parent(goal: :goals, project: :projects, todo: :todos, daily_page: :daily_pages)
   end
 
   def set_note

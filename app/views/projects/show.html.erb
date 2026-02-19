@@ -24,49 +24,7 @@
   </div>
 </div>
 
-<%# Members section %>
-<div class="bg-white rounded-2xl border border-stone-200/60 shadow-sm p-5 mb-6">
-  <div class="flex items-center justify-between mb-4">
-    <h2 class="text-sm font-semibold text-stone-500 uppercase tracking-wide">Members</h2>
-  </div>
-
-  <div class="flex flex-wrap items-center gap-3 mb-4">
-    <%# Owner %>
-    <div class="flex items-center gap-2">
-      <%= user_avatar(@project.user, size: :md) %>
-      <div>
-        <p class="text-sm font-medium text-stone-800"><%= @project.user.name %></p>
-        <p class="text-xs text-stone-400">Owner</p>
-      </div>
-    </div>
-
-    <%# Other members %>
-    <% @project.memberships.includes(:user).each do |membership| %>
-      <div class="flex items-center gap-2 group">
-        <%= user_avatar(membership.user, size: :md) %>
-        <div>
-          <p class="text-sm font-medium text-stone-800"><%= membership.user.name %></p>
-          <p class="text-xs text-stone-400">Member</p>
-        </div>
-        <%= button_to project_membership_path(@project, membership), method: :delete,
-            data: { turbo_confirm: "Remove #{membership.user.name}?" },
-            class: "ml-1 text-xs text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" do %>
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        <% end %>
-      </div>
-    <% end %>
-  </div>
-
-  <%# Add member form %>
-  <%= form_with url: project_memberships_path(@project), method: :post, class: "flex gap-2" do |f| %>
-    <%= f.email_field :email, placeholder: "Add by email address",
-        class: "flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent" %>
-    <%= f.submit "Add",
-        class: "bg-violet-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-violet-700 transition-colors cursor-pointer" %>
-  <% end %>
-</div>
+<%= render "shared/members_section", memberable: @project %>
 
 <div class="flex items-center justify-between mb-4">
   <h2 class="text-lg font-semibold">Todos</h2>
@@ -76,10 +34,10 @@
 <% if @todos.any? %>
   <div class="space-y-2">
     <% @todos.each do |todo| %>
-      <div class="flex items-center gap-3 bg-white rounded-lg border border-gray-200 p-3">
+      <div class="flex items-center gap-3 bg-white rounded-xl border border-stone-200/60 p-3">
         <%= button_to toggle_todo_path(todo), method: :patch, class: "flex-shrink-0" do %>
           <div class="w-5 h-5 rounded border-2 flex items-center justify-center cursor-pointer
-            <%= todo.complete? ? 'bg-blue-600 border-blue-600' : 'border-gray-300 hover:border-gray-400' %>">
+            <%= todo.complete? ? 'bg-violet-500 border-violet-500' : 'border-stone-300 hover:border-stone-400' %>">
             <% if todo.complete? %>
               <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -87,20 +45,18 @@
             <% end %>
           </div>
         <% end %>
-        <span class="flex-1 <%= todo.complete? ? 'line-through text-gray-400' : 'text-gray-900' %>">
+        <span class="flex-1 <%= todo.complete? ? 'line-through text-stone-400' : 'text-stone-800' %>">
           <%= todo.title %>
         </span>
         <% if todo.due_date %>
-          <span class="text-xs text-gray-400"><%= todo.due_date.strftime("%b %-d") %></span>
+          <span class="text-xs text-stone-400"><%= todo.due_date.strftime("%b %-d") %></span>
         <% end %>
-        <%= link_to "Edit", edit_todo_path(todo), class: "text-xs text-gray-400 hover:text-gray-600" %>
+        <%= link_to "Edit", edit_todo_path(todo), class: "text-xs text-stone-400 hover:text-stone-600" %>
       </div>
     <% end %>
   </div>
 <% else %>
-  <div class="text-center py-8 text-gray-500 text-sm">
-    <p>No todos yet.</p>
-  </div>
+  <%= render "shared/empty_state", message: "No todos yet." %>
 <% end %>
 
 <%= render "notes/notes", notable: @project %>

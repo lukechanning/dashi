@@ -47,7 +47,5 @@
     <% end %>
   </div>
 <% else %>
-  <div class="text-center py-12 text-stone-400">
-    <p class="text-lg">No upcoming tasks scheduled.</p>
-  </div>
+  <%= render "shared/empty_state", message: "No upcoming tasks scheduled." %>
 <% end %>

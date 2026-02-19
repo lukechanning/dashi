@@ -1,11 +1,5 @@
 <%= form_with model: todo, class: "space-y-5" do |f| %>
-  <% if todo.errors.any? %>
-    <div class="bg-red-50 border border-red-200 text-red-800 rounded-xl p-3 text-sm">
-      <% todo.errors.full_messages.each do |msg| %>
-        <p><%= msg %></p>
-      <% end %>
-    </div>
-  <% end %>
+  <%= render "shared/error_messages", model: todo %>
 
   <div>
     <%= f.label :title, class: "block text-sm font-medium text-stone-700 mb-1.5" %>

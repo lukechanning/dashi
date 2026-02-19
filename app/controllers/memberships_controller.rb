@@ -1,4 +1,6 @@
 class MembershipsController < ApplicationController
+  include PolymorphicParent
+
   before_action :set_memberable
 
   def create
@@ -32,10 +34,6 @@ class MembershipsController < ApplicationController
   private
 
   def set_memberable
-    if params[:goal_id]
-      @memberable = current_user.goals.find(params[:goal_id])
-    elsif params[:project_id]
-      @memberable = current_user.projects.find(params[:project_id])
-    end
+    @memberable = find_parent(goal: :goals, project: :projects)
   end
 end

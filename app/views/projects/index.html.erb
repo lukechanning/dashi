@@ -55,7 +55,5 @@
     <% end %>
   </div>
 <% else %>
-  <div class="text-center py-12 text-stone-400">
-    <p class="text-lg">No projects yet. Create one to get started.</p>
-  </div>
+  <%= render "shared/empty_state", message: "No projects yet. Create one to get started." %>
 <% end %>

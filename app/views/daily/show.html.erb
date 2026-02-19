@@ -119,9 +119,7 @@
     <% end %>
   </div>
 <% else %>
-  <div class="text-center py-12 text-stone-400">
-    <p class="text-lg"><%= @viewing_history ? "No tasks were recorded for this day." : "Nothing on the list for today. Enjoy your day!" %></p>
-  </div>
+  <%= render "shared/empty_state", message: @viewing_history ? "No tasks were recorded for this day." : "Nothing on the list for today. Enjoy your day!" %>
 <% end %>
 
 <%= render "notes/notes", notable: @daily_page %>
