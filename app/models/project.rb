@@ -30,9 +30,12 @@ class Project < ApplicationRecord
     days_since_monday = today.wday == 0 ? 6 : today.wday - 1
     oldest_monday = today - days_since_monday - (weeks - 1).weeks
 
+    tz_offset = Time.zone.utc_offset
+    tz_str = format("%+03d:%02d", tz_offset / 3600, (tz_offset.abs % 3600) / 60)
+
     counts = todos
       .where(completed_at: oldest_monday.beginning_of_day..)
-      .group("DATE(completed_at)")
+      .group("DATE(datetime(completed_at, '#{tz_str}'))")
       .count
 
     columns = (0...weeks).map do |w|
