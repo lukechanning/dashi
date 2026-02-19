@@ -1,15 +1,7 @@
 {
   "ignored_warnings": [
     {
-      "fingerprint": "1aa6b62dc69ea73004f85badd7f09a069d5a5c9fd01ad89bec5f765d09d32b19",
-      "note": "False positive: tz_str is derived from Time.zone.utc_offset (an integer), not user input"
-    },
-    {
-      "fingerprint": "33841efebe57f47cfff97734425927b1d344a1a4b3f9a0b07d2766a07ad38925",
-      "note": "False positive: tz_str is derived from Time.zone.utc_offset (an integer), not user input"
-    },
-    {
-      "fingerprint": "4a744037d34d733e04136287d25e7d74d854b4e81ede8280a17083af46b4661f",
+      "fingerprint": "a07ed554cd189bda1087269a4493291fb7495eecff2fc1292743bc0bd521c5bc",
       "note": "False positive: tz_str is derived from Time.zone.utc_offset (an integer), not user input"
     }
   ],
