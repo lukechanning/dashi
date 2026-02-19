@@ -48,6 +48,41 @@ RSpec.describe Todo, type: :model do
 
       expect(Todo.standalone).to eq([standalone])
     end
+
+    describe ".visible_on" do
+      let(:today) { Date.current }
+
+      it "returns incomplete todos with due_date on or before the given date" do
+        past = create(:todo, user: user, due_date: today - 2)
+        same_day = create(:todo, user: user, due_date: today)
+
+        expect(Todo.visible_on(today)).to include(past, same_day)
+      end
+
+      it "returns incomplete todos with no due_date" do
+        no_date = create(:todo, user: user, due_date: nil)
+
+        expect(Todo.visible_on(today)).to include(no_date)
+      end
+
+      it "returns completed todos with due_date on the given date" do
+        completed_today = create(:todo, :completed, user: user, due_date: today)
+
+        expect(Todo.visible_on(today)).to include(completed_today)
+      end
+
+      it "does not return completed todos with due_date before the given date" do
+        completed_past = create(:todo, :completed, user: user, due_date: today - 1)
+
+        expect(Todo.visible_on(today)).not_to include(completed_past)
+      end
+
+      it "does not return incomplete todos with due_date after the given date" do
+        future = create(:todo, user: user, due_date: today + 1)
+
+        expect(Todo.visible_on(today)).not_to include(future)
+      end
+    end
   end
 
   describe "#complete!" do

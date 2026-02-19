@@ -23,7 +23,7 @@
 
 <% unless @viewing_history %>
   <%# Stat cards %>
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+  <div class="grid grid-cols-3 gap-4 mb-8">
     <div class="bg-stat-lavender rounded-2xl p-4">
       <div class="flex items-center gap-2 mb-2">
         <svg class="w-5 h-5 text-stat-lavender-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -39,9 +39,9 @@
         <svg class="w-5 h-5 text-stat-yellow-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
-        <span class="text-sm font-medium text-stat-yellow-accent">Scheduled</span>
+        <span class="text-sm font-medium text-stat-yellow-accent">Upcoming</span>
       </div>
-      <span class="text-3xl font-bold text-stat-yellow-accent"><%= @scheduled_count %></span>
+      <span class="text-3xl font-bold text-stat-yellow-accent"><%= @upcoming_count %></span>
     </div>
 
     <div class="bg-stat-mint rounded-2xl p-4">
@@ -53,16 +53,6 @@
       </div>
       <span class="text-3xl font-bold text-stat-mint-accent"><%= @all_count %></span>
     </div>
-
-    <div class="bg-stat-rose rounded-2xl p-4">
-      <div class="flex items-center gap-2 mb-2">
-        <svg class="w-5 h-5 text-stat-rose-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-        <span class="text-sm font-medium text-stat-rose-accent">Overdue</span>
-      </div>
-      <span class="text-3xl font-bold text-stat-rose-accent"><%= @overdue_todos.count %></span>
-    </div>
   </div>
 
   <%# Activity graph %>
@@ -73,42 +63,12 @@
     </div>
   </div>
 
-  <%# Carried over section %>
-  <% if @overdue_todos.any? %>
-    <div class="mb-8">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="text-sm font-semibold text-amber-700 uppercase tracking-wide">Carried Over</h2>
-      </div>
-      <div class="space-y-2">
-        <% @overdue_todos.each do |todo| %>
-          <div class="flex items-center gap-3 bg-amber-50/80 rounded-xl border border-amber-200/60 p-3">
-            <%= button_to toggle_todo_path(todo), method: :patch, class: "flex-shrink-0" do %>
-              <div class="w-6 h-6 rounded-full border-2 border-amber-400 hover:border-amber-500 cursor-pointer transition-colors"></div>
-            <% end %>
-            <div class="flex-1 min-w-0">
-              <span class="text-stone-800"><%= todo.title %></span>
-              <% if todo.project %>
-                <span class="inline-flex items-center text-xs bg-amber-100 text-amber-700 rounded-full px-2 py-0.5 ml-2"><%= [todo.project.emoji, todo.project.title].compact.join(" ") %></span>
-              <% end %>
-            </div>
-            <span class="text-xs font-medium text-amber-600 bg-amber-100 rounded-full px-2 py-0.5 flex-shrink-0"><%= todo.due_date.strftime("%b %-d") %></span>
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <%= button_to "Today", todo_path(todo), method: :patch,
-                  params: { todo: { due_date: Date.current } },
-                  class: "text-xs font-medium text-blue-600 hover:text-blue-800 cursor-pointer transition-colors" %>
-              <%= link_to "Edit", edit_todo_path(todo), class: "text-xs text-stone-400 hover:text-stone-600 transition-colors" %>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  <% end %>
 <% end %>
 
 <%# Tasks heading %>
 <div class="flex items-center justify-between mb-3">
   <h2 class="text-sm font-semibold text-stone-500 uppercase tracking-wide">
-    <%= @viewing_history ? "Tasks That Day" : "Today's Tasks" %>
+    <%= @viewing_history ? "Tasks That Day" : "Tasks" %>
   </h2>
   <% unless @viewing_history %>
     <%= link_to new_todo_path(due_date: Date.current), class: "inline-flex items-center gap-1 text-sm font-medium text-violet-600 hover:text-violet-800 transition-colors" do %>
@@ -167,11 +127,9 @@
     <% end %>
   </div>
 <% else %>
-  <% unless @overdue_todos.any? %>
-    <div class="text-center py-12 text-stone-400">
-      <p class="text-lg"><%= @viewing_history ? "No tasks were recorded for this day." : "Nothing on the list for today. Enjoy your day!" %></p>
-    </div>
-  <% end %>
+  <div class="text-center py-12 text-stone-400">
+    <p class="text-lg"><%= @viewing_history ? "No tasks were recorded for this day." : "Nothing on the list for today. Enjoy your day!" %></p>
+  </div>
 <% end %>
 
 <%= render "notes/notes", notable: @daily_page %>

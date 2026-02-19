@@ -24,11 +24,11 @@ RSpec.describe "Daily", type: :request do
       expect(response.body).not_to include("Tomorrow thing")
     end
 
-    it "shows overdue todos in the carryover section" do
+    it "shows past-due incomplete todos in the main list" do
       create(:todo, user: user, title: "Overdue task", due_date: 2.days.ago.to_date)
       get root_path
       expect(response.body).to include("Overdue task")
-      expect(response.body).to include("Carried Over")
+      expect(response.body).not_to include("Carried Over")
     end
 
     it "creates a daily page for the user" do
