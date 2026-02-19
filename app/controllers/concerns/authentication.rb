@@ -13,7 +13,9 @@ module Authentication
   end
 
   def current_user
-    Current.user ||= User.find_by(session_token: cookies.signed[:session_token])
+    return Current.user if Current.user
+    token = cookies.signed[:session_token]
+    Current.user = token.present? ? User.find_by(session_token: token) : nil
   end
 
   def signed_in?
