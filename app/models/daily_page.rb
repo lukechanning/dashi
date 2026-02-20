@@ -12,6 +12,11 @@ class DailyPage < ApplicationRecord
     user.todos.due_on(date)
   end
 
+  def history_todos
+    user.todos.due_on(date).incomplete
+        .or(user.todos.completed_on(date))
+  end
+
   def overdue_todos
     user.todos.overdue(date)
   end

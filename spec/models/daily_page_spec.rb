@@ -43,6 +43,39 @@ RSpec.describe DailyPage, type: :model do
     end
   end
 
+  describe "#history_todos" do
+    let(:user) { create(:user) }
+    let(:date) { Date.current - 1 }
+    let(:page) { create(:daily_page, user: user, date: date) }
+
+    it "includes incomplete todos due on that date" do
+      incomplete = create(:todo, user: user, due_date: date)
+
+      expect(page.history_todos).to include(incomplete)
+    end
+
+    it "includes todos completed on that date, regardless of due_date" do
+      rolled_over = create(:todo, user: user, due_date: date - 3)
+      rolled_over.update!(completed_at: Time.zone.local(date.year, date.month, date.day, 12))
+
+      expect(page.history_todos).to include(rolled_over)
+    end
+
+    it "excludes todos completed on a different date" do
+      next_date = date + 1
+      completed_later = create(:todo, user: user, due_date: date)
+      completed_later.update!(completed_at: Time.zone.local(next_date.year, next_date.month, next_date.day, 12))
+
+      expect(page.history_todos).not_to include(completed_later)
+    end
+
+    it "excludes incomplete todos not due on that date" do
+      _other = create(:todo, user: user, due_date: date - 1)
+
+      expect(page.history_todos).to be_empty
+    end
+  end
+
   describe "#overdue_todos" do
     it "returns incomplete todos from before the page's date" do
       user = create(:user)
