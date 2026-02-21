@@ -88,16 +88,18 @@ RSpec.describe Todo, type: :model do
         expect(Todo.visible_on(today)).to include(no_date)
       end
 
-      it "returns completed todos with due_date on the given date" do
+      it "returns todos completed on the given date regardless of due_date" do
         completed_today = create(:todo, :completed, user: user, due_date: today)
+        rolled_over_completed = create(:todo, :completed, user: user, due_date: today - 3)
 
-        expect(Todo.visible_on(today)).to include(completed_today)
+        expect(Todo.visible_on(today)).to include(completed_today, rolled_over_completed)
       end
 
-      it "does not return completed todos with due_date before the given date" do
-        completed_past = create(:todo, :completed, user: user, due_date: today - 1)
+      it "does not return todos completed on a different date" do
+        completed_yesterday = create(:todo, user: user, due_date: today - 1)
+        completed_yesterday.update!(completed_at: 1.day.ago)
 
-        expect(Todo.visible_on(today)).not_to include(completed_past)
+        expect(Todo.visible_on(today)).not_to include(completed_yesterday)
       end
 
       it "does not return incomplete todos with due_date after the given date" do

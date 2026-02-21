@@ -13,8 +13,7 @@ class DailyPage < ApplicationRecord
   end
 
   def history_todos
-    user.todos.due_on(date).incomplete
-        .or(user.todos.completed_on(date))
+    user.todos.completed_on(date)
   end
 
   def overdue_todos

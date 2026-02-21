@@ -13,7 +13,7 @@ class Todo < ApplicationRecord
   scope :completed_on, ->(date) { complete.where(completed_at: date.beginning_of_day..date.end_of_day) }
   scope :visible_on, ->(date) {
     incomplete.where("due_date IS NULL OR due_date <= ?", date)
-      .or(complete.where(due_date: date))
+      .or(completed_on(date))
   }
   scope :standalone, -> { where(project: nil) }
 
