@@ -7,7 +7,7 @@ class DailyController < ApplicationController
     @daily_page = DailyPage.find_or_create_for(current_user, @date)
 
     if @viewing_history
-      @todos = @daily_page.todos.ordered.includes(project: :members)
+      @todos = @daily_page.history_todos.ordered.includes(project: :members)
     else
       @todos = current_user.todos.visible_on(@date).ordered.includes(project: :members)
     end

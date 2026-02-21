@@ -109,7 +109,9 @@
           <% todo_members = ([todo.project.user] + todo.project.members.to_a).uniq %>
           <%= avatar_stack(todo_members, size: :xs, max: 3) %>
         <% end %>
-        <% if todo.due_date %>
+        <% if @viewing_history && todo.complete? && todo.due_date && todo.due_date != @date %>
+          <span class="text-xs text-stone-400 flex-shrink-0">due <%= todo.due_date.strftime("%b %-d") %></span>
+        <% elsif !@viewing_history && todo.due_date %>
           <span class="text-xs text-stone-400 flex-shrink-0"><%= todo.due_date.strftime("%b %-d") %></span>
         <% end %>
         <% unless @viewing_history %>
