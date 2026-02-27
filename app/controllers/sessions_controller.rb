@@ -3,6 +3,10 @@ class SessionsController < ApplicationController
 
   layout "auth"
 
+  rate_limit to: 5, within: 1.minute, only: :create, with: -> {
+    redirect_to new_session_path, alert: "Too many sign-in attempts. Please try again later."
+  }
+
   def new
   end
 

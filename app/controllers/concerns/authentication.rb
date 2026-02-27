@@ -24,7 +24,7 @@ module Authentication
 
   def sign_in(user)
     token = user.reset_session_token!
-    cookies.signed.permanent[:session_token] = { value: token, httponly: true }
+    cookies.signed.permanent[:session_token] = { value: token, httponly: true, same_site: :lax }
     Current.user = user
   end
 
