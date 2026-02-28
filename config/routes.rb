@@ -24,6 +24,11 @@ Rails.application.routes.draw do
       patch :toggle
     end
   end
+  resources :habits do
+    member do
+      patch :toggle_active
+    end
+  end
   resources :daily_pages, only: [], concerns: :notable
 
   # Daily page

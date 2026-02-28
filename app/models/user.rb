@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_many :goals, dependent: :destroy
   has_many :projects, dependent: :destroy
   has_many :todos, dependent: :destroy
+  has_many :habits, dependent: :destroy
   has_many :daily_pages, dependent: :destroy
   has_many :notes, dependent: :destroy
   has_many :invitations, foreign_key: :invited_by_id, dependent: :destroy
@@ -14,6 +15,12 @@ class User < ApplicationRecord
   validates :name, presence: true
 
   normalizes :email, with: ->(email) { email.strip.downcase }
+
+  def generate_habit_todos_for(date)
+    habits.active.find_each do |habit|
+      habit.generate_todo_for!(date)
+    end
+  end
 
   def generate_magic_token!
     update!(
