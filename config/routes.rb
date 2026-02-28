@@ -33,6 +33,7 @@ Rails.application.routes.draw do
 
   # Daily page
   get "upcoming", to: "upcoming#index", as: :upcoming
+  get "calendar", to: "calendar#show", as: :calendar
   root "daily#show"
 
   # User preferences

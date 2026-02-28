@@ -3,7 +3,7 @@
 <% selected_date ||= today %>
 <% days = (6.days.ago.to_date..today).to_a.last(7) %>
 
-<div class="flex items-center justify-between gap-1 mb-6">
+<div class="flex items-center justify-between gap-1">
   <% days.each do |day| %>
     <% is_selected = day == selected_date %>
     <% is_today = day == today %>

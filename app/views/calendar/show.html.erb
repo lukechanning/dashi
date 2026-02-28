@@ -1,0 +1,65 @@
+<%= turbo_frame_tag "calendar" do %>
+  <div class="bg-white rounded-xl border border-stone-200/60 shadow-sm p-4 sm:p-5">
+    <%# Header: prev / month title / next %>
+    <div class="flex items-center justify-between mb-4">
+      <%= link_to calendar_path(month: @prev_month.strftime("%Y-%m")), class: "p-2 rounded-lg hover:bg-stone-100 transition-colors text-stone-400 hover:text-stone-600" do %>
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      <% end %>
+
+      <div class="flex items-center gap-2">
+        <h2 class="text-base font-bold text-stone-800"><%= @month.strftime("%B %Y") %></h2>
+        <% unless @month == @today.beginning_of_month %>
+          <%= link_to "Today", calendar_path, class: "text-xs font-medium text-violet-600 hover:text-violet-800 bg-violet-50 hover:bg-violet-100 rounded-full px-2 py-0.5 transition-colors" %>
+        <% end %>
+      </div>
+
+      <%= link_to calendar_path(month: @next_month.strftime("%Y-%m")), class: "p-2 rounded-lg hover:bg-stone-100 transition-colors text-stone-400 hover:text-stone-600" do %>
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      <% end %>
+    </div>
+
+    <%# Day-of-week headers %>
+    <div class="grid grid-cols-7 mb-1">
+      <% %w[Sun Mon Tue Wed Thu Fri Sat].each do |day_name| %>
+        <div class="text-center text-[11px] font-semibold text-stone-400 uppercase tracking-wide py-1"><%= day_name %></div>
+      <% end %>
+    </div>
+
+    <%# Day cells %>
+    <div class="grid grid-cols-7">
+      <% (@start_date..@end_date).each do |date| %>
+        <% in_month = date.month == @month.month %>
+        <% is_today = date == @today %>
+        <% count = @completed_counts[date] || 0 %>
+        <% link_target = date == @today ? root_path : root_path(date: date.iso8601) %>
+
+        <%= link_to link_target, data: { turbo_frame: "_top" }, class: "flex flex-col items-center py-1.5 rounded-lg transition-colors #{in_month ? 'hover:bg-stone-50' : 'hover:bg-stone-50/50'}" do %>
+          <span class="flex items-center justify-center w-7 h-7 rounded-full text-sm font-medium
+            <%= is_today ? 'bg-violet-600 text-white' : (in_month ? 'text-stone-700' : 'text-stone-300') %>">
+            <%= date.day %>
+          </span>
+
+          <% if count > 0 %>
+            <div class="flex items-center justify-center mt-0.5 h-3">
+              <% if count <= 3 %>
+                <div class="flex gap-0.5">
+                  <% count.times do %>
+                    <span class="w-1.5 h-1.5 rounded-full <%= in_month ? 'bg-emerald-400' : 'bg-emerald-200' %>"></span>
+                  <% end %>
+                </div>
+              <% else %>
+                <span class="text-[10px] font-semibold <%= in_month ? 'text-emerald-500' : 'text-emerald-300' %>"><%= count %></span>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="mt-0.5 h-3"></div>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
