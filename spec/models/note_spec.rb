@@ -17,7 +17,7 @@ RSpec.describe Note, type: :model do
       old_note = create(:note, user: user, notable: goal, created_at: 2.days.ago)
       new_note = create(:note, user: user, notable: goal, created_at: 1.day.ago)
 
-      expect(Note.ordered).to eq([new_note, old_note])
+      expect(Note.ordered).to eq([ new_note, old_note ])
     end
   end
 

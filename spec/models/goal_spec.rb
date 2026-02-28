@@ -22,7 +22,7 @@ RSpec.describe Goal, type: :model do
       goal_b = create(:goal, user: user, position: 2)
       goal_a = create(:goal, user: user, position: 1)
 
-      expect(Goal.ordered).to eq([goal_a, goal_b])
+      expect(Goal.ordered).to eq([ goal_a, goal_b ])
     end
   end
 

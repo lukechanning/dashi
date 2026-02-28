@@ -4,5 +4,5 @@ class Membership < ApplicationRecord
 
   enum :role, { member: 0, admin: 1 }
 
-  validates :user_id, uniqueness: { scope: [:memberable_type, :memberable_id], message: "is already a member" }
+  validates :user_id, uniqueness: { scope: [ :memberable_type, :memberable_id ], message: "is already a member" }
 end

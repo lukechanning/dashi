@@ -12,7 +12,7 @@ class CreateTodos < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :todos, [:user_id, :due_date]
-    add_index :todos, [:user_id, :completed_at]
+    add_index :todos, [ :user_id, :due_date ]
+    add_index :todos, [ :user_id, :completed_at ]
   end
 end

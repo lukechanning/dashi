@@ -41,5 +41,4 @@ class User < ApplicationRecord
     user = find_by(magic_token: token)
     user if user&.magic_token_valid?
   end
-
 end

@@ -1,8 +1,8 @@
 class InvitationsController < ApplicationController
-  before_action :require_admin, only: [:index, :new, :create]
-  skip_before_action :authenticate_user!, only: [:accept, :register]
+  before_action :require_admin, only: [ :index, :new, :create ]
+  skip_before_action :authenticate_user!, only: [ :accept, :register ]
 
-  layout "auth", only: [:accept, :register]
+  layout "auth", only: [ :accept, :register ]
 
   def index
     @invitations = Invitation.order(created_at: :desc)

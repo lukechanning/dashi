@@ -18,28 +18,28 @@ RSpec.describe Todo, type: :model do
       complete = create(:todo, :completed, user: user)
       _incomplete = create(:todo, user: user)
 
-      expect(Todo.complete).to eq([complete])
+      expect(Todo.complete).to eq([ complete ])
     end
 
     it "returns incomplete todos" do
       _complete = create(:todo, :completed, user: user)
       incomplete = create(:todo, user: user)
 
-      expect(Todo.incomplete).to eq([incomplete])
+      expect(Todo.incomplete).to eq([ incomplete ])
     end
 
     it "returns todos due on a specific date" do
       today = create(:todo, user: user, due_date: Date.current)
       _tomorrow = create(:todo, user: user, due_date: Date.tomorrow)
 
-      expect(Todo.due_on(Date.current)).to eq([today])
+      expect(Todo.due_on(Date.current)).to eq([ today ])
     end
 
     it "returns overdue todos" do
       overdue = create(:todo, :overdue, user: user)
       _today = create(:todo, user: user, due_date: Date.current)
 
-      expect(Todo.overdue).to eq([overdue])
+      expect(Todo.overdue).to eq([ overdue ])
     end
 
     describe ".completed_on" do
@@ -69,7 +69,7 @@ RSpec.describe Todo, type: :model do
       standalone = create(:todo, user: user)
       _linked = create(:todo, :with_project, user: user)
 
-      expect(Todo.standalone).to eq([standalone])
+      expect(Todo.standalone).to eq([ standalone ])
     end
 
     describe ".visible_on" do

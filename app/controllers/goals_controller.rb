@@ -1,5 +1,5 @@
 class GoalsController < ApplicationController
-  before_action :set_goal, only: [:show, :edit, :update, :destroy]
+  before_action :set_goal, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @goals = current_user.goals.ordered.includes(:members)

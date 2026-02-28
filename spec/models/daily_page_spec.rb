@@ -39,7 +39,7 @@ RSpec.describe DailyPage, type: :model do
       today_todo = create(:todo, user: user, due_date: Date.current)
       _tomorrow_todo = create(:todo, user: user, due_date: Date.tomorrow)
 
-      expect(page.todos).to eq([today_todo])
+      expect(page.todos).to eq([ today_todo ])
     end
   end
 
@@ -85,7 +85,7 @@ RSpec.describe DailyPage, type: :model do
       _today = create(:todo, user: user, due_date: Date.current)
       _completed_overdue = create(:todo, :completed, user: user, due_date: 2.days.ago.to_date)
 
-      expect(page.overdue_todos).to eq([overdue])
+      expect(page.overdue_todos).to eq([ overdue ])
     end
   end
 end
