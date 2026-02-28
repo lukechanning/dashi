@@ -38,14 +38,14 @@ RSpec.describe Invitation, type: :model do
       pending_inv = create(:invitation)
       _accepted = create(:invitation, accepted_at: Time.current)
 
-      expect(Invitation.pending).to eq([pending_inv])
+      expect(Invitation.pending).to eq([ pending_inv ])
     end
 
     it "returns accepted invitations" do
       _pending = create(:invitation)
       accepted = create(:invitation, accepted_at: Time.current)
 
-      expect(Invitation.accepted).to eq([accepted])
+      expect(Invitation.accepted).to eq([ accepted ])
     end
   end
 

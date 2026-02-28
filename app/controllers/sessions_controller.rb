@@ -1,7 +1,11 @@
 class SessionsController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:new, :create, :verify]
+  skip_before_action :authenticate_user!, only: [ :new, :create, :verify ]
 
   layout "auth"
+
+  rate_limit to: 5, within: 1.minute, only: :create, with: -> {
+    redirect_to new_session_path, alert: "Too many sign-in attempts. Please try again later."
+  }
 
   def new
   end

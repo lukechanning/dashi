@@ -1,5 +1,5 @@
 class TodosController < ApplicationController
-  before_action :set_todo, only: [:edit, :update, :destroy, :toggle]
+  before_action :set_todo, only: [ :edit, :update, :destroy, :toggle ]
 
   def new
     @todo = current_user.todos.build(

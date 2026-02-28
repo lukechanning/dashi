@@ -1,25 +1,25 @@
 Rails.application.routes.draw do
   # Auth
-  resource :session, only: [:new, :create, :destroy]
+  resource :session, only: [ :new, :create, :destroy ]
   get "auth/verify", to: "sessions#verify", as: :verify_session
 
   # Invitations
-  resources :invitations, only: [:index, :new, :create]
+  resources :invitations, only: [ :index, :new, :create ]
   get "invitations/:token/accept", to: "invitations#accept", as: :accept_invitation
   post "invitations/:token/register", to: "invitations#register", as: :register_invitation
 
   # Core resources with nested notes
   concern :notable do
-    resources :notes, only: [:create, :edit, :update, :destroy]
+    resources :notes, only: [ :create, :edit, :update, :destroy ]
   end
 
   resources :goals, concerns: :notable do
-    resources :memberships, only: [:create, :destroy]
+    resources :memberships, only: [ :create, :destroy ]
   end
   resources :projects, concerns: :notable do
-    resources :memberships, only: [:create, :destroy]
+    resources :memberships, only: [ :create, :destroy ]
   end
-  resources :todos, except: [:index, :show], concerns: :notable do
+  resources :todos, except: [ :index, :show ], concerns: :notable do
     member do
       patch :toggle
     end

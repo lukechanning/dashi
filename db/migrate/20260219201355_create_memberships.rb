@@ -8,6 +8,6 @@ class CreateMemberships < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :memberships, [:user_id, :memberable_type, :memberable_id], unique: true, name: "index_memberships_on_user_and_memberable"
+    add_index :memberships, [ :user_id, :memberable_type, :memberable_id ], unique: true, name: "index_memberships_on_user_and_memberable"
   end
 end

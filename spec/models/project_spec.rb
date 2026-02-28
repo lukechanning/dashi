@@ -23,7 +23,7 @@ RSpec.describe Project, type: :model do
       goal = create(:goal, user: user)
       _linked = create(:project, user: user, goal: goal)
 
-      expect(Project.standalone).to eq([standalone])
+      expect(Project.standalone).to eq([ standalone ])
     end
   end
 
