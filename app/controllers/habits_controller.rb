@@ -7,7 +7,7 @@ class HabitsController < ApplicationController
   end
 
   def new
-    @habit = current_user.habits.build
+    @habit = current_user.habits.build(project_id: params[:project_id])
   end
 
   def create

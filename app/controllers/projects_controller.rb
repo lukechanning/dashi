@@ -6,6 +6,7 @@ class ProjectsController < ApplicationController
   end
 
   def show
+    @habits = @project.habits.ordered
     @todos = @project.todos.ordered
   end
 

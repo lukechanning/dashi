@@ -9,7 +9,7 @@
     <span class="font-medium text-stone-800"><%= habit.title %></span>
     <div class="flex items-center gap-2 mt-0.5">
       <span class="text-xs text-stone-500"><%= habit.schedule_description %></span>
-      <% if habit.project %>
+      <% if local_assigns.fetch(:show_project, true) && habit.project %>
         <span class="inline-flex items-center text-xs bg-stone-100 text-stone-500 rounded-full px-2 py-0.5"><%= [habit.project.emoji, habit.project.title].compact.join(" ") %></span>
       <% end %>
     </div>

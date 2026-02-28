@@ -19,6 +19,12 @@ RSpec.describe "Habits", type: :request do
       get new_habit_path
       expect(response).to have_http_status(:ok)
     end
+
+    it "pre-fills the project when project_id is provided" do
+      project = create(:project, user: user)
+      get new_habit_path(project_id: project.id)
+      expect(response).to have_http_status(:ok)
+    end
   end
 
   describe "POST /habits" do
