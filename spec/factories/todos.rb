@@ -15,5 +15,9 @@ FactoryBot.define do
     trait :overdue do
       due_date { 2.days.ago.to_date }
     end
+
+    trait :from_habit do
+      habit
+    end
   end
 end

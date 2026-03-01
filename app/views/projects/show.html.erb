@@ -26,6 +26,18 @@
 
 <%= render "shared/members_section", memberable: @project %>
 
+<% if @habits.any? %>
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold">Habits</h2>
+    <%= link_to "Add habit", new_habit_path(project_id: @project.id), class: "text-sm text-blue-600 hover:text-blue-800" %>
+  </div>
+  <div class="space-y-2 mb-8">
+    <% @habits.each do |habit| %>
+      <%= render "habits/habit_card", habit: habit, show_project: false %>
+    <% end %>
+  </div>
+<% end %>
+
 <div class="flex items-center justify-between mb-4">
   <h2 class="text-lg font-semibold">Todos</h2>
   <%= link_to "Add todo", new_todo_path(project_id: @project.id), class: "text-sm text-blue-600 hover:text-blue-800" %>

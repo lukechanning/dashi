@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_19_201355) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_28_232838) do
   create_table "daily_pages", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.date "date", null: false
@@ -30,6 +30,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_19_201355) do
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_goals_on_user_id"
+  end
+
+  create_table "habits", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "days_of_week"
+    t.integer "frequency", default: 0, null: false
+    t.integer "position"
+    t.integer "project_id"
+    t.date "start_date", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["project_id"], name: "index_habits_on_project_id"
+    t.index ["user_id", "active"], name: "index_habits_on_user_id_and_active"
+    t.index ["user_id"], name: "index_habits_on_user_id"
   end
 
   create_table "invitations", force: :cascade do |t|
@@ -84,12 +100,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_19_201355) do
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.date "due_date"
+    t.integer "habit_id"
     t.text "notes"
     t.integer "position"
     t.integer "project_id"
     t.string "title"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["habit_id", "due_date"], name: "index_todos_on_habit_id_and_due_date", unique: true
+    t.index ["habit_id"], name: "index_todos_on_habit_id"
     t.index ["project_id"], name: "index_todos_on_project_id"
     t.index ["user_id", "completed_at"], name: "index_todos_on_user_id_and_completed_at"
     t.index ["user_id", "due_date"], name: "index_todos_on_user_id_and_due_date"
@@ -113,11 +132,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_19_201355) do
 
   add_foreign_key "daily_pages", "users"
   add_foreign_key "goals", "users"
+  add_foreign_key "habits", "projects"
+  add_foreign_key "habits", "users"
   add_foreign_key "invitations", "users", column: "invited_by_id"
   add_foreign_key "memberships", "users"
   add_foreign_key "notes", "users"
   add_foreign_key "projects", "goals"
   add_foreign_key "projects", "users"
+  add_foreign_key "todos", "habits"
   add_foreign_key "todos", "projects"
   add_foreign_key "todos", "users"
 end

@@ -24,10 +24,16 @@ Rails.application.routes.draw do
       patch :toggle
     end
   end
+  resources :habits do
+    member do
+      patch :toggle_active
+    end
+  end
   resources :daily_pages, only: [], concerns: :notable
 
   # Daily page
   get "upcoming", to: "upcoming#index", as: :upcoming
+  get "calendar", to: "calendar#show", as: :calendar
   root "daily#show"
 
   # User preferences

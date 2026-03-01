@@ -1,5 +1,32 @@
-<%# Week strip navigation %>
-<%= render "shared/week_strip", selected_date: @date, today: Date.current %>
+<%# Week strip + collapsible calendar %>
+<div data-controller="calendar-panel">
+  <div class="flex items-center gap-3 mb-2">
+    <div class="flex-1">
+      <%= render "shared/week_strip", selected_date: @date, today: Date.current %>
+    </div>
+    <button data-action="calendar-panel#toggle" class="flex flex-col items-center justify-center w-10 h-10 rounded-xl text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors cursor-pointer" title="Calendar view">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+      <svg data-calendar-panel-target="icon" class="w-3 h-3 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+  </div>
+
+  <%# Collapsible calendar panel %>
+  <div data-calendar-panel-target="panel"
+       class="grid transition-[grid-template-rows] duration-300 ease-in-out mb-4"
+       style="grid-template-rows: 0fr">
+    <div class="overflow-hidden">
+      <div class="pt-2 pb-1">
+        <%= turbo_frame_tag "calendar", src: calendar_path(month: @date.strftime("%Y-%m")) do %>
+          <div class="h-20 flex items-center justify-center text-stone-300 text-sm">Loading...</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="mb-8">
   <% if @viewing_history %>
@@ -101,6 +128,11 @@
           <span class="<%= todo.complete? ? 'line-through text-stone-400' : 'text-stone-800' %>">
             <%= todo.title %>
           </span>
+          <% if todo.from_habit? %>
+            <svg class="w-3.5 h-3.5 text-stone-400 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" title="Recurring habit">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          <% end %>
           <% if todo.project %>
             <span class="inline-flex items-center text-xs bg-stone-100 text-stone-500 rounded-full px-2 py-0.5 ml-2"><%= [todo.project.emoji, todo.project.title].compact.join(" ") %></span>
           <% end %>

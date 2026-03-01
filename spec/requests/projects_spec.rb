@@ -21,6 +21,14 @@ RSpec.describe "Projects", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include(project.title)
     end
+
+    it "displays the project's habits" do
+      project = create(:project, user: user)
+      habit = create(:habit, user: user, project: project, title: "Daily standup")
+      get project_path(project)
+      expect(response.body).to include("Daily standup")
+      expect(response.body).to include("Habits")
+    end
   end
 
   describe "POST /projects" do

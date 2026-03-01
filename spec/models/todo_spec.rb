@@ -4,6 +4,7 @@ RSpec.describe Todo, type: :model do
   describe "associations" do
     it { should belong_to(:user) }
     it { should belong_to(:project).optional }
+    it { should belong_to(:habit).optional }
     it { should have_many(:notes).dependent(:destroy) }
   end
 
@@ -107,6 +108,28 @@ RSpec.describe Todo, type: :model do
 
         expect(Todo.visible_on(today)).not_to include(future)
       end
+
+      context "habit todos" do
+        let(:habit) { create(:habit, user: user) }
+
+        it "shows habit todos on their due date" do
+          habit_todo = create(:todo, user: user, habit: habit, due_date: today)
+
+          expect(Todo.visible_on(today)).to include(habit_todo)
+        end
+
+        it "does NOT carry over habit todos from past days" do
+          past_habit_todo = create(:todo, user: user, habit: habit, due_date: today - 1)
+
+          expect(Todo.visible_on(today)).not_to include(past_habit_todo)
+        end
+
+        it "shows completed habit todos on the day they were completed" do
+          completed_habit_todo = create(:todo, :completed, user: user, habit: habit, due_date: today)
+
+          expect(Todo.visible_on(today)).to include(completed_habit_todo)
+        end
+      end
     end
   end
 
@@ -125,6 +148,17 @@ RSpec.describe Todo, type: :model do
       todo = create(:todo, :completed)
       todo.incomplete!
       expect(todo.completed_at).to be_nil
+    end
+  end
+
+  describe "#from_habit?" do
+    it "returns true when associated with a habit" do
+      todo = create(:todo, :from_habit)
+      expect(todo).to be_from_habit
+    end
+
+    it "returns false when not associated with a habit" do
+      expect(build(:todo)).not_to be_from_habit
     end
   end
 

@@ -48,6 +48,14 @@ RSpec.describe "Todos", type: :request do
     end
   end
 
+  describe "GET /todos/:id/edit" do
+    it "shows a delete button" do
+      todo = create(:todo, user: user)
+      get edit_todo_path(todo)
+      expect(response.body).to include("Delete this todo")
+    end
+  end
+
   describe "DELETE /todos/:id" do
     it "destroys the todo" do
       todo = create(:todo, user: user)
