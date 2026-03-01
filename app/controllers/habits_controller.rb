@@ -55,6 +55,9 @@ class HabitsController < ApplicationController
 
   def habit_params
     permitted = params.require(:habit).permit(:title, :frequency, :project_id, :start_date, days_of_week: [])
+    if permitted[:project_id].present?
+      permitted[:project_id] = current_user.projects.find_by(id: permitted[:project_id])&.id
+    end
     if permitted[:days_of_week].is_a?(Array)
       permitted[:days_of_week] = permitted[:days_of_week].reject(&:blank?).join(",")
     end

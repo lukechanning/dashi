@@ -20,7 +20,7 @@
        style="grid-template-rows: 0fr">
     <div class="overflow-hidden">
       <div class="pt-2 pb-1">
-        <%= turbo_frame_tag "calendar", src: calendar_path(month: @date.strftime("%Y-%m")), loading: :lazy do %>
+        <%= turbo_frame_tag "calendar", src: calendar_path(month: @date.strftime("%Y-%m")) do %>
           <div class="h-20 flex items-center justify-center text-stone-300 text-sm">Loading...</div>
         <% end %>
       </div>

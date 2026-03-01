@@ -1,7 +1,11 @@
 class CalendarController < ApplicationController
   def show
     if params[:month].present?
-      @month = Date.parse("#{params[:month]}-01")
+      begin
+        @month = Date.parse("#{params[:month]}-01")
+      rescue ArgumentError
+        @month = Date.current.beginning_of_month
+      end
     else
       @month = Date.current.beginning_of_month
     end
