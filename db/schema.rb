@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_28_232838) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_05_194155) do
   create_table "daily_pages", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.date "date", null: false
@@ -115,6 +115,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_232838) do
     t.index ["user_id"], name: "index_todos_on_user_id"
   end
 
+  create_table "user_sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "token", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["token"], name: "index_user_sessions_on_token", unique: true
+    t.index ["user_id"], name: "index_user_sessions_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.boolean "admin", default: false, null: false
     t.datetime "created_at", null: false
@@ -122,12 +131,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_232838) do
     t.string "magic_token"
     t.datetime "magic_token_expires_at"
     t.string "name"
-    t.string "session_token"
     t.string "timezone"
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["magic_token"], name: "index_users_on_magic_token", unique: true
-    t.index ["session_token"], name: "index_users_on_session_token", unique: true
   end
 
   add_foreign_key "daily_pages", "users"
@@ -142,4 +149,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_232838) do
   add_foreign_key "todos", "habits"
   add_foreign_key "todos", "projects"
   add_foreign_key "todos", "users"
+  add_foreign_key "user_sessions", "users"
 end

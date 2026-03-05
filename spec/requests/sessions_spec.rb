@@ -76,12 +76,13 @@ RSpec.describe "Sessions", type: :request do
       delete session_path
 
       expect(response).to redirect_to(new_session_path)
-      expect(user.reload.session_token).to be_nil
+      expect(user.user_sessions.count).to eq(0)
     end
   end
 
   describe "authentication required" do
     it "redirects unauthenticated users to login" do
+      create(:user)
       get root_path
       expect(response).to redirect_to(new_session_path)
     end

@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  # Setup wizard (first-run only)
+  get  "setup", to: "setup#show",   as: :setup
+  post "setup", to: "setup#create"
+
   # Auth
   resource :session, only: [ :new, :create, :destroy ]
   get "auth/verify", to: "sessions#verify", as: :verify_session

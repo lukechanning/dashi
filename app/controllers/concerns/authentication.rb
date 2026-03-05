@@ -15,7 +15,7 @@ module Authentication
   def current_user
     return Current.user if Current.user
     token = cookies.signed[:session_token]
-    Current.user = token.present? ? User.find_by(session_token: token) : nil
+    Current.user = token.present? ? UserSession.find_by(token: token)&.user : nil
   end
 
   def signed_in?
@@ -23,13 +23,14 @@ module Authentication
   end
 
   def sign_in(user)
-    token = user.reset_session_token!
-    cookies.signed.permanent[:session_token] = { value: token, httponly: true, same_site: :lax }
+    session = user.create_session!
+    cookies.signed.permanent[:session_token] = { value: session.token, httponly: true, same_site: :lax }
     Current.user = user
   end
 
   def sign_out
-    current_user&.update!(session_token: nil)
+    token = cookies.signed[:session_token]
+    UserSession.find_by(token: token)&.destroy
     cookies.delete(:session_token)
     Current.user = nil
   end

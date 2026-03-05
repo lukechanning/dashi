@@ -68,12 +68,13 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe "#reset_session_token!" do
-    it "generates and persists a new session token" do
+  describe "#create_session!" do
+    it "creates a new UserSession with a token" do
       user = create(:user)
-      token = user.reset_session_token!
-      expect(token).to be_present
-      expect(user.reload.session_token).to eq(token)
+      session = user.create_session!
+      expect(session).to be_persisted
+      expect(session.token).to be_present
+      expect(session.user).to eq(user)
     end
   end
 
