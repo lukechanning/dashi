@@ -3,6 +3,7 @@ class User < ApplicationRecord
 
   MAGIC_TOKEN_TTL = 15.minutes
 
+  has_many :user_sessions, dependent: :destroy
   has_many :goals, dependent: :destroy
   has_many :projects, dependent: :destroy
   has_many :todos, dependent: :destroy
@@ -38,9 +39,8 @@ class User < ApplicationRecord
     magic_token.present? && magic_token_expires_at&.future?
   end
 
-  def reset_session_token!
-    update!(session_token: SecureRandom.urlsafe_base64(32))
-    session_token
+  def create_session!
+    user_sessions.create!
   end
 
   def self.find_by_magic_token(token)

@@ -31,7 +31,7 @@ class TodosController < ApplicationController
 
   def destroy
     @todo.destroy!
-    redirect_back fallback_location: root_path, notice: "Todo deleted."
+    redirect_to root_path, notice: "Todo deleted."
   end
 
   def toggle
