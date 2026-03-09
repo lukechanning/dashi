@@ -36,3 +36,9 @@
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# Generated screenshots (run bin/screenshots to regenerate)
+/screenshots/
+
+# Mac specific files
+.DS_Store
