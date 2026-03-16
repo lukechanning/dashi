@@ -55,9 +55,9 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "dashi.fly.dev"), protocol: "https" }
+  config.action_mailer.default_url_options = { host: ENV["APP_HOST"] || (URI.parse(ENV["ORIGIN"]).host if ENV["ORIGIN"].present?) || "dashi.fly.dev", protocol: "https" }
 
-  # Resend for transactional email (magic links, invitations)
+  # Transactional email (magic links, invitations) via Resend
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     address: "smtp.resend.com",
@@ -80,8 +80,9 @@ Rails.application.configure do
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   config.hosts = [
-    ENV.fetch("APP_HOST", "dashi.fly.dev")
-  ]
+    ENV.fetch("APP_HOST", "dashi.fly.dev"),
+    (URI.parse(ENV["ORIGIN"]).host if ENV["ORIGIN"].present?)
+  ].compact
 
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }

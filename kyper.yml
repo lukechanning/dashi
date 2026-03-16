@@ -1,0 +1,35 @@
+name: Dashi
+version: 0.1.0
+description: │A calm, focused space for daily todos, projects, and the goals behind them.
+tagline: A quiet place to keep your days in order.
+category: productivity
+docker:
+    dockerfile: ./Dockerfile
+processes:
+    web: "./bin/rails server -b 0.0.0.0 -p 3000"
+pricing:
+    subscription: 10
+resources:
+    min_memory_mb: 512
+    min_cpu: 1
+env:
+  - MAILER_FROM
+integrations:
+  - resend
+hooks:
+  on_deploy: "bundle exec rails db:prepare"
+  on_update: "bundle exec rails db:migrate"
+healthcheck:
+    path: /up
+    interval: 30
+    timeout: 10
+security:
+    ignore_cves:
+        - id: "CVE-2025-68121"
+          reason: "Go stdlib CVE in Litestream binary; no upstream fix until Go 1.24.13 — awaiting new Litestream release"
+        - id: "CVE-2025-61726"
+          reason: "Go stdlib CVE in Litestream binary; no upstream fix until Go 1.24.12 — awaiting new Litestream release"
+        - id: "CVE-2025-61728"
+          reason: "Go stdlib CVE in Litestream binary; no upstream fix until Go 1.24.12 — awaiting new Litestream release"
+        - id: "CVE-2026-0861"
+          reason: "libc vulnerability in Debian Trixie base image; no upstream fix available as of 2026-03-10"
