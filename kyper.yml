@@ -12,6 +12,8 @@ pricing:
 resources:
     min_memory_mb: 512
     min_cpu: 1
+deps:
+  - s3
 env:
   - MAILER_FROM
 integrations:

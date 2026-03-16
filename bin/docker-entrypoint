@@ -1,5 +1,13 @@
 #!/bin/bash -e
 
+# Map Kyper S3 env vars to Litestream env vars (Fly sets LITESTREAM_* directly)
+if [ -z "${LITESTREAM_ENDPOINT}" ] && [ -n "${AWS_ENDPOINT_URL}" ]; then
+  export LITESTREAM_ENDPOINT="${AWS_ENDPOINT_URL}"
+  export LITESTREAM_BUCKET="${AWS_BUCKET}"
+  export LITESTREAM_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
+  export LITESTREAM_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
+fi
+
 # Restore databases from Litestream backup if configured and no local DB exists
 if [ -n "${LITESTREAM_ENDPOINT}" ]; then
   if [ ! -f /rails/storage/production.sqlite3 ]; then
