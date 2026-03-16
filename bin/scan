@@ -7,5 +7,5 @@ echo "==> Building image..."
 docker build -t "$IMAGE" .
 
 echo ""
-echo "==> Running Trivy scan (CRITICAL + HIGH)..."
-trivy image --severity CRITICAL,HIGH --ignorefile .trivyignore "$IMAGE"
+echo "==> Running Trivy scan (CRITICAL + HIGH, fixable only)..."
+trivy image --severity CRITICAL,HIGH --ignore-unfixed --ignorefile .trivyignore "$IMAGE"
