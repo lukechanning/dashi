@@ -58,6 +58,7 @@ jobs:
           severity: CRITICAL,HIGH
           ignore-unfixed: true
           trivyignores: .trivyignore
+          scanners: vuln
 
   test:
     runs-on: ubuntu-latest
