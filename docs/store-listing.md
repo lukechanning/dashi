@@ -30,7 +30,7 @@ Dashi is invite-only and deliberately unhurried. It won't ask for your attention
 - Goals and projects if you want the bigger picture connected
 - Activity heatmap to notice your own momentum
 - Upcoming view for a look ahead
-- Magic link sign-in — no password to forget
+- Magic link sign-in via Resend — no password to forget
 - Works well on phone or desktop
 
 ## Keywords
