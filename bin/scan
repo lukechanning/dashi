@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -e
+
+IMAGE="dashi-scan"
+
+echo "==> Building image..."
+docker build -t "$IMAGE" .
+
+echo ""
+echo "==> Running Trivy scan (CRITICAL + HIGH, fixable only)..."
+trivy image --severity CRITICAL,HIGH --ignore-unfixed --ignorefile .trivyignore "$IMAGE"
