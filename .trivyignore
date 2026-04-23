@@ -6,6 +6,7 @@ CVE-2026-0861
 # These affect net/url IPv6 parsing, crypto/x509 certificate validation, and crypto/tls key updates
 # Risk is low for our use case (HTTP proxy/caching layer with no direct certificate handling)
 # Review and remove once thruster releases a new version built with patched Go toolchain
+CVE-2025-68121
 CVE-2026-25679
 CVE-2026-32280
 CVE-2026-32281
