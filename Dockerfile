@@ -22,7 +22,7 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install Litestream
-ARG LITESTREAM_VERSION=0.5.9
+ARG LITESTREAM_VERSION=0.5.11
 RUN ARCH=$(dpkg --print-architecture) && \
     DEB_ARCH=$([ "$ARCH" = "amd64" ] && echo "x86_64" || echo "$ARCH") && \
     curl -fsSL "https://github.com/benbjohnson/litestream/releases/download/v${LITESTREAM_VERSION}/litestream-${LITESTREAM_VERSION}-linux-${DEB_ARCH}.deb" -o /tmp/litestream.deb && \

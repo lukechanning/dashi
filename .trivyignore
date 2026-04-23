@@ -1,9 +1,12 @@
 # CVE-2026-0861: libc-bin / libc6 — no upstream fix available as of 2026-03-10
 CVE-2026-0861
 
-# CVE-2025-68121, CVE-2025-61726, CVE-2025-61728: Go stdlib CVEs in the Litestream binary.
-# Litestream 0.5.9 was compiled against an older Go toolchain; fixes require Go 1.24.12+.
-# Remove these once Litestream releases a build with Go 1.24.13 or later.
-CVE-2025-68121
-CVE-2025-61726
-CVE-2025-61728
+# Go stdlib CVEs in thruster binary (v0.1.18, compiled with Go 1.25.6)
+# Thruster is maintained by the Rails core team. Awaiting upstream release with Go 1.25.9+ or 1.26.2+
+# These affect net/url IPv6 parsing, crypto/x509 certificate validation, and crypto/tls key updates
+# Risk is low for our use case (HTTP proxy/caching layer with no direct certificate handling)
+# Review and remove once thruster releases a new version built with patched Go toolchain
+CVE-2026-25679
+CVE-2026-32280
+CVE-2026-32281
+CVE-2026-32283
