@@ -8,7 +8,7 @@ docker:
 processes:
     web: "./bin/rails server -b 0.0.0.0 -p 3000"
 pricing:
-    subscription: 10
+    subscription: 5 
 resources:
     min_memory_mb: 512
     min_cpu: 1
