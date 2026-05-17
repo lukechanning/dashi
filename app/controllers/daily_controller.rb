@@ -15,5 +15,6 @@ class DailyController < ApplicationController
 
     @upcoming_count = current_user.todos.incomplete.where(due_date: (Date.current + 1)..).count
     @done_count = current_user.todos.completed_on(Date.current).count
+    @stale_todos = @viewing_history ? [] : current_user.todos.stale.ordered
   end
 end

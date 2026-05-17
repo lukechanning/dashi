@@ -34,5 +34,45 @@ RSpec.describe "Daily", type: :request do
     it "creates a daily page for the user" do
       expect { get root_path }.to change(DailyPage, :count).by(1)
     end
+
+    context "stale task banner" do
+      it "shows the stale banner when user has todos 3+ days overdue" do
+        create(:todo, :stale, user: user, title: "Old forgotten task")
+        get root_path
+        expect(response.body).to include("stale-banner")
+      end
+
+      it "does not show the stale banner when overdue todos are less than 3 days old" do
+        create(:todo, :overdue, user: user, title: "Slightly overdue task")
+        get root_path
+        expect(response.body).not_to include("stale-banner")
+      end
+
+      it "does not show the stale banner when there are no stale todos" do
+        create(:todo, user: user, due_date: Date.current)
+        get root_path
+        expect(response.body).not_to include("stale-banner")
+      end
+
+      it "does not show the stale banner when viewing history" do
+        create(:todo, :stale, user: user)
+        get root_path(date: 7.days.ago.to_date.to_s)
+        expect(response.body).not_to include("stale-banner")
+      end
+    end
+
+    context "stale wizard" do
+      it "embeds the wizard overlay in the page when stale todos exist" do
+        create(:todo, :stale, user: user, title: "Long forgotten task")
+        get root_path
+        expect(response.body).to include("stale-wizard-overlay")
+        expect(response.body).to include("Long forgotten task")
+      end
+
+      it "does not embed the wizard overlay when there are no stale todos" do
+        get root_path
+        expect(response.body).not_to include("stale-wizard-overlay")
+      end
+    end
   end
 end

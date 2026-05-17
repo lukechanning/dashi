@@ -48,6 +48,13 @@
   <% end %>
 </div>
 
+<% if @stale_todos.any? %>
+  <div data-controller="stale-wizard" data-stale-wizard-current-index-value="0">
+    <%= render "daily/stale_banner" %>
+    <%= render "daily/stale_wizard" %>
+  </div>
+<% end %>
+
 <% unless @viewing_history %>
   <%# Stat cards %>
   <div class="grid grid-cols-3 gap-4 mb-8">

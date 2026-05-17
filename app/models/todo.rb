@@ -11,6 +11,7 @@ class Todo < ApplicationRecord
   scope :incomplete, -> { where(completed_at: nil) }
   scope :due_on, ->(date) { where(due_date: date) }
   scope :overdue, ->(date = Date.current) { incomplete.where(due_date: ...date) }
+  scope :stale, -> { incomplete.where(due_date: ..3.days.ago.to_date) }
   scope :completed_on, ->(date) { complete.where(completed_at: date.beginning_of_day..date.end_of_day) }
   scope :visible_on, ->(date) {
     regular = where(habit_id: nil).incomplete
