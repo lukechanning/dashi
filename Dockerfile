@@ -44,6 +44,10 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libyaml-dev pkg-config && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
+# Patch system Ruby gems that ship with the base image at vulnerable versions.
+# These are default gems not managed by Bundler, so they must be updated explicitly.
+RUN gem update erb net-imap --no-document
+
 # Install application gems
 COPY vendor/* ./vendor/
 COPY Gemfile Gemfile.lock ./

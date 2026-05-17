@@ -5,9 +5,19 @@ CVE-2026-0861
 # Thruster is maintained by the Rails core team. Awaiting upstream release with Go 1.25.9+ or 1.26.2+
 # These affect net/url IPv6 parsing, crypto/x509 certificate validation, and crypto/tls key updates
 # Risk is low for our use case (HTTP proxy/caching layer with no direct certificate handling)
-# Review and remove once thruster releases a new version built with patched Go toolchain
+# Updated to thruster 0.1.21 — remove these if no longer reported after next Trivy scan
 CVE-2025-68121
 CVE-2026-25679
 CVE-2026-32280
 CVE-2026-32281
 CVE-2026-32283
+
+# Go stdlib CVEs in thruster binary (v0.1.21, Go stdlib >= 1.25.6)
+# Affects DNS/CNAME resolution, HTTP/2 SETTINGS frames, email address parsing, Windows NUL byte handling
+# Risk is low: thruster is a local HTTP proxy layer, not exposed to arbitrary network inputs
+# Remove once thruster ships a binary compiled with Go >= 1.25.10 or >= 1.26.3
+CVE-2026-33811
+CVE-2026-33814
+CVE-2026-39820
+CVE-2026-39836
+CVE-2026-42499
