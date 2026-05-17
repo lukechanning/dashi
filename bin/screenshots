@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
-mkdir -p screenshots
+mkdir -p docs/screenshots
 
-bundle exec rspec spec/system/screenshots_spec.rb --format documentation
+SCREENSHOT_DIR=docs/screenshots bundle exec rspec spec/system/screenshots_spec.rb --format documentation
 
 echo ""
-echo "Screenshots saved to screenshots/"
-ls -1 screenshots/*.png 2>/dev/null || echo "(no PNGs found)"
+echo "Screenshots saved to docs/screenshots/"
+ls -1 docs/screenshots/*.png 2>/dev/null || echo "(no PNGs found)"
