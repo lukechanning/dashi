@@ -20,9 +20,9 @@
     </div>
   <% end %>
 
-  <%= form_with model: [notable, Note.new], class: "flex gap-2" do |f| %>
+  <%= form_with model: [notable, Note.new], class: "flex items-end gap-2" do |f| %>
     <%= f.text_area :body, rows: 2, placeholder: "Add a note...",
         class: "flex-1 rounded-xl border border-stone-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent" %>
-    <%= f.submit "Add", class: "self-end bg-violet-600 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-violet-700 cursor-pointer" %>
+    <%= f.submit "Add", class: "bg-violet-600 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-violet-700 cursor-pointer" %>
   <% end %>
 </div>

@@ -12,6 +12,9 @@ Rails.application.routes.draw do
   get "invitations/:token/accept", to: "invitations#accept", as: :accept_invitation
   post "invitations/:token/register", to: "invitations#register", as: :register_invitation
 
+  # Notes journal
+  get "notes", to: "notes#index", as: :notes_index
+
   # Core resources with nested notes
   concern :notable do
     resources :notes, only: [ :create, :edit, :update, :destroy ]

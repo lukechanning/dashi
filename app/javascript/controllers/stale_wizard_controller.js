@@ -25,6 +25,22 @@ export default class extends Controller {
     }
   }
 
+  prev() {
+    const prev = this.currentIndexValue - 1
+    if (prev >= 0) {
+      this.currentIndexValue = prev
+      this.showStep(prev)
+    }
+  }
+
+  next() {
+    const next = this.currentIndexValue + 1
+    if (next < this.stepTargets.length) {
+      this.currentIndexValue = next
+      this.showStep(next)
+    }
+  }
+
   // Called after a Turbo form submit (delete or delay) succeeds
   advanceAfterSubmit(event) {
     // For form submits, advance immediately; Turbo handles the DOM update

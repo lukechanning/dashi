@@ -1,8 +1,12 @@
 class NotesController < ApplicationController
   include PolymorphicParent
 
-  before_action :set_notable
+  before_action :set_notable, only: [ :create, :edit, :update, :destroy ]
   before_action :set_note, only: [ :edit, :update, :destroy ]
+
+  def index
+    @notes = current_user.notes.includes(:notable).order(created_at: :desc)
+  end
 
   def create
     @note = @notable.notes.build(note_params.merge(user: current_user))

@@ -75,6 +75,56 @@ RSpec.describe "Daily", type: :request do
       end
     end
 
+    context "weekly reflection" do
+      it "shows the reflection banner on Friday" do
+        travel_to Date.current.next_occurring(:friday) do
+          get root_path
+          expect(response.body).to include("reflection-banner")
+        end
+      end
+
+      it "does not show the reflection banner on other days" do
+        travel_to Date.current.next_occurring(:monday) do
+          get root_path
+          expect(response.body).not_to include("reflection-banner")
+        end
+      end
+
+      it "does not show the reflection banner when viewing history" do
+        friday = Date.current.next_occurring(:friday)
+        travel_to friday do
+          get root_path(date: (friday - 7).to_s)
+          expect(response.body).not_to include("reflection-banner")
+        end
+      end
+
+      it "embeds the reflection overlay on Friday" do
+        travel_to Date.current.next_occurring(:friday) do
+          get root_path
+          expect(response.body).to include("reflection-overlay")
+        end
+      end
+
+      it "shows week stats in the reflection overlay" do
+        friday = Date.current.next_occurring(:friday)
+        travel_to friday do
+          create(:todo, :completed, user: user, due_date: friday - 2)
+          create(:todo, user: user, due_date: friday - 1)
+          get root_path
+          expect(response.body).to include("reflection-overlay")
+        end
+      end
+
+      it "lists incomplete todos from this week in the reflection overlay" do
+        friday = Date.current.next_occurring(:friday)
+        travel_to friday do
+          create(:todo, user: user, title: "Unfinished thing", due_date: friday - 1)
+          get root_path
+          expect(response.body).to include("Unfinished thing")
+        end
+      end
+    end
+
     context "focus mode" do
       it "shows the focus mode button on today's page" do
         get root_path

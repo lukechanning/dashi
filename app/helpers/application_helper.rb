@@ -28,6 +28,27 @@ module ApplicationHelper
     )
   end
 
+  def notable_link(note)
+    notable = note.notable
+    case note.notable_type
+    when "DailyPage"
+      label = notable.date.strftime("%b %-d, %Y")
+      path  = root_path(date: notable.date.to_s)
+    when "Todo"
+      label = notable.title
+      path  = edit_todo_path(notable)
+    when "Goal"
+      label = notable.title
+      path  = goal_path(notable)
+    when "Project"
+      label = notable.title
+      path  = project_path(notable)
+    else
+      return nil
+    end
+    [ label, path ]
+  end
+
   def avatar_stack(users, size: :sm, max: 3)
     shown = users.first(max)
     overflow = users.size - max

@@ -55,6 +55,13 @@
   </div>
 <% end %>
 
+<% if @show_reflection %>
+  <div data-controller="reflection">
+    <%= render "daily/reflection_banner" %>
+    <%= render "daily/reflection_overlay" %>
+  </div>
+<% end %>
+
 <% unless @viewing_history %>
   <%# Stat cards %>
   <div class="grid grid-cols-3 gap-4 mb-8">

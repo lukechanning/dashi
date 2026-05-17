@@ -46,25 +46,29 @@ export default class extends Controller {
     const checkmark = label.querySelector("[data-focus-mode-target='checkmark']")
     const checkIcon = label.querySelector("[data-focus-mode-target='checkIcon']")
 
+    // The browser has already toggled checkbox.checked before the change event fires,
+    // so checked===true means the user just selected this item.
     if (checkbox.checked) {
-      // Already checked — uncheck
-      checkbox.checked = false
-      this.selected = this.selected.filter(t => t.id !== id)
-      if (checkmark) {
-        checkmark.classList.remove("bg-violet-500", "border-violet-500")
-        checkmark.classList.add("border-stone-300")
+      if (this.selected.length >= MAX_TASKS) {
+        // At the limit — reject this selection
+        checkbox.checked = false
+        return
       }
-      if (checkIcon) checkIcon.classList.add("hidden")
-    } else if (this.selected.length < MAX_TASKS) {
-      checkbox.checked = true
       this.selected.push({ id, title, toggleUrl })
       if (checkmark) {
         checkmark.classList.add("bg-violet-500", "border-violet-500")
         checkmark.classList.remove("border-stone-300")
       }
       if (checkIcon) checkIcon.classList.remove("hidden")
+    } else {
+      // User just unchecked this item
+      this.selected = this.selected.filter(t => t.id !== id)
+      if (checkmark) {
+        checkmark.classList.remove("bg-violet-500", "border-violet-500")
+        checkmark.classList.add("border-stone-300")
+      }
+      if (checkIcon) checkIcon.classList.add("hidden")
     }
-    // If already at MAX_TASKS and unchecked, do nothing (prevent checking a 4th)
 
     this.#updateSelectionUI()
   }
@@ -75,12 +79,14 @@ export default class extends Controller {
     this.#renderTaskList()
     this.viewTarget.classList.remove("hidden")
     document.body.style.overflow = "hidden"
+    document.getElementById("fab-new-todo")?.classList.add("!hidden")
   }
 
   endSession() {
     this.#clearTimer()
     this.viewTarget.classList.add("hidden")
     document.body.style.overflow = ""
+    document.getElementById("fab-new-todo")?.classList.remove("!hidden")
     // Reset timer state
     this.timerRemaining = POMODORO_SECONDS
     this.timerRunning = false
