@@ -19,7 +19,7 @@
           </svg>
         </button>
       </div>
-      <p class="text-xs text-stone-400 mt-1"><%= Date.current.beginning_of_week.strftime("%b %-d") %> – <%= Date.current.strftime("%b %-d") %></p>
+      <p class="text-xs text-stone-400 mt-1"><%= @date.beginning_of_week.strftime("%b %-d") %> – <%= @date.strftime("%b %-d") %></p>
     </div>
 
     <div class="overflow-y-auto flex-1">

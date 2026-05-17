@@ -229,6 +229,7 @@ export default class extends Controller {
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5)
       osc.start(ctx.currentTime)
       osc.stop(ctx.currentTime + 1.5)
+      osc.addEventListener("ended", () => ctx.close())
     } catch {
       // Audio not available — fail silently
     }

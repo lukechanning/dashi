@@ -31,18 +31,7 @@ export default class extends Controller {
     const body = this.noteBodyTarget.value.trim()
     if (!body) return
 
-    const form = event.target
-    const url = form.action
-    const csrfToken = document.querySelector("meta[name='csrf-token']").content
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "X-CSRF-Token": csrfToken,
-      },
-      body: new URLSearchParams({ "note[body]": body }),
-    })
+    const response = await this.#postNote(event.target.action, body)
 
     if (response.ok) {
       this.noteBodyTarget.value = ""
@@ -57,17 +46,7 @@ export default class extends Controller {
     // Save note if there's content, then close
     const body = this.hasNoteBodyTarget ? this.noteBodyTarget.value.trim() : ""
     if (body && this.hasNoteFormTarget) {
-      const form = this.noteFormTarget
-      const url = form.action
-      const csrfToken = document.querySelector("meta[name='csrf-token']").content
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-CSRF-Token": csrfToken,
-        },
-        body: new URLSearchParams({ "note[body]": body }),
-      })
+      const response = await this.#postNote(this.noteFormTarget.action, body)
       if (!response.ok) {
         // Note failed to save — stay open so the user can retry
         this.noteBodyTarget.placeholder = "Couldn't save — try again"
@@ -84,5 +63,17 @@ export default class extends Controller {
       row.style.transition = "opacity 0.2s"
       setTimeout(() => row.remove(), 200)
     }
+  }
+
+  #postNote(url, body) {
+    const csrfToken = document.querySelector("meta[name='csrf-token']").content
+    return fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-CSRF-Token": csrfToken,
+      },
+      body: new URLSearchParams({ "note[body]": body }),
+    })
   }
 }

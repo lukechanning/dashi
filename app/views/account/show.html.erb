@@ -41,6 +41,26 @@
   <% end %>
 </div>
 
+<div class="mt-8">
+  <h2 class="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-3">Data</h2>
+  <div class="bg-white rounded-2xl border border-stone-200/60 shadow-sm divide-y divide-stone-100">
+    <div class="p-5 flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-stone-700">Export</p>
+        <p class="text-stone-500 text-sm mt-0.5">Download all your data as a JSON file</p>
+      </div>
+      <%= link_to "Download", account_export_path, class: "text-sm text-violet-600 hover:text-violet-800 font-medium shrink-0" %>
+    </div>
+    <div class="p-5 flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-stone-700">Import</p>
+        <p class="text-stone-500 text-sm mt-0.5">Restore data from a previous export</p>
+      </div>
+      <%= link_to "Upload", new_account_import_path, class: "text-sm text-violet-600 hover:text-violet-800 font-medium shrink-0" %>
+    </div>
+  </div>
+</div>
+
 <div class="mt-8 sm:hidden">
   <%= link_to habits_path, class: "flex items-center justify-between p-4 bg-white rounded-xl border border-stone-200/60 shadow-sm hover:shadow transition-shadow" do %>
     <div class="flex items-center gap-3">

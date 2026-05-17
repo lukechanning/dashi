@@ -70,7 +70,7 @@
           <div class="px-6 pb-6 space-y-2">
             <%# Done with it — delete %>
             <%= button_to todo_path(todo), method: :delete,
-              data: { action: "stale-wizard#advanceAfterSubmit", turbo_confirm: nil },
+              data: { action: "turbo:submit-end->stale-wizard#advanceAfterSubmit", turbo_confirm: nil },
               class: "w-full flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-stone-200 hover:border-red-300 hover:bg-red-50 text-left transition-colors group cursor-pointer" do %>
               <span class="flex-shrink-0 w-8 h-8 rounded-lg bg-red-100 group-hover:bg-red-200 flex items-center justify-center transition-colors">
                 <svg class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -102,7 +102,7 @@
               </button>
               <div data-stale-wizard-target="delayForm<%= i %>" class="hidden border-t border-stone-100 px-4 pb-3 pt-2 bg-stone-50">
                 <%= form_with url: todo_path(todo), method: :patch,
-                    data: { action: "submit->stale-wizard#advanceAfterSubmit", turbo_stream: true } do |f| %>
+                    data: { action: "turbo:submit-end->stale-wizard#advanceAfterSubmit", turbo_stream: true } do |f| %>
                   <div class="flex items-center gap-2">
                     <%= f.date_field :due_date,
                         value: Date.tomorrow,

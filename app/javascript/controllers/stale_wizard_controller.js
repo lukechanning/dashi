@@ -41,7 +41,8 @@ export default class extends Controller {
     }
   }
 
-  advanceAfterSubmit() {
+  advanceAfterSubmit(event) {
+    if (!event.detail?.success) return
     this.advance()
   }
 
@@ -54,7 +55,7 @@ export default class extends Controller {
   }
 
   async submitBreakUp({ params: { todoId, step } }) {
-    const input = this.targets.find(`breakUpInput${step}`)
+    const input = this.element.querySelector(`[data-stale-wizard-target="breakUpInput${step}"]`)
     const lines = input.value.split("\n").map(l => l.trim()).filter(Boolean)
     if (lines.length === 0) return
 
@@ -98,11 +99,11 @@ export default class extends Controller {
   showDone() {
     this.stepTargets.forEach(step => step.classList.add("hidden"))
     this.doneTarget.classList.remove("hidden")
-    setTimeout(() => { if (this.element.isConnected) window.location.reload() }, 1200)
+    setTimeout(() => { if (this.element.isConnected) Turbo.visit(window.location.href) }, 1200)
   }
 
   #togglePanel(targetName) {
-    const panel = this.targets.find(targetName)
+    const panel = this.element.querySelector(`[data-stale-wizard-target="${targetName}"]`)
     if (panel) panel.classList.toggle("hidden")
   }
 }

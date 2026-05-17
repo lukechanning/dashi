@@ -68,6 +68,12 @@ RSpec.describe Todo, type: :model do
         today = create(:todo, user: user, due_date: Date.current)
         expect(Todo.stale).not_to include(today)
       end
+
+      it "does not return habit todos even if overdue" do
+        habit = create(:habit, user: user)
+        habit_todo = create(:todo, :stale, user: user, habit: habit)
+        expect(Todo.stale).not_to include(habit_todo)
+      end
     end
 
     describe ".completed_on" do
