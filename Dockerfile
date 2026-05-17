@@ -44,10 +44,6 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libyaml-dev pkg-config && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Patch system Ruby gems that ship with the base image at vulnerable versions.
-# These are default gems not managed by Bundler, so they must be updated explicitly.
-RUN gem update erb net-imap --no-document
-
 # Install application gems
 COPY vendor/* ./vendor/
 COPY Gemfile Gemfile.lock ./
@@ -72,6 +68,11 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 # Final stage for app image
 FROM base
+
+# Patch system Ruby default gems that ship with the base image at vulnerable versions.
+# These are not managed by Bundler — they live in the system Ruby gem path, which is
+# what Trivy scans. This must run in the final stage (not build) since FROM base starts fresh.
+RUN gem update erb net-imap --no-document
 
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
