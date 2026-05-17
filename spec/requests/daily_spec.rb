@@ -74,5 +74,30 @@ RSpec.describe "Daily", type: :request do
         expect(response.body).not_to include("stale-wizard-overlay")
       end
     end
+
+    context "focus mode" do
+      it "shows the focus mode button on today's page" do
+        get root_path
+        expect(response.body).to include("focus-mode-btn")
+      end
+
+      it "does not show the focus mode button when viewing history" do
+        get root_path(date: 3.days.ago.to_date.to_s)
+        expect(response.body).not_to include("focus-mode-btn")
+      end
+
+      it "embeds the focus panel with today's incomplete todos" do
+        create(:todo, user: user, title: "Deep work block", due_date: Date.current)
+        get root_path
+        expect(response.body).to include("focus-panel")
+        expect(response.body).to include("Deep work block")
+      end
+
+      it "embeds the focus view overlay with timer markup" do
+        get root_path
+        expect(response.body).to include("focus-view-overlay")
+        expect(response.body).to include("focus-timer")
+      end
+    end
   end
 end

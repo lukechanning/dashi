@@ -1,0 +1,58 @@
+<%# Full-screen focus session view — hidden until session starts %>
+<div
+  id="focus-view-overlay"
+  data-focus-mode-target="view"
+  class="fixed inset-0 z-50 bg-stone-950 flex flex-col hidden"
+>
+  <%# Top bar %>
+  <div class="flex items-center justify-between px-6 pt-8 pb-4">
+    <p class="text-xs font-medium text-stone-500 uppercase tracking-widest">Focus session</p>
+    <button
+      data-action="focus-mode#endSession"
+      class="text-xs text-stone-500 hover:text-stone-300 transition-colors cursor-pointer"
+    >
+      End session
+    </button>
+  </div>
+
+  <%# Pomodoro timer %>
+  <div id="focus-timer" class="flex flex-col items-center justify-center px-6 py-8">
+    <div
+      data-focus-mode-target="timerDisplay"
+      class="text-7xl font-bold tabular-nums text-white tracking-tight"
+    >25:00</div>
+    <div class="flex items-center gap-4 mt-6">
+      <button
+        data-action="focus-mode#toggleTimer"
+        data-focus-mode-target="timerBtn"
+        class="px-6 py-2.5 rounded-2xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-colors cursor-pointer"
+      >
+        Start
+      </button>
+      <button
+        data-action="focus-mode#resetTimer"
+        class="px-4 py-2.5 rounded-2xl bg-stone-800 hover:bg-stone-700 text-stone-300 text-sm font-medium transition-colors cursor-pointer"
+      >
+        Reset
+      </button>
+    </div>
+    <p class="text-xs text-stone-600 mt-4">No pressure — go as long as you can</p>
+  </div>
+
+  <%# Selected tasks %>
+  <div class="flex-1 overflow-y-auto px-6">
+    <p class="text-xs font-medium text-stone-500 uppercase tracking-widest mb-3">Focusing on</p>
+    <div data-focus-mode-target="taskList" class="space-y-3">
+      <%# Populated dynamically by focus-mode Stimulus controller %>
+    </div>
+  </div>
+
+  <div class="px-6 pb-10 pt-4">
+    <button
+      data-action="focus-mode#endSession"
+      class="w-full py-3 rounded-2xl bg-stone-800 hover:bg-stone-700 text-stone-300 text-sm font-semibold transition-colors cursor-pointer"
+    >
+      Done for now
+    </button>
+  </div>
+</div>

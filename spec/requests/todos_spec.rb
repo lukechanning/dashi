@@ -46,6 +46,21 @@ RSpec.describe "Todos", type: :request do
       patch toggle_todo_path(todo)
       expect(todo.reload).not_to be_complete
     end
+
+    it "responds with JSON including completed_at when requested" do
+      todo = create(:todo, user: user)
+      patch toggle_todo_path(todo), headers: { "Accept" => "application/json" }
+      expect(response.content_type).to include("application/json")
+      body = JSON.parse(response.body)
+      expect(body).to have_key("completed_at")
+    end
+
+    it "responds with JSON with null completed_at when uncompleting" do
+      todo = create(:todo, :completed, user: user)
+      patch toggle_todo_path(todo), headers: { "Accept" => "application/json" }
+      body = JSON.parse(response.body)
+      expect(body["completed_at"]).to be_nil
+    end
   end
 
   describe "GET /todos/:id/edit" do

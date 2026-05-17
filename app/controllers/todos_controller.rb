@@ -41,7 +41,10 @@ class TodosController < ApplicationController
       @todo.complete!
     end
 
-    redirect_back fallback_location: root_path
+    respond_to do |format|
+      format.json { render json: { completed_at: @todo.completed_at } }
+      format.any { redirect_back fallback_location: root_path }
+    end
   end
 
   private
