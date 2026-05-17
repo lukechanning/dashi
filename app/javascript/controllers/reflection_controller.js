@@ -19,16 +19,11 @@ export default class extends Controller {
     this.#removeRow(todoId)
   }
 
-  // "Let it go" — the button_to already DELETEs the todo via Turbo;
-  // we remove the row from the overlay after the delete completes
+  // "Let it go" — the button_to generates a <form>; Turbo fires turbo:submit-end on it
   letItGo(event) {
     const todoId = event.currentTarget.dataset.todoId
-    // Wait for the Turbo delete to fire, then remove the row
-    event.currentTarget.closest("[data-todo-id]")?.addEventListener(
-      "turbo:submit-end",
-      () => this.#removeRow(todoId),
-      { once: true }
-    )
+    const form = event.currentTarget.closest("form")
+    form?.addEventListener("turbo:submit-end", () => this.#removeRow(todoId), { once: true })
   }
 
   async saveNote(event) {
@@ -40,7 +35,7 @@ export default class extends Controller {
     const url = form.action
     const csrfToken = document.querySelector("meta[name='csrf-token']").content
 
-    await fetch(url, {
+    const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -49,9 +44,13 @@ export default class extends Controller {
       body: new URLSearchParams({ "note[body]": body }),
     })
 
-    this.noteBodyTarget.value = ""
-    this.noteBodyTarget.placeholder = "Saved!"
-    setTimeout(() => { this.noteBodyTarget.placeholder = "What did you learn this week? What would you do differently?" }, 2000)
+    if (response.ok) {
+      this.noteBodyTarget.value = ""
+      this.noteBodyTarget.placeholder = "Saved!"
+      setTimeout(() => { this.noteBodyTarget.placeholder = "What did you learn this week? What would you do differently?" }, 2000)
+    } else {
+      this.noteBodyTarget.placeholder = "Couldn't save — try again"
+    }
   }
 
   async finish() {
@@ -61,7 +60,7 @@ export default class extends Controller {
       const form = this.noteFormTarget
       const url = form.action
       const csrfToken = document.querySelector("meta[name='csrf-token']").content
-      await fetch(url, {
+      const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -69,6 +68,11 @@ export default class extends Controller {
         },
         body: new URLSearchParams({ "note[body]": body }),
       })
+      if (!response.ok) {
+        // Note failed to save — stay open so the user can retry
+        this.noteBodyTarget.placeholder = "Couldn't save — try again"
+        return
+      }
     }
     this.close()
   }

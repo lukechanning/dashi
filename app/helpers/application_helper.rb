@@ -44,6 +44,8 @@ module ApplicationHelper
       label = notable.title
       path  = project_path(notable)
     else
+      # New notable type added? Extend this case statement to show a source link.
+      Rails.logger.warn("notable_link: unhandled notable_type '#{note.notable_type}' for note #{note.id}")
       return nil
     end
     [ label, path ]

@@ -12,9 +12,15 @@ class TodosController < ApplicationController
     @todo = current_user.todos.build(todo_params)
 
     if @todo.save
-      redirect_back fallback_location: root_path, notice: "Todo added."
+      respond_to do |format|
+        format.json { render json: { id: @todo.id }, status: :created }
+        format.any { redirect_back fallback_location: root_path, notice: "Todo added." }
+      end
     else
-      render :new, status: :unprocessable_entity
+      respond_to do |format|
+        format.json { render json: { errors: @todo.errors.full_messages }, status: :unprocessable_entity }
+        format.any { render :new, status: :unprocessable_entity }
+      end
     end
   end
 

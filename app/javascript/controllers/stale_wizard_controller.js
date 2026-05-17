@@ -41,9 +41,7 @@ export default class extends Controller {
     }
   }
 
-  // Called after a Turbo form submit (delete or delay) succeeds
-  advanceAfterSubmit(event) {
-    // For form submits, advance immediately; Turbo handles the DOM update
+  advanceAfterSubmit() {
     this.advance()
   }
 
@@ -62,9 +60,9 @@ export default class extends Controller {
 
     const csrfToken = document.querySelector("meta[name='csrf-token']").content
 
-    // Create each subtask
+    // Create each subtask — abort if any request fails to avoid losing the original
     for (const title of lines) {
-      await fetch("/todos", {
+      const response = await fetch("/todos", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,9 +71,13 @@ export default class extends Controller {
         },
         body: JSON.stringify({ todo: { title, due_date: new Date().toISOString().split("T")[0] } }),
       })
+      if (!response.ok) {
+        alert("Something went wrong creating a subtask. Your original task has not been removed.")
+        return
+      }
     }
 
-    // Delete the original
+    // All subtasks created — safe to delete the original
     await fetch(`/todos/${todoId}`, {
       method: "DELETE",
       headers: { "X-CSRF-Token": csrfToken, "Accept": "application/json" },
@@ -96,8 +98,7 @@ export default class extends Controller {
   showDone() {
     this.stepTargets.forEach(step => step.classList.add("hidden"))
     this.doneTarget.classList.remove("hidden")
-    // Reload the page after a short delay so the banner disappears
-    setTimeout(() => { window.location.reload() }, 1200)
+    setTimeout(() => { if (this.element.isConnected) window.location.reload() }, 1200)
   }
 
   #togglePanel(targetName) {

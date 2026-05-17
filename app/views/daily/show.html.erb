@@ -98,7 +98,7 @@
 
 <% end %>
 
-<%# Tasks heading + focus mode (controller wraps heading, overlays, and task list) %>
+<%# Tasks heading — focus-mode controller wraps the heading + fixed overlays only %>
 <% if @viewing_history %>
   <div class="flex items-center justify-between mb-3">
     <h2 class="text-sm font-semibold text-stone-500 uppercase tracking-wide">Tasks That Day</h2>
@@ -130,9 +130,10 @@
         <% end %>
       </div>
     </div>
+  </div>
 <% end %>
 
-<%# task list (inside focus-mode controller on today's view) %>
+<%# Task list %>
 <% if @todos.any? %>
   <div class="space-y-2">
     <% @todos.each do |todo| %>
@@ -188,10 +189,6 @@
   </div>
 <% else %>
   <%= render "shared/empty_state", message: @viewing_history ? "No tasks were recorded for this day." : "Nothing on the list for today. Enjoy your day!" %>
-<% end %>
-
-<% unless @viewing_history %>
-  </div><%# closes focus-mode controller div %>
 <% end %>
 
 <%= render "notes/notes", notable: @daily_page %>

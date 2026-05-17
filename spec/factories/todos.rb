@@ -17,7 +17,7 @@ FactoryBot.define do
     end
 
     trait :stale do
-      due_date { 4.days.ago.to_date }
+      due_date { 3.days.ago.to_date }
     end
 
     trait :from_habit do
