@@ -43,6 +43,39 @@ RSpec.describe Todo, type: :model do
       expect(Todo.overdue).to eq([ overdue ])
     end
 
+    describe ".stale" do
+      it "returns incomplete todos with due_date 3 or more days ago" do
+        stale = create(:todo, :stale, user: user)
+        expect(Todo.stale).to include(stale)
+      end
+
+      it "returns todos due exactly 3 days ago" do
+        three_days = create(:todo, user: user, due_date: 3.days.ago.to_date)
+        expect(Todo.stale).to include(three_days)
+      end
+
+      it "does not return todos due only 2 days ago" do
+        recent = create(:todo, :overdue, user: user)
+        expect(Todo.stale).not_to include(recent)
+      end
+
+      it "does not return completed todos even if old" do
+        completed_stale = create(:todo, :stale, :completed, user: user)
+        expect(Todo.stale).not_to include(completed_stale)
+      end
+
+      it "does not return todos due today" do
+        today = create(:todo, user: user, due_date: Date.current)
+        expect(Todo.stale).not_to include(today)
+      end
+
+      it "does not return habit todos even if overdue" do
+        habit = create(:habit, user: user)
+        habit_todo = create(:todo, :stale, user: user, habit: habit)
+        expect(Todo.stale).not_to include(habit_todo)
+      end
+    end
+
     describe ".completed_on" do
       let(:today) { Date.current }
 

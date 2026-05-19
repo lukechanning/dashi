@@ -50,4 +50,50 @@ RSpec.describe "Notes", type: :request do
       }.to change(daily_page.notes, :count).by(1)
     end
   end
+
+  describe "GET /notes" do
+    it "returns 200" do
+      get notes_index_path
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "shows notes from daily pages" do
+      daily_page = create(:daily_page, user: user)
+      create(:note, user: user, notable: daily_page, body: "Today I learned something important")
+      get notes_index_path
+      expect(response.body).to include("Today I learned something important")
+    end
+
+    it "shows notes from goals" do
+      create(:note, user: user, notable: goal, body: "Goal note here")
+      get notes_index_path
+      expect(response.body).to include("Goal note here")
+    end
+
+    it "shows notes from todos" do
+      todo = create(:todo, user: user)
+      create(:note, user: user, notable: todo, body: "Todo note here")
+      get notes_index_path
+      expect(response.body).to include("Todo note here")
+    end
+
+    it "shows the notable source context for each note" do
+      create(:note, user: user, notable: goal, body: "Source check")
+      get notes_index_path
+      expect(response.body).to include(goal.title)
+    end
+
+    it "does not show notes belonging to other users" do
+      other = create(:user)
+      other_goal = create(:goal, user: other)
+      create(:note, user: other, notable: other_goal, body: "Private note")
+      get notes_index_path
+      expect(response.body).not_to include("Private note")
+    end
+
+    it "shows an empty state when the user has no notes" do
+      get notes_index_path
+      expect(response.body).to include("No notes yet")
+    end
+  end
 end

@@ -48,6 +48,20 @@
   <% end %>
 </div>
 
+<% if @stale_todos.any? %>
+  <div data-controller="stale-wizard" data-stale-wizard-current-index-value="0">
+    <%= render "daily/stale_banner" %>
+    <%= render "daily/stale_wizard" %>
+  </div>
+<% end %>
+
+<% if @show_reflection %>
+  <div data-controller="reflection">
+    <%= render "daily/reflection_banner" %>
+    <%= render "daily/reflection_overlay" %>
+  </div>
+<% end %>
+
 <% unless @viewing_history %>
   <%# Stat cards %>
   <div class="grid grid-cols-3 gap-4 mb-8">
@@ -84,21 +98,42 @@
 
 <% end %>
 
-<%# Tasks heading %>
-<div class="flex items-center justify-between mb-3">
-  <h2 class="text-sm font-semibold text-stone-500 uppercase tracking-wide">
-    <%= @viewing_history ? "Tasks That Day" : "Tasks" %>
-  </h2>
-  <% unless @viewing_history %>
-    <%= link_to new_todo_path(due_date: Date.current), class: "inline-flex items-center gap-1 text-sm font-medium text-violet-600 hover:text-violet-800 transition-colors" do %>
-      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-      </svg>
-      Add task
-    <% end %>
-  <% end %>
-</div>
+<%# Tasks heading — focus-mode controller wraps the heading + fixed overlays only %>
+<% if @viewing_history %>
+  <div class="flex items-center justify-between mb-3">
+    <h2 class="text-sm font-semibold text-stone-500 uppercase tracking-wide">Tasks That Day</h2>
+  </div>
+<% else %>
+  <div data-controller="focus-mode">
+    <%= render "daily/focus_panel" %>
+    <%= render "daily/focus_view" %>
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-sm font-semibold text-stone-500 uppercase tracking-wide">Tasks</h2>
+      <div class="flex items-center gap-3">
+        <button
+          id="focus-mode-btn"
+          data-action="focus-mode#openPanel"
+          class="inline-flex items-center gap-1 text-sm font-medium text-stone-400 hover:text-violet-600 transition-colors cursor-pointer"
+          title="Enter focus mode"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+          Focus
+        </button>
+        <%= link_to new_todo_path(due_date: Date.current), class: "inline-flex items-center gap-1 text-sm font-medium text-violet-600 hover:text-violet-800 transition-colors" do %>
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Add task
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
 
+<%# Task list %>
 <% if @todos.any? %>
   <div class="space-y-2">
     <% @todos.each do |todo| %>

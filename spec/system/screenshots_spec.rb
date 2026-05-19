@@ -178,6 +178,12 @@ RSpec.describe "App Screenshots", type: :system do
     page.save_screenshot("upcoming_desktop.png")
   end
 
+  it "focus session panel — desktop" do
+    visit root_path
+    find("#focus-mode-btn").click
+    page.save_screenshot("focus_session_desktop.png")
+  end
+
   it "daily page — mobile" do
     driven_by :screenshot_mobile
     token = user.generate_magic_token!

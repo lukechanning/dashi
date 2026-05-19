@@ -12,6 +12,9 @@ Rails.application.routes.draw do
   get "invitations/:token/accept", to: "invitations#accept", as: :accept_invitation
   post "invitations/:token/register", to: "invitations#register", as: :register_invitation
 
+  # Notes journal
+  get "notes", to: "notes#index", as: :notes_index
+
   # Core resources with nested notes
   concern :notable do
     resources :notes, only: [ :create, :edit, :update, :destroy ]
@@ -44,7 +47,10 @@ Rails.application.routes.draw do
   patch "user/timezone", to: "users#update_timezone"
 
   # Account
-  get "account", to: "account#show", as: :account
+  resource :account, only: [ :show ], controller: "account" do
+    resource :export, only: [ :show ], module: :account
+    resource :import, only: [ :new, :create ], module: :account
+  end
 
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check

@@ -16,4 +16,4 @@ Capybara.register_driver :screenshot_mobile do |app|
   Capybara::Selenium::Driver.new(app, browser: :chrome, options:)
 end
 
-Capybara.save_path = Rails.root.join("screenshots")
+Capybara.save_path = Rails.root.join(ENV.fetch("SCREENSHOT_DIR", "screenshots"))

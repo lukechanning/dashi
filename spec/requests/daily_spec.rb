@@ -34,5 +34,120 @@ RSpec.describe "Daily", type: :request do
     it "creates a daily page for the user" do
       expect { get root_path }.to change(DailyPage, :count).by(1)
     end
+
+    context "stale task banner" do
+      it "shows the stale banner when user has todos 3+ days overdue" do
+        create(:todo, :stale, user: user, title: "Old forgotten task")
+        get root_path
+        expect(response.body).to include("stale-banner")
+      end
+
+      it "does not show the stale banner when overdue todos are less than 3 days old" do
+        create(:todo, :overdue, user: user, title: "Slightly overdue task")
+        get root_path
+        expect(response.body).not_to include("stale-banner")
+      end
+
+      it "does not show the stale banner when there are no stale todos" do
+        create(:todo, user: user, due_date: Date.current)
+        get root_path
+        expect(response.body).not_to include("stale-banner")
+      end
+
+      it "does not show the stale banner when viewing history" do
+        create(:todo, :stale, user: user)
+        get root_path(date: 7.days.ago.to_date.to_s)
+        expect(response.body).not_to include("stale-banner")
+      end
+    end
+
+    context "stale wizard" do
+      it "embeds the wizard overlay in the page when stale todos exist" do
+        create(:todo, :stale, user: user, title: "Long forgotten task")
+        get root_path
+        expect(response.body).to include("stale-wizard-overlay")
+        expect(response.body).to include("Long forgotten task")
+      end
+
+      it "does not embed the wizard overlay when there are no stale todos" do
+        get root_path
+        expect(response.body).not_to include("stale-wizard-overlay")
+      end
+    end
+
+    context "weekly reflection" do
+      it "shows the reflection banner on Friday" do
+        travel_to Date.current.next_occurring(:friday) do
+          get root_path
+          expect(response.body).to include("reflection-banner")
+        end
+      end
+
+      it "does not show the reflection banner on other days" do
+        travel_to Date.current.next_occurring(:monday) do
+          get root_path
+          expect(response.body).not_to include("reflection-banner")
+        end
+      end
+
+      it "does not show the reflection banner when viewing history" do
+        friday = Date.current.next_occurring(:friday)
+        travel_to friday do
+          get root_path(date: (friday - 7).to_s)
+          expect(response.body).not_to include("reflection-banner")
+        end
+      end
+
+      it "embeds the reflection overlay on Friday" do
+        travel_to Date.current.next_occurring(:friday) do
+          get root_path
+          expect(response.body).to include("reflection-overlay")
+        end
+      end
+
+      it "shows week stats in the reflection overlay" do
+        friday = Date.current.next_occurring(:friday)
+        travel_to friday do
+          create(:todo, :completed, user: user, due_date: friday - 2)
+          create(:todo, user: user, due_date: friday - 1)
+          get root_path
+          expect(response.body).to include("reflection-overlay")
+        end
+      end
+
+      it "lists incomplete todos from this week in the reflection overlay" do
+        friday = Date.current.next_occurring(:friday)
+        travel_to friday do
+          create(:todo, user: user, title: "Unfinished thing", due_date: friday - 1)
+          get root_path
+          expect(response.body).to include("Unfinished thing")
+        end
+      end
+    end
+
+    context "focus mode" do
+      it "shows the focus mode button on today's page" do
+        get root_path
+        expect(response.body).to include("focus-mode-btn")
+      end
+
+      it "does not show the focus mode button when viewing history" do
+        get root_path(date: 3.days.ago.to_date.to_s)
+        expect(response.body).not_to include("focus-mode-btn")
+      end
+
+      it "embeds the focus panel with today's incomplete todos" do
+        create(:todo, user: user, title: "Deep work block", due_date: Date.current)
+        get root_path
+        expect(response.body).to include("focus-panel")
+        expect(response.body).to include("Deep work block")
+      end
+
+      it "embeds the focus view overlay with timer markup" do
+        get root_path
+        expect(response.body).to include("focus-view-overlay")
+        expect(response.body).to include("focus-timer")
+      end
+    end
   end
 end

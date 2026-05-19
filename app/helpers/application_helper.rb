@@ -28,6 +28,24 @@ module ApplicationHelper
     )
   end
 
+  def notable_link(note)
+    notable = note.notable
+    case note.notable_type
+    when "DailyPage"
+      { label: notable.date.strftime("%b %-d, %Y"), path: root_path(date: notable.date.to_s), icon: :calendar }
+    when "Todo"
+      { label: notable.title, path: edit_todo_path(notable), icon: :check }
+    when "Goal"
+      { label: notable.title, path: goal_path(notable), icon: :star }
+    when "Project"
+      { label: notable.title, path: project_path(notable), icon: :folder }
+    else
+      # New notable type added? Extend this case statement to show a source link.
+      Rails.logger.warn("notable_link: unhandled notable_type '#{note.notable_type}' for note #{note.id}")
+      nil
+    end
+  end
+
   def avatar_stack(users, size: :sm, max: 3)
     shown = users.first(max)
     overflow = users.size - max

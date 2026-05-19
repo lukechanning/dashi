@@ -1,0 +1,190 @@
+<%# Full-screen wizard overlay, hidden by default. Stimulus controller manages visibility and step progression. %>
+<div
+  id="stale-wizard-overlay"
+  class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden"
+  data-stale-wizard-target="overlay"
+>
+  <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden">
+    <%# Header %>
+    <div class="px-6 pt-6 pb-4 border-b border-stone-100">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold text-stone-800">Review old tasks</h2>
+        <div class="flex items-center gap-1">
+          <button
+            data-action="stale-wizard#prev"
+            class="w-7 h-7 rounded-lg flex items-center justify-center text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors cursor-pointer"
+            aria-label="Previous task"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <span class="text-xs text-stone-400 tabular-nums px-1">
+            <span data-stale-wizard-target="currentNum">1</span> of <%= @stale_todos.size %>
+          </span>
+          <button
+            data-action="stale-wizard#next"
+            class="w-7 h-7 rounded-lg flex items-center justify-center text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors cursor-pointer"
+            aria-label="Next task"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="w-px h-4 bg-stone-200 mx-1"></div>
+          <button
+            data-action="stale-wizard#close"
+            class="w-7 h-7 rounded-lg flex items-center justify-center text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors cursor-pointer"
+            aria-label="Close"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <%# Task steps %>
+    <div data-stale-wizard-target="steps">
+      <% @stale_todos.each_with_index do |todo, i| %>
+        <div
+          data-stale-wizard-target="step"
+          data-index="<%= i %>"
+          class="<%= i == 0 ? '' : 'hidden' %>"
+        >
+          <%# Task info %>
+          <div class="px-6 py-5">
+            <p class="text-xs font-medium text-stone-400 uppercase tracking-wide mb-1">
+              <%= "#{todo.due_date.strftime("%b %-d")} — #{(Date.current - todo.due_date).to_i} days ago" %>
+            </p>
+            <p class="text-xl font-semibold text-stone-800 leading-snug"><%= todo.title %></p>
+            <% if todo.project %>
+              <span class="inline-flex items-center text-xs bg-stone-100 text-stone-500 rounded-full px-2 py-0.5 mt-2">
+                <%= [todo.project.emoji, todo.project.title].compact.join(" ") %>
+              </span>
+            <% end %>
+          </div>
+
+          <%# Action buttons %>
+          <div class="px-6 pb-6 space-y-2">
+            <%# Done with it — delete %>
+            <%= button_to todo_path(todo), method: :delete,
+              data: { action: "turbo:submit-end->stale-wizard#advanceAfterSubmit", turbo_confirm: nil },
+              class: "w-full flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-stone-200 hover:border-red-300 hover:bg-red-50 text-left transition-colors group cursor-pointer" do %>
+              <span class="flex-shrink-0 w-8 h-8 rounded-lg bg-red-100 group-hover:bg-red-200 flex items-center justify-center transition-colors">
+                <svg class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </span>
+              <div>
+                <p class="text-sm font-medium text-stone-700">Done with it</p>
+                <p class="text-xs text-stone-400">Remove this task for good</p>
+              </div>
+            <% end %>
+
+            <%# Not yet — delay (inline date form) %>
+            <div class="w-full rounded-xl border-2 border-stone-200 overflow-hidden">
+              <button
+                data-action="stale-wizard#toggleDelay"
+                data-stale-wizard-step-param="<%= i %>"
+                class="w-full flex items-center gap-3 px-4 py-3 hover:bg-amber-50 hover:border-amber-300 text-left transition-colors group cursor-pointer"
+              >
+                <span class="flex-shrink-0 w-8 h-8 rounded-lg bg-amber-100 group-hover:bg-amber-200 flex items-center justify-center transition-colors">
+                  <svg class="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </span>
+                <div>
+                  <p class="text-sm font-medium text-stone-700">Not yet — delay it</p>
+                  <p class="text-xs text-stone-400">Pick a new due date</p>
+                </div>
+              </button>
+              <div data-stale-wizard-target="delayForm<%= i %>" class="hidden border-t border-stone-100 px-4 pb-3 pt-2 bg-stone-50">
+                <%= form_with url: todo_path(todo), method: :patch,
+                    data: { action: "turbo:submit-end->stale-wizard#advanceAfterSubmit", turbo_stream: true } do |f| %>
+                  <div class="flex items-center gap-2">
+                    <%= f.date_field :due_date,
+                        value: Date.tomorrow,
+                        min: Date.tomorrow,
+                        class: "flex-1 text-sm border border-stone-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-violet-400" %>
+                    <%= f.submit "Set date",
+                        class: "px-3 py-1.5 text-sm font-medium bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors cursor-pointer" %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+
+            <%# Break it up (inline subtask form) %>
+            <div class="w-full rounded-xl border-2 border-stone-200 overflow-hidden">
+              <button
+                data-action="stale-wizard#toggleBreakUp"
+                data-stale-wizard-step-param="<%= i %>"
+                class="w-full flex items-center gap-3 px-4 py-3 hover:bg-violet-50 hover:border-violet-300 text-left transition-colors group cursor-pointer"
+              >
+                <span class="flex-shrink-0 w-8 h-8 rounded-lg bg-violet-100 group-hover:bg-violet-200 flex items-center justify-center transition-colors">
+                  <svg class="w-4 h-4 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h8m-8 6h16" />
+                  </svg>
+                </span>
+                <div>
+                  <p class="text-sm font-medium text-stone-700">Break it up</p>
+                  <p class="text-xs text-stone-400">Split into smaller tasks, then remove this one</p>
+                </div>
+              </button>
+              <div data-stale-wizard-target="breakUpForm<%= i %>" class="hidden border-t border-stone-100 px-4 pb-3 pt-2 bg-stone-50">
+                <p class="text-xs text-stone-500 mb-2">Add smaller tasks (one per line):</p>
+                <textarea
+                  data-stale-wizard-target="breakUpInput<%= i %>"
+                  rows="3"
+                  placeholder="Step 1&#10;Step 2&#10;Step 3"
+                  class="w-full text-sm border border-stone-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none"
+                ></textarea>
+                <button
+                  data-action="stale-wizard#submitBreakUp"
+                  data-stale-wizard-todo-id-param="<%= todo.id %>"
+                  data-stale-wizard-step-param="<%= i %>"
+                  class="mt-2 w-full px-3 py-2 text-sm font-medium bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors cursor-pointer"
+                >
+                  Create tasks &amp; remove this one
+                </button>
+              </div>
+            </div>
+
+            <%# Promote to project %>
+            <%= link_to new_project_path(title: todo.title, from_todo: todo.id),
+                data: { turbo: false },
+                class: "w-full flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-stone-200 hover:border-emerald-300 hover:bg-emerald-50 text-left transition-colors group" do %>
+              <span class="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-100 group-hover:bg-emerald-200 flex items-center justify-center transition-colors">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                </svg>
+              </span>
+              <div>
+                <p class="text-sm font-medium text-stone-700">This is actually a project</p>
+                <p class="text-xs text-stone-400">Promote it and plan it properly</p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <%# All done state (shown after last task) %>
+    <div data-stale-wizard-target="done" class="hidden px-6 py-10 text-center">
+      <div class="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+        <svg class="w-7 h-7 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <p class="text-lg font-bold text-stone-800">All caught up</p>
+      <p class="text-sm text-stone-500 mt-1 mb-5">Nice work clearing the backlog.</p>
+      <button
+        data-action="stale-wizard#close"
+        class="px-6 py-2.5 text-sm font-medium bg-violet-600 text-white rounded-xl hover:bg-violet-700 transition-colors cursor-pointer"
+      >
+        Back to today
+      </button>
+    </div>
+  </div>
+</div>

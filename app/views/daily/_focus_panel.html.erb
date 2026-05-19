@@ -1,0 +1,84 @@
+<%# Slide-up task selection panel — hidden until Focus button is tapped %>
+<div
+  id="focus-panel"
+  data-focus-mode-target="panel"
+  class="fixed inset-0 z-40 flex flex-col justify-end hidden"
+>
+  <%# Backdrop %>
+  <div
+    data-action="click->focus-mode#closePanel"
+    class="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
+  ></div>
+
+  <%# Sheet %>
+  <div class="relative bg-white rounded-t-3xl shadow-2xl max-h-[70vh] flex flex-col">
+    <%# Handle %>
+    <div class="flex justify-center pt-3 pb-1">
+      <div class="w-10 h-1 rounded-full bg-stone-200"></div>
+    </div>
+
+    <div class="px-6 pt-3 pb-2 flex items-center justify-between">
+      <div>
+        <h2 class="text-lg font-bold text-stone-800">Focus session</h2>
+        <p class="text-xs text-stone-400 mt-0.5">Pick up to 3 tasks to work on now</p>
+      </div>
+      <button
+        data-action="focus-mode#closePanel"
+        class="text-stone-400 hover:text-stone-600 transition-colors cursor-pointer"
+      >
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <%# Todo selection list %>
+    <div class="overflow-y-auto flex-1 px-6 pb-2">
+      <% incomplete_today = @todos.reject(&:complete?) %>
+      <% if incomplete_today.any? %>
+        <div class="space-y-2" data-focus-mode-target="selectionList">
+          <% incomplete_today.each do |todo| %>
+            <label
+              data-action="change->focus-mode#selectionChanged"
+              class="flex items-center gap-3 p-3 rounded-xl border-2 border-stone-100 hover:border-violet-200 hover:bg-violet-50/50 cursor-pointer transition-colors has-[:checked]:border-violet-400 has-[:checked]:bg-violet-50"
+            >
+              <input
+                type="checkbox"
+                value="<%= todo.id %>"
+                data-title="<%= todo.title %>"
+                data-toggle-url="<%= toggle_todo_path(todo) %>"
+                data-focus-mode-target="checkbox"
+                class="sr-only"
+              />
+              <span class="w-5 h-5 rounded-md border-2 border-stone-300 flex-shrink-0 flex items-center justify-center transition-colors peer-checked:border-violet-500 peer-checked:bg-violet-500" data-focus-mode-target="checkmark">
+                <svg class="w-3 h-3 text-white hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" data-focus-mode-target="checkIcon">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              <span class="text-sm text-stone-700 flex-1"><%= todo.title %></span>
+              <% if todo.project %>
+                <span class="text-xs text-stone-400 bg-stone-100 rounded-full px-2 py-0.5">
+                  <%= [todo.project.emoji, todo.project.title].compact.join(" ") %>
+                </span>
+              <% end %>
+            </label>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-sm text-stone-400 text-center py-6">No incomplete tasks for today.</p>
+      <% end %>
+    </div>
+
+    <div class="px-6 py-4 border-t border-stone-100">
+      <p class="text-xs text-stone-400 text-center mb-3" data-focus-mode-target="selectionCount">0 of 3 selected</p>
+      <button
+        data-action="focus-mode#startSession"
+        data-focus-mode-target="startBtn"
+        disabled
+        class="w-full py-3 text-sm font-semibold rounded-2xl bg-violet-600 text-white hover:bg-violet-700 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        Start focus session
+      </button>
+    </div>
+  </div>
+</div>

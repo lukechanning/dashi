@@ -1,0 +1,96 @@
+<%# Weekly reflection overlay — hidden until banner "Reflect" button is clicked %>
+<div
+  id="reflection-overlay"
+  data-reflection-target="overlay"
+  class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden"
+>
+  <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+    <%# Header %>
+    <div class="px-6 pt-6 pb-4 border-b border-stone-100 flex-shrink-0">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold text-stone-800">Week in review</h2>
+        <button
+          data-action="reflection#close"
+          class="text-stone-400 hover:text-stone-600 transition-colors cursor-pointer"
+          aria-label="Close"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <p class="text-xs text-stone-400 mt-1"><%= @date.beginning_of_week.strftime("%b %-d") %> – <%= @date.strftime("%b %-d") %></p>
+    </div>
+
+    <div class="overflow-y-auto flex-1">
+      <%# Week stats %>
+      <div class="px-6 py-5 border-b border-stone-100">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-emerald-50 rounded-2xl p-4 text-center">
+            <p class="text-3xl font-bold text-emerald-600"><%= @week_stats[:completed] %></p>
+            <p class="text-xs text-emerald-700 mt-1 font-medium">completed</p>
+          </div>
+          <div class="bg-stone-50 rounded-2xl p-4 text-center">
+            <p class="text-3xl font-bold text-stone-500"><%= @week_stats[:incomplete] %></p>
+            <p class="text-xs text-stone-500 mt-1 font-medium">unfinished</p>
+          </div>
+        </div>
+      </div>
+
+      <%# Unfinished tasks %>
+      <% if @week_incomplete_todos.any? %>
+        <div class="px-6 py-4 border-b border-stone-100">
+          <p class="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-3">What to do with unfinished tasks?</p>
+          <div class="space-y-2">
+            <% @week_incomplete_todos.each do |todo| %>
+              <div class="flex items-center gap-3 p-3 rounded-xl bg-stone-50" data-todo-id="<%= todo.id %>">
+                <span class="flex-1 text-sm text-stone-700 min-w-0"><%= todo.title %></span>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                  <button
+                    data-action="reflection#carryForward"
+                    data-todo-id="<%= todo.id %>"
+                    class="text-xs px-3 py-1.5 rounded-lg bg-white border border-stone-200 text-stone-600 hover:border-violet-300 hover:text-violet-700 hover:bg-violet-50 transition-colors cursor-pointer"
+                  >
+                    Keep it
+                  </button>
+                  <%= button_to todo_path(todo), method: :delete,
+                      data: { action: "reflection#letItGo", todo_id: todo.id, turbo_confirm: nil },
+                      class: "text-xs px-3 py-1.5 rounded-lg bg-white border border-stone-200 text-stone-400 hover:border-red-300 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer" do %>
+                    Let it go
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% else %>
+        <div class="px-6 py-6 text-center border-b border-stone-100">
+          <p class="text-sm text-stone-400">Everything finished — excellent week!</p>
+        </div>
+      <% end %>
+
+      <%# Week note %>
+      <div class="px-6 py-5">
+        <p class="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">Week note (optional)</p>
+        <%= form_with url: daily_page_notes_path(@daily_page),
+            data: { reflection_target: "noteForm", action: "submit->reflection#saveNote" } do |f| %>
+          <%= f.text_area :body,
+              placeholder: "What did you learn this week? What would you do differently?",
+              rows: 3,
+              data: { reflection_target: "noteBody" },
+              class: "w-full text-sm border border-stone-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none placeholder:text-stone-300" %>
+        <% end %>
+      </div>
+    </div>
+
+    <%# Footer %>
+    <div class="px-6 py-4 border-t border-stone-100 flex-shrink-0">
+      <button
+        data-action="reflection#finish"
+        class="w-full py-3 text-sm font-semibold rounded-2xl bg-violet-600 text-white hover:bg-violet-700 transition-colors cursor-pointer"
+      >
+        Done reflecting
+      </button>
+    </div>
+  </div>
+</div>

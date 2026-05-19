@@ -16,6 +16,10 @@ FactoryBot.define do
       due_date { 2.days.ago.to_date }
     end
 
+    trait :stale do
+      due_date { 3.days.ago.to_date }
+    end
+
     trait :from_habit do
       habit
     end
