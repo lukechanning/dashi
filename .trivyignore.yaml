@@ -1,0 +1,60 @@
+vulnerabilities:
+  # libc-bin / libc6 — no upstream fix available from Debian
+  - id: CVE-2026-0861
+    statement: No upstream fix available as of 2026-03-10; risk accepted for base image dependency
+
+  # Go stdlib CVEs in thruster binary (compiled with Go 1.25.6, shipped in v0.1.18–v0.1.21)
+  # Thruster is maintained by the Rails core team. Remove once thruster ships with Go >= 1.25.9 or >= 1.26.2.
+  - id: CVE-2025-68121
+    statement: Thruster binary awaiting Go stdlib update; low risk — local HTTP proxy layer not exposed to arbitrary network inputs
+    expired_at: 2026-12-01
+  - id: CVE-2026-25679
+    statement: Thruster binary awaiting Go stdlib update; low risk — local HTTP proxy layer not exposed to arbitrary network inputs
+    expired_at: 2026-12-01
+  - id: CVE-2026-32280
+    statement: Thruster binary awaiting Go stdlib update; low risk — local HTTP proxy layer not exposed to arbitrary network inputs
+    expired_at: 2026-12-01
+  - id: CVE-2026-32281
+    statement: Thruster binary awaiting Go stdlib update; low risk — local HTTP proxy layer not exposed to arbitrary network inputs
+    expired_at: 2026-12-01
+  - id: CVE-2026-32283
+    statement: Thruster binary awaiting Go stdlib update; low risk — local HTTP proxy layer not exposed to arbitrary network inputs
+    expired_at: 2026-12-01
+
+  # Go stdlib CVEs in thruster binary (v0.1.21, Go stdlib >= 1.25.6)
+  # Affects DNS/CNAME resolution, HTTP/2 SETTINGS frames, email address parsing, Windows NUL byte handling.
+  # Remove once thruster ships with Go >= 1.25.10 or >= 1.26.3.
+  - id: CVE-2026-33811
+    statement: Thruster binary awaiting Go stdlib update; low risk — local HTTP proxy layer not exposed to arbitrary network inputs
+    expired_at: 2026-12-01
+  - id: CVE-2026-33814
+    statement: Thruster binary awaiting Go stdlib update; low risk — local HTTP proxy layer not exposed to arbitrary network inputs
+    expired_at: 2026-12-01
+  - id: CVE-2026-39820
+    statement: Thruster binary awaiting Go stdlib update; low risk — local HTTP proxy layer not exposed to arbitrary network inputs
+    expired_at: 2026-12-01
+  - id: CVE-2026-39836
+    statement: Thruster binary awaiting Go stdlib update; low risk — local HTTP proxy layer not exposed to arbitrary network inputs
+    expired_at: 2026-12-01
+  - id: CVE-2026-42499
+    statement: Thruster binary awaiting Go stdlib update; low risk — local HTTP proxy layer not exposed to arbitrary network inputs
+    expired_at: 2026-12-01
+
+  # Ruby default gem CVEs (erb, net-imap) — stale gemspec artifacts from ruby:3.4-slim base image.
+  # Default gems ship bundled gemspecs that cannot be removed; gem update in the Dockerfile final stage
+  # installs the patched versions which are active at runtime. See Dockerfile: RUN gem update erb net-imap.
+  - id: CVE-2026-41316
+    statement: erb patched via gem update in Dockerfile; stale default gemspec in ruby base image is a scanner artifact, not the active version
+    expired_at: 2027-01-01
+  - id: CVE-2026-42246
+    statement: net-imap 0.6.4 (fixed) installed via gem update in Dockerfile; stale default gemspec in ruby base image is a scanner artifact
+    expired_at: 2027-01-01
+  - id: CVE-2026-42245
+    statement: net-imap 0.6.4 (fixed) installed via gem update in Dockerfile; stale default gemspec in ruby base image is a scanner artifact
+    expired_at: 2027-01-01
+  - id: CVE-2026-42257
+    statement: net-imap 0.6.4 (fixed) installed via gem update in Dockerfile; stale default gemspec in ruby base image is a scanner artifact
+    expired_at: 2027-01-01
+  - id: CVE-2026-42258
+    statement: net-imap 0.6.4 (fixed) installed via gem update in Dockerfile; stale default gemspec in ruby base image is a scanner artifact
+    expired_at: 2027-01-01
