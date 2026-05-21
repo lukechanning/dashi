@@ -2,11 +2,17 @@ class GoalsController < ApplicationController
   before_action :set_goal, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @goals = current_user.goals.ordered.includes(:members)
+    @show_all = params[:show_all].present?
+    scope = @show_all ? current_user.goals : current_user.goals.active
+    @goals = scope.ordered.includes(:members)
+    @inactive_count = current_user.goals.where.not(status: :active).count unless @show_all
   end
 
   def show
-    @projects = @goal.projects.ordered
+    @show_all_projects = params[:show_all].present?
+    base = @goal.projects
+    @projects = (@show_all_projects ? base : base.active).ordered
+    @inactive_projects_count = base.where.not(status: :active).count unless @show_all_projects
   end
 
   def new
@@ -27,8 +33,16 @@ class GoalsController < ApplicationController
   end
 
   def update
+    prev_status = @goal.status
     if @goal.update(goal_params)
-      redirect_to @goal, notice: "Goal updated."
+      if @goal.completed? && prev_status != "completed"
+        flash[:celebration] = "\"#{@goal.title}\" completed!"
+        redirect_to goals_path
+      elsif !@goal.active? && prev_status == "active"
+        redirect_to goals_path, notice: "Goal archived."
+      else
+        redirect_to @goal, notice: "Goal updated."
+      end
     else
       render :edit, status: :unprocessable_entity
     end

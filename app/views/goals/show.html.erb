@@ -13,10 +13,22 @@
     <p class="text-gray-600 mt-2"><%= @goal.description %></p>
   <% end %>
 
-  <div class="flex items-center gap-3 mt-3">
-    <span class="text-xs px-2 py-1 rounded-full <%= @goal.active? ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' %>">
-      <%= @goal.status.capitalize %>
-    </span>
+  <div class="flex items-center gap-2 mt-3">
+    <% if @goal.active? %>
+      <%= button_to "Mark complete", goal_path(@goal), method: :patch,
+          params: { goal: { status: "completed" } },
+          class: "px-3 py-1.5 text-sm font-medium bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors cursor-pointer" %>
+      <%= button_to "Archive", goal_path(@goal), method: :patch,
+          params: { goal: { status: "archived" } },
+          class: "px-3 py-1.5 text-sm font-medium bg-stone-100 text-stone-600 rounded-xl hover:bg-stone-200 transition-colors cursor-pointer" %>
+    <% else %>
+      <span class="text-xs px-2 py-1 rounded-full bg-stone-100 text-stone-500 font-medium">
+        <%= @goal.status.capitalize %>
+      </span>
+      <%= button_to "Reactivate", goal_path(@goal), method: :patch,
+          params: { goal: { status: "active" } },
+          class: "px-3 py-1.5 text-sm font-medium bg-violet-600 text-white rounded-xl hover:bg-violet-700 transition-colors cursor-pointer" %>
+    <% end %>
   </div>
   <div class="mt-4">
     <%= render "shared/contribution_graph", record: @goal %>
@@ -47,9 +59,23 @@
       <% end %>
     <% end %>
   </div>
-<% else %>
+<% elsif !@show_all_projects %>
   <div class="text-center py-8 text-gray-500 text-sm">
-    <p>No projects yet.</p>
+    <p>No active projects yet.</p>
+  </div>
+<% end %>
+
+<% if @show_all_projects %>
+  <div class="mt-4 text-center">
+    <%= link_to goal_path(@goal), class: "text-sm text-stone-400 hover:text-stone-600 transition-colors" do %>
+      Hide completed &amp; archived projects
+    <% end %>
+  </div>
+<% elsif @inactive_projects_count&.positive? %>
+  <div class="mt-4 text-center">
+    <%= link_to goal_path(@goal, show_all: 1), class: "text-sm text-stone-400 hover:text-stone-600 transition-colors" do %>
+      Show completed &amp; archived projects (<%= @inactive_projects_count %>)
+    <% end %>
   </div>
 <% end %>
 

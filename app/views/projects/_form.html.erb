@@ -1,5 +1,6 @@
 <%= form_with model: project, class: "space-y-4" do |f| %>
   <%= render "shared/error_messages", model: project %>
+  <%= hidden_field_tag :from_todo, @from_todo if @from_todo.present? %>
 
   <div class="flex gap-3">
     <div class="w-20 flex-shrink-0">

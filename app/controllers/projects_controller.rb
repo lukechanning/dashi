@@ -2,7 +2,10 @@ class ProjectsController < ApplicationController
   before_action :set_project, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @projects = current_user.projects.ordered.includes(:members, :goal)
+    @show_all = params[:show_all].present?
+    scope = @show_all ? current_user.projects : current_user.projects.active
+    @projects = scope.ordered.includes(:members, :goal)
+    @inactive_count = current_user.projects.where.not(status: :active).count unless @show_all
   end
 
   def show
@@ -11,15 +14,21 @@ class ProjectsController < ApplicationController
   end
 
   def new
-    @project = current_user.projects.build(goal_id: params[:goal_id])
+    @project = current_user.projects.build(goal_id: params[:goal_id], title: params[:title])
+    @from_todo = params[:from_todo]
   end
 
   def create
     @project = current_user.projects.build(project_params)
 
     if @project.save
+      if params[:from_todo].present?
+        todo = current_user.todos.find_by(id: params[:from_todo])
+        todo&.destroy
+      end
       redirect_to @project, notice: "Project created."
     else
+      @from_todo = params[:from_todo]
       render :new, status: :unprocessable_entity
     end
   end
@@ -28,8 +37,16 @@ class ProjectsController < ApplicationController
   end
 
   def update
+    prev_status = @project.status
     if @project.update(project_params)
-      redirect_to @project, notice: "Project updated."
+      if @project.completed? && prev_status != "completed"
+        flash[:celebration] = "\"#{@project.title}\" completed!"
+        redirect_to projects_path
+      elsif !@project.active? && prev_status == "active"
+        redirect_to projects_path, notice: "Project archived."
+      else
+        redirect_to @project, notice: "Project updated."
+      end
     else
       render :edit, status: :unprocessable_entity
     end
