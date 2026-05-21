@@ -14,7 +14,7 @@ class TodosController < ApplicationController
     if @todo.save
       respond_to do |format|
         format.json { render json: { id: @todo.id }, status: :created }
-        format.any { redirect_back fallback_location: root_path, notice: "Todo added." }
+        format.any { redirect_to new_todo_path, notice: "Todo added." }
       end
     else
       respond_to do |format|
@@ -29,7 +29,7 @@ class TodosController < ApplicationController
 
   def update
     if @todo.update(todo_params)
-      redirect_back fallback_location: root_path, notice: "Todo updated."
+      redirect_to root_path, notice: "Todo updated."
     else
       render :edit, status: :unprocessable_entity
     end

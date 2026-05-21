@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["overlay", "step", "done", "currentNum"]
+  static targets = ["overlay", "step", "done", "currentNum", "banner"]
   static values = { currentIndex: { type: Number, default: 0 } }
 
   open() {
@@ -13,6 +13,15 @@ export default class extends Controller {
   close() {
     this.overlayTarget.classList.add("hidden")
     document.body.style.overflow = ""
+  }
+
+  dismissBanner() {
+    this.close()
+    if (!this.hasBannerTarget) return
+    const banner = this.bannerTarget
+    banner.style.transition = "opacity 0.3s"
+    banner.style.opacity = "0"
+    setTimeout(() => banner.remove(), 300)
   }
 
   advance() {
@@ -54,6 +63,41 @@ export default class extends Controller {
     this.#togglePanel(`breakUpForm${step}`)
   }
 
+  async submitDelete({ params: { todoId } }) {
+    const csrfToken = document.querySelector("meta[name='csrf-token']").content
+    const response = await fetch(`/todos/${todoId}`, {
+      method: "DELETE",
+      headers: { "X-CSRF-Token": csrfToken, "Accept": "application/json" },
+    })
+    if (response.ok) {
+      this.advance()
+    } else {
+      alert("Something went wrong removing this task. Please try again.")
+    }
+  }
+
+  async submitDelay({ params: { todoId, step } }) {
+    const input = this.element.querySelector(`[data-stale-wizard-target="delayDateInput${step}"]`)
+    const dueDate = input?.value
+    if (!dueDate) return
+
+    const csrfToken = document.querySelector("meta[name='csrf-token']").content
+    const response = await fetch(`/todos/${todoId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": csrfToken,
+        "Accept": "application/json",
+      },
+      body: JSON.stringify({ todo: { due_date: dueDate } }),
+    })
+    if (response.ok) {
+      this.advance()
+    } else {
+      alert("Something went wrong updating the due date. Please try again.")
+    }
+  }
+
   async submitBreakUp({ params: { todoId, step } }) {
     const input = this.element.querySelector(`[data-stale-wizard-target="breakUpInput${step}"]`)
     const lines = input.value.split("\n").map(l => l.trim()).filter(Boolean)
@@ -79,10 +123,13 @@ export default class extends Controller {
     }
 
     // All subtasks created — safe to delete the original
-    await fetch(`/todos/${todoId}`, {
+    const deleteResponse = await fetch(`/todos/${todoId}`, {
       method: "DELETE",
       headers: { "X-CSRF-Token": csrfToken, "Accept": "application/json" },
     })
+    if (!deleteResponse.ok) {
+      alert("Subtasks were created but the original task could not be removed. You can delete it manually.")
+    }
 
     this.advance()
   }

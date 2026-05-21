@@ -54,6 +54,10 @@
         </div>
       <% end %>
 
+      <% if flash[:celebration] %>
+        <%= render "shared/celebration_banner", message: flash[:celebration] %>
+      <% end %>
+
       <%= yield %>
     </main>
 

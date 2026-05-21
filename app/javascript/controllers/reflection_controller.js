@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["overlay", "noteForm", "noteBody"]
+  static targets = ["overlay", "banner", "noteForm", "noteBody"]
 
   open() {
     this.overlayTarget.classList.remove("hidden")
@@ -11,6 +11,15 @@ export default class extends Controller {
   close() {
     this.overlayTarget.classList.add("hidden")
     document.body.style.overflow = ""
+    this.#dismissBanner()
+  }
+
+  #dismissBanner() {
+    if (!this.hasBannerTarget) return
+    const banner = this.bannerTarget
+    banner.style.transition = "opacity 0.3s"
+    banner.style.opacity = "0"
+    setTimeout(() => banner.remove(), 300)
   }
 
   // "Keep it" — just remove the row from the overlay UI, task stays in DB
