@@ -9,7 +9,7 @@ class DismissalsController < ApplicationController
       value:     Date.current.to_s,
       expires:   Date.current.end_of_day,
       httponly:  true,
-      same_site: :lax,
+      same_site: :lax
     }
     head :no_content
   end

@@ -17,9 +17,9 @@ class DailyController < ApplicationController
     @done_count = current_user.todos.completed_on(Date.current).count
     @stale_todos = if !@viewing_history && !stale_banner_dismissed?
                      current_user.todos.stale.ordered.includes(:project)
-                   else
+    else
                      []
-                   end
+    end
 
     if !@viewing_history && @date.friday? && !reflection_banner_dismissed?
       week_start = @date.beginning_of_week

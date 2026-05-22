@@ -44,7 +44,7 @@ Rails.application.routes.draw do
   root "daily#show"
 
   # Banner dismissals
-  resources :dismissals, only: [:create]
+  resources :dismissals, only: [ :create ]
 
   # User preferences
   patch "user/timezone", to: "users#update_timezone"
