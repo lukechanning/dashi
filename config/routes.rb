@@ -43,6 +43,9 @@ Rails.application.routes.draw do
   get "calendar", to: "calendar#show", as: :calendar
   root "daily#show"
 
+  # Banner dismissals
+  resources :dismissals, only: [:create]
+
   # User preferences
   patch "user/timezone", to: "users#update_timezone"
 
