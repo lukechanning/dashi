@@ -18,10 +18,23 @@ export default class extends Controller {
   dismissBanner() {
     this.close()
     if (!this.hasBannerTarget) return
+    this.#postDismissal("stale")
     const banner = this.bannerTarget
     banner.style.transition = "opacity 0.3s"
     banner.style.opacity = "0"
     setTimeout(() => banner.remove(), 300)
+  }
+
+  #postDismissal(banner) {
+    const csrfToken = document.querySelector("meta[name='csrf-token']").content
+    return fetch("/dismissals", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-CSRF-Token": csrfToken,
+      },
+      body: new URLSearchParams({ banner }),
+    })
   }
 
   advance() {
