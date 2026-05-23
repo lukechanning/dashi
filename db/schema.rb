@@ -10,7 +10,36 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_05_194155) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_23_051013) do
+  create_table "chain_items", force: :cascade do |t|
+    t.integer "chain_id", null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "emoji"
+    t.string "item_type", null: false
+    t.integer "position", null: false
+    t.bigint "project_id"
+    t.string "title", null: false
+    t.bigint "todo_id"
+    t.datetime "updated_at", null: false
+    t.index ["chain_id", "position"], name: "index_chain_items_on_chain_id_and_position", unique: true
+    t.index ["chain_id"], name: "index_chain_items_on_chain_id"
+    t.index ["project_id"], name: "index_chain_items_on_project_id", where: "project_id IS NOT NULL"
+    t.index ["todo_id"], name: "index_chain_items_on_todo_id", where: "todo_id IS NOT NULL"
+  end
+
+  create_table "chains", force: :cascade do |t|
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "emoji"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_chains_on_user_id"
+  end
+
   create_table "daily_pages", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.date "date", null: false
@@ -137,6 +166,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_05_194155) do
     t.index ["magic_token"], name: "index_users_on_magic_token", unique: true
   end
 
+  add_foreign_key "chain_items", "chains"
+  add_foreign_key "chain_items", "projects"
+  add_foreign_key "chain_items", "todos"
+  add_foreign_key "chains", "users"
   add_foreign_key "daily_pages", "users"
   add_foreign_key "goals", "users"
   add_foreign_key "habits", "projects"

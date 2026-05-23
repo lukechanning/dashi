@@ -9,6 +9,9 @@ class Project < ApplicationRecord
   has_many :notes, as: :notable, dependent: :destroy
   has_many :memberships, as: :memberable, dependent: :destroy
   has_many :members, through: :memberships, source: :user
+  has_one :chain_item
+
+  after_save :check_chain_completion, if: -> { saved_change_to_status? && completed? }
 
   enum :status, { active: 0, completed: 1, archived: 2 }
 
@@ -16,4 +19,12 @@ class Project < ApplicationRecord
 
   scope :ordered, -> { order(:position) }
   scope :standalone, -> { where(goal: nil) }
+
+  private
+
+  def check_chain_completion
+    return unless (ci = chain_item)
+    ci.complete!
+    ci.chain.complete! if ci.chain.all_items_complete?
+  end
 end

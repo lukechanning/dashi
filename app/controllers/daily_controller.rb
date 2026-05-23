@@ -10,7 +10,8 @@ class DailyController < ApplicationController
       @todos = @daily_page.history_todos.ordered.includes(:habit, project: :members)
     else
       current_user.generate_habit_todos_for(@date)
-      @todos = current_user.todos.visible_on(@date).ordered.includes(:habit, project: :members)
+      @todos = current_user.todos.visible_on(@date).ordered
+                            .includes(:habit, project: :members, chain_item: { chain: :chain_items })
     end
 
     @upcoming_count = current_user.todos.incomplete.where(due_date: (Date.current + 1)..).count

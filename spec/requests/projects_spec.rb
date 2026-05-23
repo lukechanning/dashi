@@ -45,6 +45,29 @@ RSpec.describe "Projects", type: :request do
       post projects_path, params: { project: { title: "Linked", goal_id: goal.id } }
       expect(Project.last.goal).to eq(goal)
     end
+
+    context "when requested as JSON (wizard)" do
+      it "returns the project id and redirect path" do
+        post projects_path,
+             params: { project: { title: "Wizard project" } }.to_json,
+             headers: { "Content-Type" => "application/json", "Accept" => "application/json" }
+
+        expect(response).to have_http_status(:created)
+        body = JSON.parse(response.body)
+        expect(body["id"]).to eq(Project.last.id)
+        expect(body["redirect"]).to be_present
+      end
+
+      it "returns errors for an invalid project" do
+        post projects_path,
+             params: { project: { title: "" } }.to_json,
+             headers: { "Content-Type" => "application/json", "Accept" => "application/json" }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        body = JSON.parse(response.body)
+        expect(body["errors"]).to be_present
+      end
+    end
   end
 
   describe "PATCH /projects/:id" do
@@ -52,6 +75,31 @@ RSpec.describe "Projects", type: :request do
       project = create(:project, user: user)
       patch project_path(project), params: { project: { title: "Updated" } }
       expect(project.reload.title).to eq("Updated")
+    end
+
+    context "when completing a project that finishes a chain" do
+      it "sets the celebration flash to the chain name" do
+        chain = create(:chain, user: user, title: "Launch sequence")
+        project = create(:project, user: user)
+        _item0 = create(:chain_item, :completed, chain: chain, position: 0, item_type: "todo")
+        _item1 = create(:chain_item, chain: chain, position: 1, item_type: "project", project_id: project.id)
+
+        patch project_path(project), params: { project: { status: "completed" } }
+
+        expect(flash[:celebration]).to include("Launch sequence")
+      end
+
+      it "uses the project name when it does not finish the chain" do
+        chain = create(:chain, user: user, title: "My chain")
+        project = create(:project, user: user, title: "Phase one")
+        _item0 = create(:chain_item, chain: chain, position: 0, item_type: "project", project_id: project.id)
+        _item1 = create(:chain_item, chain: chain, position: 1, item_type: "todo")
+
+        patch project_path(project), params: { project: { status: "completed" } }
+
+        expect(flash[:celebration]).to include("Phase one")
+        expect(flash[:celebration]).not_to include("My chain")
+      end
     end
   end
 

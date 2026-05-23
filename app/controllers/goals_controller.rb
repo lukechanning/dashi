@@ -23,9 +23,15 @@ class GoalsController < ApplicationController
     @goal = current_user.goals.build(goal_params)
 
     if @goal.save
-      redirect_to @goal, notice: "Goal created."
+      respond_to do |format|
+        format.json { render json: { id: @goal.id, redirect: goal_path(@goal) }, status: :created }
+        format.any { redirect_to @goal, notice: "Goal created." }
+      end
     else
-      render :new, status: :unprocessable_entity
+      respond_to do |format|
+        format.json { render json: { errors: @goal.errors.full_messages }, status: :unprocessable_entity }
+        format.any { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
