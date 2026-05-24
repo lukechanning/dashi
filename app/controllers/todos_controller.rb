@@ -13,7 +13,7 @@ class TodosController < ApplicationController
 
     if @todo.save
       respond_to do |format|
-        format.json { render json: { id: @todo.id }, status: :created }
+        format.json { render json: { id: @todo.id, redirect: root_path }, status: :created }
         format.any { redirect_to new_todo_path, notice: "Todo added." }
       end
     else

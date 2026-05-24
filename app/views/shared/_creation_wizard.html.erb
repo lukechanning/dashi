@@ -43,7 +43,7 @@
           <%# Task %>
           <button
             data-action="creation-wizard#selectType"
-            data-type-param="task"
+            data-creation-wizard-type-param="task"
             class="flex flex-col items-center gap-3 bg-stone-50 hover:bg-violet-50 border-2 border-stone-200 hover:border-violet-300 rounded-2xl p-5 transition-all cursor-pointer group"
           >
             <div class="w-12 h-12 rounded-xl bg-violet-100 group-hover:bg-violet-200 flex items-center justify-center transition-colors">
@@ -60,7 +60,7 @@
           <%# Project %>
           <button
             data-action="creation-wizard#selectType"
-            data-type-param="project"
+            data-creation-wizard-type-param="project"
             class="flex flex-col items-center gap-3 bg-stone-50 hover:bg-violet-50 border-2 border-stone-200 hover:border-violet-300 rounded-2xl p-5 transition-all cursor-pointer group"
           >
             <div class="w-12 h-12 rounded-xl bg-blue-100 group-hover:bg-blue-200 flex items-center justify-center transition-colors">
@@ -77,7 +77,7 @@
           <%# Goal %>
           <button
             data-action="creation-wizard#selectType"
-            data-type-param="goal"
+            data-creation-wizard-type-param="goal"
             class="flex flex-col items-center gap-3 bg-stone-50 hover:bg-violet-50 border-2 border-stone-200 hover:border-violet-300 rounded-2xl p-5 transition-all cursor-pointer group"
           >
             <div class="w-12 h-12 rounded-xl bg-amber-100 group-hover:bg-amber-200 flex items-center justify-center transition-colors">
@@ -94,7 +94,7 @@
           <%# Chain %>
           <button
             data-action="creation-wizard#selectType"
-            data-type-param="chain"
+            data-creation-wizard-type-param="chain"
             class="flex flex-col items-center gap-3 bg-stone-50 hover:bg-violet-50 border-2 border-stone-200 hover:border-violet-300 rounded-2xl p-5 transition-all cursor-pointer group"
           >
             <div class="w-12 h-12 rounded-xl bg-emerald-100 group-hover:bg-emerald-200 flex items-center justify-center transition-colors">
@@ -111,13 +111,18 @@
       </div>
 
       <%# ─────────────────────────────────────────────────── %>
-      <%# STEP: task — quick todo form %>
+      <%# STEP: task %>
       <%# ─────────────────────────────────────────────────── %>
-      <div data-creation-wizard-target="step" data-step-name="task" class="hidden p-6 space-y-4">
+      <div
+        data-controller="wizard-task-form"
+        data-creation-wizard-target="step"
+        data-step-name="task"
+        class="hidden p-6 space-y-4"
+      >
         <div>
           <label class="block text-sm font-medium text-stone-700 mb-1">What needs to get done?</label>
           <input
-            data-creation-wizard-target="taskTitle"
+            data-wizard-task-form-target="title"
             type="text"
             placeholder="e.g. Review quarterly goals"
             class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
@@ -127,7 +132,7 @@
         <div>
           <label class="block text-sm font-medium text-stone-700 mb-1">Due date</label>
           <input
-            data-creation-wizard-target="taskDueDate"
+            data-wizard-task-form-target="dueDate"
             type="date"
             value="<%= Date.current %>"
             class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
@@ -137,7 +142,7 @@
         <div>
           <label class="block text-sm font-medium text-stone-700 mb-1">Project <span class="text-stone-400 font-normal">(optional)</span></label>
           <select
-            data-creation-wizard-target="taskProject"
+            data-wizard-task-form-target="project"
             class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition bg-white"
             autocomplete="off"
           >
@@ -148,7 +153,7 @@
           </select>
         </div>
         <button
-          data-action="creation-wizard#submitTask"
+          data-action="wizard-task-form#submit"
           class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
         >
           Add task
@@ -156,14 +161,19 @@
       </div>
 
       <%# ─────────────────────────────────────────────────── %>
-      <%# STEP: project — quick project form %>
+      <%# STEP: project %>
       <%# ─────────────────────────────────────────────────── %>
-      <div data-creation-wizard-target="step" data-step-name="project" class="hidden p-6 space-y-4">
+      <div
+        data-controller="wizard-project-form"
+        data-creation-wizard-target="step"
+        data-step-name="project"
+        class="hidden p-6 space-y-4"
+      >
         <div class="flex gap-3">
           <div class="w-14 shrink-0">
             <label class="block text-sm font-medium text-stone-700 mb-1">Icon</label>
             <input
-              data-creation-wizard-target="projectEmoji"
+              data-wizard-project-form-target="emoji"
               type="text"
               placeholder="📁"
               maxlength="2"
@@ -174,7 +184,7 @@
           <div class="flex-1">
             <label class="block text-sm font-medium text-stone-700 mb-1">Project name</label>
             <input
-              data-creation-wizard-target="projectTitle"
+              data-wizard-project-form-target="title"
               type="text"
               placeholder="e.g. Website redesign"
               class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
@@ -185,7 +195,7 @@
         <div>
           <label class="block text-sm font-medium text-stone-700 mb-1">Description <span class="text-stone-400 font-normal">(optional)</span></label>
           <textarea
-            data-creation-wizard-target="projectDescription"
+            data-wizard-project-form-target="description"
             rows="2"
             placeholder="What's this project about?"
             class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition resize-none"
@@ -195,7 +205,7 @@
         <div>
           <label class="block text-sm font-medium text-stone-700 mb-1">Goal <span class="text-stone-400 font-normal">(optional)</span></label>
           <select
-            data-creation-wizard-target="projectGoal"
+            data-wizard-project-form-target="goal"
             class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition bg-white"
             autocomplete="off"
           >
@@ -206,7 +216,7 @@
           </select>
         </div>
         <button
-          data-action="creation-wizard#submitProject"
+          data-action="wizard-project-form#submit"
           class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
         >
           Create project
@@ -214,14 +224,19 @@
       </div>
 
       <%# ─────────────────────────────────────────────────── %>
-      <%# STEP: goal — quick goal form %>
+      <%# STEP: goal %>
       <%# ─────────────────────────────────────────────────── %>
-      <div data-creation-wizard-target="step" data-step-name="goal" class="hidden p-6 space-y-4">
+      <div
+        data-controller="wizard-goal-form"
+        data-creation-wizard-target="step"
+        data-step-name="goal"
+        class="hidden p-6 space-y-4"
+      >
         <div class="flex gap-3">
           <div class="w-14 shrink-0">
             <label class="block text-sm font-medium text-stone-700 mb-1">Icon</label>
             <input
-              data-creation-wizard-target="goalEmoji"
+              data-wizard-goal-form-target="emoji"
               type="text"
               placeholder="🎯"
               maxlength="2"
@@ -232,7 +247,7 @@
           <div class="flex-1">
             <label class="block text-sm font-medium text-stone-700 mb-1">Goal name</label>
             <input
-              data-creation-wizard-target="goalTitle"
+              data-wizard-goal-form-target="title"
               type="text"
               placeholder="e.g. Get fit"
               class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
@@ -243,7 +258,7 @@
         <div>
           <label class="block text-sm font-medium text-stone-700 mb-1">Description <span class="text-stone-400 font-normal">(optional)</span></label>
           <textarea
-            data-creation-wizard-target="goalDescription"
+            data-wizard-goal-form-target="description"
             rows="2"
             placeholder="Why does this matter to you?"
             class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition resize-none"
@@ -251,7 +266,7 @@
           ></textarea>
         </div>
         <button
-          data-action="creation-wizard#submitGoal"
+          data-action="wizard-goal-form#submit"
           class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
         >
           Create goal
@@ -259,153 +274,154 @@
       </div>
 
       <%# ─────────────────────────────────────────────────── %>
-      <%# STEP: chainName — name the chain %>
+      <%# STEPS: chain (name → step builder → review) %>
+      <%# All three are wrapped so wizard-chain has a single root element. %>
       <%# ─────────────────────────────────────────────────── %>
-      <div data-creation-wizard-target="step" data-step-name="chainName" class="hidden p-6 space-y-4">
-        <p class="text-sm text-stone-500">A chain is an ordered sequence of tasks or projects. Complete one to unlock scheduling the next.</p>
-        <div class="flex gap-3">
-          <div class="w-14 shrink-0">
-            <label class="block text-sm font-medium text-stone-700 mb-1">Icon</label>
-            <input
-              data-creation-wizard-target="chainEmoji"
-              type="text"
-              placeholder="🔗"
-              maxlength="2"
-              class="w-full rounded-xl border border-stone-300 px-2 py-3 text-center text-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
-              autocomplete="off"
-            >
-          </div>
-          <div class="flex-1">
-            <label class="block text-sm font-medium text-stone-700 mb-1">Chain name</label>
-            <input
-              data-creation-wizard-target="chainTitle"
-              type="text"
-              placeholder="e.g. Morning Routine"
-              class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
-              autocomplete="off"
-            >
-          </div>
-        </div>
-        <button
-          data-action="creation-wizard#goToAddStep"
-          class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
-        >
-          Add steps →
-        </button>
-      </div>
+      <div data-controller="wizard-chain">
 
-      <%# ─────────────────────────────────────────────────── %>
-      <%# STEP: chainStep — define one step %>
-      <%# ─────────────────────────────────────────────────── %>
-      <div data-creation-wizard-target="step" data-step-name="chainStep" class="hidden p-6 space-y-4">
-        <div data-creation-wizard-target="stepCounter" class="text-xs font-semibold text-violet-600 uppercase tracking-wide">Step 1</div>
-        <div>
-          <label class="block text-sm font-medium text-stone-700 mb-2">Type</label>
-          <div class="flex gap-2">
-            <label class="flex-1 flex items-center gap-2 border-2 border-stone-200 rounded-xl px-4 py-3 cursor-pointer hover:border-violet-300 transition-colors has-checked:bg-violet-50 has-checked]:bg-violet-50">
+        <%# Chain: name step %>
+        <div data-creation-wizard-target="step" data-step-name="chainName" class="hidden p-6 space-y-4">
+          <p class="text-sm text-stone-500">A chain is an ordered sequence of tasks or projects. Complete one to unlock scheduling the next.</p>
+          <div class="flex gap-3">
+            <div class="w-14 shrink-0">
+              <label class="block text-sm font-medium text-stone-700 mb-1">Icon</label>
               <input
-                type="radio"
-                name="step_item_type"
-                value="todo"
-                data-creation-wizard-target="stepItemType"
-                data-action="creation-wizard#stepTypeChanged"
-                class="accent-violet-600"
-                checked
+                data-wizard-chain-target="emoji"
+                type="text"
+                placeholder="🔗"
+                maxlength="2"
+                class="w-full rounded-xl border border-stone-300 px-2 py-3 text-center text-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
                 autocomplete="off"
               >
-              <span class="font-medium text-stone-800">Task</span>
-            </label>
-            <label class="flex-1 flex items-center gap-2 border-2 border-stone-200 rounded-xl px-4 py-3 cursor-pointer hover:border-violet-300 transition-colors has-checked:bg-violet-50">
+            </div>
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-stone-700 mb-1">Chain name</label>
               <input
-                type="radio"
-                name="step_item_type"
-                value="project"
-                data-creation-wizard-target="stepItemType"
-                data-action="creation-wizard#stepTypeChanged"
-                class="accent-violet-600"
+                data-wizard-chain-target="title"
+                type="text"
+                placeholder="e.g. Morning Routine"
+                class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
                 autocomplete="off"
               >
-              <span class="font-medium text-stone-800">Project</span>
-            </label>
+            </div>
           </div>
-        </div>
-        <div class="flex gap-3">
-          <div data-creation-wizard-target="stepEmojiWrapper" class="hidden w-14 shrink-0">
-            <label class="block text-sm font-medium text-stone-700 mb-1">Icon</label>
-            <input
-              data-creation-wizard-target="stepEmoji"
-              type="text"
-              placeholder="📁"
-              maxlength="2"
-              class="w-full rounded-xl border border-stone-300 px-2 py-3 text-center text-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
-              autocomplete="off"
-            >
-          </div>
-          <div class="flex-1">
-            <label class="block text-sm font-medium text-stone-700 mb-1">Title</label>
-            <input
-              data-creation-wizard-target="stepTitle"
-              type="text"
-              placeholder="e.g. Read for 30 minutes"
-              class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
-              autocomplete="off"
-            >
-          </div>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-stone-700 mb-1">Description <span class="text-stone-400 font-normal">(optional)</span></label>
-          <input
-            data-creation-wizard-target="stepDescription"
-            type="text"
-            placeholder="Any extra details"
-            class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
-            autocomplete="off"
-          >
-        </div>
-        <div data-creation-wizard-target="stepDueDateWrapper">
-          <label class="block text-sm font-medium text-stone-700 mb-1">Start date <span class="text-stone-400 font-normal">(when should this begin?)</span></label>
-          <input
-            data-creation-wizard-target="stepDueDate"
-            type="date"
-            value="<%= Date.current %>"
-            class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
-            autocomplete="off"
-          >
-        </div>
-        <button
-          data-action="creation-wizard#addStep"
-          class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
-        >
-          Save step
-        </button>
-      </div>
-
-      <%# ─────────────────────────────────────────────────── %>
-      <%# STEP: chainReview — review steps & submit %>
-      <%# ─────────────────────────────────────────────────── %>
-      <div data-creation-wizard-target="step" data-step-name="chainReview" class="hidden p-6 space-y-4">
-        <div>
-          <h3 data-creation-wizard-target="chainReviewTitle" class="font-semibold text-stone-800 mb-3"></h3>
-          <ol data-creation-wizard-target="chainPreviewList" class="space-y-2">
-            <%# Populated dynamically by Stimulus %>
-          </ol>
-        </div>
-        <div class="flex flex-col gap-2">
           <button
-            data-action="creation-wizard#addAnotherStep"
-            class="w-full border-2 border-stone-200 hover:border-violet-300 text-stone-700 hover:text-violet-700 font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
-          >
-            + Add another step
-          </button>
-          <button
-            data-action="creation-wizard#submitChain"
-            data-creation-wizard-target="submitChainBtn"
+            data-action="wizard-chain#goToAddStep"
             class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
           >
-            Create chain ✓
+            Add steps →
           </button>
         </div>
-      </div>
+
+        <%# Chain: step builder %>
+        <div data-creation-wizard-target="step" data-step-name="chainStep" class="hidden p-6 space-y-4">
+          <div data-wizard-chain-target="stepCounter" class="text-xs font-semibold text-violet-600 uppercase tracking-wide">Step 1</div>
+          <div>
+            <label class="block text-sm font-medium text-stone-700 mb-2">Type</label>
+            <div class="flex gap-2">
+              <label class="flex-1 flex items-center gap-2 border-2 border-stone-200 rounded-xl px-4 py-3 cursor-pointer hover:border-violet-300 transition-colors has-[:checked]:bg-violet-50">
+                <input
+                  type="radio"
+                  name="step_item_type"
+                  value="todo"
+                  data-wizard-chain-target="itemType"
+                  data-action="wizard-chain#itemTypeChanged"
+                  class="accent-violet-600"
+                  checked
+                  autocomplete="off"
+                >
+                <span class="font-medium text-stone-800">Task</span>
+              </label>
+              <label class="flex-1 flex items-center gap-2 border-2 border-stone-200 rounded-xl px-4 py-3 cursor-pointer hover:border-violet-300 transition-colors has-[:checked]:bg-violet-50">
+                <input
+                  type="radio"
+                  name="step_item_type"
+                  value="project"
+                  data-wizard-chain-target="itemType"
+                  data-action="wizard-chain#itemTypeChanged"
+                  class="accent-violet-600"
+                  autocomplete="off"
+                >
+                <span class="font-medium text-stone-800">Project</span>
+              </label>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <div data-wizard-chain-target="emojiWrapper" class="hidden w-14 shrink-0">
+              <label class="block text-sm font-medium text-stone-700 mb-1">Icon</label>
+              <input
+                data-wizard-chain-target="stepEmoji"
+                type="text"
+                placeholder="📁"
+                maxlength="2"
+                class="w-full rounded-xl border border-stone-300 px-2 py-3 text-center text-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+                autocomplete="off"
+              >
+            </div>
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-stone-700 mb-1">Title</label>
+              <input
+                data-wizard-chain-target="stepTitle"
+                type="text"
+                placeholder="e.g. Read for 30 minutes"
+                class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+                autocomplete="off"
+              >
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-stone-700 mb-1">Description <span class="text-stone-400 font-normal">(optional)</span></label>
+            <input
+              data-wizard-chain-target="stepDescription"
+              type="text"
+              placeholder="Any extra details"
+              class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+              autocomplete="off"
+            >
+          </div>
+          <div data-wizard-chain-target="dueDateWrapper">
+            <label class="block text-sm font-medium text-stone-700 mb-1">Start date <span class="text-stone-400 font-normal">(when should this begin?)</span></label>
+            <input
+              data-wizard-chain-target="dueDate"
+              type="date"
+              value="<%= Date.current %>"
+              class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+              autocomplete="off"
+            >
+          </div>
+          <button
+            data-action="wizard-chain#addStep"
+            class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
+          >
+            Save step
+          </button>
+        </div>
+
+        <%# Chain: review %>
+        <div data-creation-wizard-target="step" data-step-name="chainReview" class="hidden p-6 space-y-4">
+          <div>
+            <h3 data-wizard-chain-target="reviewTitle" class="font-semibold text-stone-800 mb-3"></h3>
+            <ol data-wizard-chain-target="previewList" class="space-y-2">
+              <%# Populated dynamically by wizard-chain controller %>
+            </ol>
+          </div>
+          <div class="flex flex-col gap-2">
+            <button
+              data-action="wizard-chain#addAnotherStep"
+              class="w-full border-2 border-stone-200 hover:border-violet-300 text-stone-700 hover:text-violet-700 font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
+            >
+              + Add another step
+            </button>
+            <button
+              data-action="wizard-chain#submitChain"
+              class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
+            >
+              Create chain ✓
+            </button>
+          </div>
+        </div>
+
+      </div><%# end wizard-chain %>
 
       <%# ─────────────────────────────────────────────────── %>
       <%# STATE: submitting — loading indicator %>
