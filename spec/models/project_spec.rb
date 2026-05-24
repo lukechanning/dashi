@@ -6,7 +6,6 @@ RSpec.describe Project, type: :model do
     it { should belong_to(:goal).optional }
     it { should have_many(:todos).dependent(:destroy) }
     it { should have_many(:notes).dependent(:destroy) }
-    it { should have_one(:chain_item) }
   end
 
   describe "validations" do
@@ -25,63 +24,6 @@ RSpec.describe Project, type: :model do
       _linked = create(:project, user: user, goal: goal)
 
       expect(Project.standalone).to eq([ standalone ])
-    end
-  end
-
-  describe "chain completion callback" do
-    let(:user) { create(:user) }
-
-    context "when a project in a chain is marked completed" do
-      it "marks the chain item as complete" do
-        chain = create(:chain, user: user)
-        project = create(:project, user: user)
-        chain_item = create(:chain_item, chain: chain, position: 0, item_type: "project", project_id: project.id)
-
-        project.update!(status: :completed)
-
-        expect(chain_item.reload).to be_complete
-      end
-
-      it "marks the whole chain complete when it is the last item" do
-        chain = create(:chain, user: user)
-        project = create(:project, user: user)
-        _item0 = create(:chain_item, :completed, chain: chain, position: 0, item_type: "todo")
-        _item1 = create(:chain_item, chain: chain, position: 1, item_type: "project", project_id: project.id)
-
-        project.update!(status: :completed)
-
-        expect(chain.reload).to be_complete
-      end
-
-      it "does not mark the chain complete when other items are still pending" do
-        chain = create(:chain, user: user)
-        project = create(:project, user: user)
-        _item0 = create(:chain_item, chain: chain, position: 0, item_type: "project", project_id: project.id)
-        _item1 = create(:chain_item, chain: chain, position: 1, item_type: "todo")
-
-        project.update!(status: :completed)
-
-        expect(chain.reload).not_to be_complete
-      end
-    end
-
-    context "when a project is archived (not completed)" do
-      it "does not touch the chain item" do
-        chain = create(:chain, user: user)
-        project = create(:project, user: user)
-        chain_item = create(:chain_item, chain: chain, position: 0, item_type: "project", project_id: project.id)
-
-        project.update!(status: :archived)
-
-        expect(chain_item.reload).not_to be_complete
-      end
-    end
-
-    context "when the project has no chain item" do
-      it "does not raise" do
-        project = create(:project, user: user)
-        expect { project.update!(status: :completed) }.not_to raise_error
-      end
     end
   end
 

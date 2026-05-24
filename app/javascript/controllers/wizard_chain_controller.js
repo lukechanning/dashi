@@ -3,6 +3,7 @@ import { requireTitle, postJSON, dispatchWizardEvent } from "controllers/wizard_
 
 // Manages the three-step chain creation flow: name → step builder → review.
 // Navigation is delegated to the parent creation-wizard controller via events.
+// Chains are tasks-only; each step can optionally be assigned to a project.
 export default class extends Controller {
   static targets = [
     // Name step
@@ -10,30 +11,30 @@ export default class extends Controller {
     "title",
     // Step builder
     "stepCounter",
-    "itemType",
-    "emojiWrapper",
-    "stepEmoji",
     "stepTitle",
-    "stepDescription",
     "dueDate",
-    "dueDateWrapper",
+    "projectSelect",
     // Review
     "reviewTitle",
     "previewList",
   ];
 
-  static ICONS = {
-    project: `<svg class="w-4 h-4 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-    </svg>`,
-    todo: `<svg class="w-4 h-4 text-violet-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-    </svg>`,
-  };
+  static TASK_ICON = `<svg class="w-4 h-4 text-violet-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+  </svg>`;
+
+  static DRAG_ICON = `<svg class="w-4 h-4 text-stone-300 shrink-0 cursor-grab" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16" />
+  </svg>`;
+
+  static DELETE_ICON = `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+  </svg>`;
 
   // ─── Private state ────────────────────────────────────
 
   #chainData = { title: "", emoji: "", items: [] };
+  #dragSrcIndex = null;
 
   connect() {
     this.#resetChainData();
@@ -51,23 +52,21 @@ export default class extends Controller {
 
   // ─── Step builder ─────────────────────────────────────
 
-  itemTypeChanged() {
-    const isProject = this.#selectedItemType() === "project";
-    this.emojiWrapperTarget.classList.toggle("hidden", !isProject);
-    this.dueDateWrapperTarget.classList.toggle("hidden", isProject);
-  }
-
   addStep() {
     if (!requireTitle(this.stepTitleTarget)) return;
 
-    const type = this.#selectedItemType();
+    const projectSelect = this.hasProjectSelectTarget ? this.projectSelectTarget : null;
+    const projectId = projectSelect?.value || null;
+    const projectName = projectId
+      ? projectSelect.options[projectSelect.selectedIndex].text
+      : null;
+
     this.#chainData.items.push({
       title: this.stepTitleTarget.value.trim(),
-      item_type: type,
       position: this.#chainData.items.length,
-      description: this.hasStepDescriptionTarget ? this.stepDescriptionTarget.value.trim() || null : null,
-      emoji: type === "project" ? this.stepEmojiTarget.value.trim() || null : null,
-      due_date: type === "todo" ? this.dueDateTarget.value || null : null,
+      due_date: this.hasDueDateTarget ? this.dueDateTarget.value || null : null,
+      target_project_id: projectId,
+      _projectName: projectName, // display-only, stripped before submission
     });
 
     this.#renderReview();
@@ -75,12 +74,55 @@ export default class extends Controller {
   }
 
   addAnotherStep() {
-    this.#clearStepForm(); // also calls #updateStepCounter
+    this.#clearStepForm();
     dispatchWizardEvent(this.element, "wizard:navigate", { step: "chainStep" });
     requestAnimationFrame(() => this.stepTitleTarget.focus());
   }
 
-  // ─── Review step ─────────────────────────────────────
+  // ─── Review: delete & drag-to-reorder ─────────────────
+
+  deleteStep(event) {
+    const idx = parseInt(event.currentTarget.dataset.index, 10);
+    this.#chainData.items.splice(idx, 1);
+    this.#chainData.items.forEach((item, i) => (item.position = i));
+
+    if (this.#chainData.items.length === 0) {
+      dispatchWizardEvent(this.element, "wizard:navigate", { step: "chainStep" });
+    } else {
+      this.#renderReview();
+    }
+  }
+
+  dragStart(event) {
+    this.#dragSrcIndex = parseInt(event.currentTarget.dataset.index, 10);
+    event.dataTransfer.effectAllowed = "move";
+    event.currentTarget.classList.add("opacity-50");
+  }
+
+  dragEnd(event) {
+    event.currentTarget.classList.remove("opacity-50");
+    this.#dragSrcIndex = null;
+  }
+
+  dragOver(event) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+  }
+
+  drop(event) {
+    event.preventDefault();
+    const targetIdx = parseInt(event.currentTarget.dataset.index, 10);
+    if (this.#dragSrcIndex === null || this.#dragSrcIndex === targetIdx) return;
+
+    const [moved] = this.#chainData.items.splice(this.#dragSrcIndex, 1);
+    this.#chainData.items.splice(targetIdx, 0, moved);
+    this.#chainData.items.forEach((item, i) => (item.position = i));
+
+    this.#dragSrcIndex = null;
+    this.#renderReview();
+  }
+
+  // ─── Review: submit ────────────────────────────────────
 
   async submitChain() {
     if (this.#chainData.items.length === 0) return;
@@ -90,7 +132,11 @@ export default class extends Controller {
       chain: {
         title: this.#chainData.title,
         emoji: this.#chainData.emoji || null,
-        chain_items_attributes: this.#chainData.items,
+        // Strip display-only _projectName before sending
+        chain_items_attributes: this.#chainData.items.map(
+          // eslint-disable-next-line no-unused-vars
+          ({ _projectName, ...rest }) => rest
+        ),
       },
     });
 
@@ -112,10 +158,6 @@ export default class extends Controller {
     this.#chainData = { title: "", emoji: "", items: [] };
   }
 
-  #selectedItemType() {
-    return this.itemTypeTargets.find((r) => r.checked)?.value ?? "todo";
-  }
-
   #updateStepCounter() {
     if (this.hasStepCounterTarget) {
       this.stepCounterTarget.textContent = `Step ${this.#chainData.items.length + 1}`;
@@ -124,11 +166,7 @@ export default class extends Controller {
 
   #clearStepForm() {
     if (this.hasStepTitleTarget) this.stepTitleTarget.value = "";
-    if (this.hasStepDescriptionTarget) this.stepDescriptionTarget.value = "";
-    if (this.hasStepEmojiTarget) this.stepEmojiTarget.value = "";
-    this.itemTypeTargets.forEach((r) => { r.checked = r.value === "todo"; });
-    this.emojiWrapperTarget.classList.add("hidden");
-    this.dueDateWrapperTarget.classList.remove("hidden");
+    if (this.hasProjectSelectTarget) this.projectSelectTarget.value = "";
     this.#updateStepCounter();
   }
 
@@ -146,16 +184,33 @@ export default class extends Controller {
   }
 
   #itemHtml(item, index) {
-    const typeLabel = item.item_type === "project" ? "Project" : "Task";
-    const icon = this.constructor.ICONS[item.item_type] ?? this.constructor.ICONS.todo;
+    const subtitle = item._projectName
+      ? this.#escapeHtml(item._projectName)
+      : "";
+
     return `
-      <li class="flex items-center gap-3 bg-stone-50 rounded-xl px-4 py-3">
+      <li
+        draggable="true"
+        data-index="${index}"
+        data-action="dragstart->wizard-chain#dragStart dragend->wizard-chain#dragEnd dragover->wizard-chain#dragOver drop->wizard-chain#drop"
+        class="flex items-center gap-3 bg-stone-50 rounded-xl px-4 py-3 select-none"
+      >
+        ${this.constructor.DRAG_ICON}
         <span class="w-6 h-6 rounded-full bg-violet-100 text-violet-700 text-xs font-bold flex items-center justify-center shrink-0">${index + 1}</span>
-        ${icon}
+        ${this.constructor.TASK_ICON}
         <div class="flex-1 min-w-0">
           <p class="font-medium text-stone-800 truncate">${this.#escapeHtml(item.title)}</p>
-          <p class="text-xs text-stone-400">${typeLabel}</p>
+          ${subtitle ? `<p class="text-xs text-stone-400">${subtitle}</p>` : ""}
         </div>
+        <button
+          type="button"
+          data-index="${index}"
+          data-action="click->wizard-chain#deleteStep"
+          class="text-stone-300 hover:text-red-400 transition-colors shrink-0 cursor-pointer"
+          aria-label="Remove step"
+        >
+          ${this.constructor.DELETE_ICON}
+        </button>
       </li>
     `;
   }

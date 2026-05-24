@@ -5,8 +5,8 @@ RSpec.describe ChainItems::ActivateService do
   let(:chain) { create(:chain, user: user) }
 
   describe "#call" do
-    context "for a todo-type chain item" do
-      let(:chain_item) { create(:chain_item, chain: chain, item_type: "todo", position: 0, title: "Go for a run") }
+    context "for a chain item" do
+      let(:chain_item) { create(:chain_item, chain: chain, position: 0, title: "Go for a run") }
       let(:due_date) { Date.current + 1.day }
 
       it "creates a todo with the correct title and due date" do
@@ -28,32 +28,9 @@ RSpec.describe ChainItems::ActivateService do
       end
     end
 
-    context "for a project-type chain item" do
-      let(:chain_item) { create(:chain_item, chain: chain, item_type: "project", position: 0, title: "Build a deck", emoji: "🏗️") }
-      let(:due_date) { Date.current }
-
-      it "creates a project with the correct title and emoji" do
-        result = described_class.new(chain_item, due_date: due_date).call
-        expect(result.success?).to be true
-        expect(result.project).to be_a(Project)
-        expect(result.project.title).to eq("Build a deck")
-        expect(result.project.emoji).to eq("🏗️")
-      end
-
-      it "links the project to the chain item" do
-        result = described_class.new(chain_item, due_date: due_date).call
-        expect(chain_item.reload.project_id).to eq(result.project.id)
-      end
-
-      it "assigns the project to the chain's user" do
-        result = described_class.new(chain_item, due_date: due_date).call
-        expect(result.project.user).to eq(user)
-      end
-    end
-
     context "when the chain item is already activated" do
       let(:existing_todo) { create(:todo, user: user) }
-      let!(:chain_item) { create(:chain_item, chain: chain, item_type: "todo", position: 0, todo_id: existing_todo.id) }
+      let!(:chain_item) { create(:chain_item, chain: chain, position: 0, todo_id: existing_todo.id) }
 
       it "returns a failure result" do
         result = described_class.new(chain_item, due_date: Date.current).call

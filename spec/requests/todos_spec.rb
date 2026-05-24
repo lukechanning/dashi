@@ -73,8 +73,8 @@ RSpec.describe "Todos", type: :request do
       it "returns next chain item info" do
         chain = create(:chain, user: user)
         todo = create(:todo, user: user)
-        item0 = create(:chain_item, chain: chain, position: 0, title: "First step", item_type: "todo", todo_id: todo.id)
-        _item1 = create(:chain_item, chain: chain, position: 1, title: "Second step", item_type: "todo")
+        item0 = create(:chain_item, chain: chain, position: 0, title: "First step", todo_id: todo.id)
+        _item1 = create(:chain_item, chain: chain, position: 1, title: "Second step")
 
         patch toggle_todo_path(todo), headers: { "Accept" => "application/json" }
         body = JSON.parse(response.body)
@@ -91,8 +91,8 @@ RSpec.describe "Todos", type: :request do
       it "returns chain_complete: true and marks the chain complete" do
         chain = create(:chain, user: user)
         todo = create(:todo, user: user)
-        _item0 = create(:chain_item, :completed, chain: chain, position: 0, title: "Already done", item_type: "todo")
-        _item1 = create(:chain_item, chain: chain, position: 1, title: "Last step", item_type: "todo", todo_id: todo.id)
+        _item0 = create(:chain_item, :completed, chain: chain, position: 0, title: "Already done")
+        _item1 = create(:chain_item, chain: chain, position: 1, title: "Last step", todo_id: todo.id)
 
         patch toggle_todo_path(todo), headers: { "Accept" => "application/json" }
         body = JSON.parse(response.body)
@@ -106,7 +106,7 @@ RSpec.describe "Todos", type: :request do
       it "returns null chain context" do
         chain = create(:chain, user: user)
         todo = create(:todo, :completed, user: user)
-        _item = create(:chain_item, chain: chain, position: 0, item_type: "todo", todo_id: todo.id)
+        _item = create(:chain_item, chain: chain, position: 0, todo_id: todo.id)
 
         patch toggle_todo_path(todo), headers: { "Accept" => "application/json" }
         body = JSON.parse(response.body)

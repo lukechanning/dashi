@@ -9,7 +9,7 @@
     <% end %>
   </div>
   <%= button_to chain_path(@chain), method: :delete,
-      data: { turbo_confirm: "Delete this chain? The individual tasks and projects will not be deleted." },
+      data: { turbo_confirm: "Delete this chain? The individual tasks will not be deleted." },
       class: "ml-auto text-xs text-stone-400 hover:text-red-600 transition-colors cursor-pointer" do %>
     Delete chain
   <% end %>
@@ -29,17 +29,16 @@
       </div>
       <div class="flex-1 min-w-0">
         <p class="font-medium <%= item.complete? ? 'line-through text-stone-400' : 'text-stone-800' %>">
-          <%= item.emoji.presence %> <%= item.title %>
+          <%= item.title %>
         </p>
-        <p class="text-xs text-stone-400 mt-0.5 capitalize"><%= item.item_type %></p>
+        <% if item.target_project %>
+          <p class="text-xs text-stone-400 mt-0.5"><%= item.target_project.title %></p>
+        <% end %>
       </div>
-      <% if item.activated? %>
-        <% linked = item.todo || item.project %>
-        <% if linked %>
-          <%= link_to item.todo ? edit_todo_path(linked) : project_path(linked),
-              class: "text-xs text-violet-600 hover:text-violet-800 transition-colors" do %>
-            View →
-          <% end %>
+      <% if item.activated? && item.todo %>
+        <%= link_to edit_todo_path(item.todo),
+            class: "text-xs text-violet-600 hover:text-violet-800 transition-colors" do %>
+          View →
         <% end %>
       <% end %>
     </div>

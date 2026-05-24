@@ -2,7 +2,7 @@ class ChainsController < ApplicationController
   before_action :set_chain, only: [ :show, :destroy ]
 
   def index
-    @chains = current_user.chains.order(created_at: :desc)
+    @chains = current_user.chains.includes(:chain_items).order(created_at: :desc)
   end
 
   def show
@@ -35,7 +35,7 @@ class ChainsController < ApplicationController
   def chain_params
     params.require(:chain).permit(
       :title, :description, :emoji,
-      chain_items_attributes: [ :title, :description, :emoji, :item_type, :position ]
+      chain_items_attributes: [ :title, :description, :position, :target_project_id ]
     )
   end
 

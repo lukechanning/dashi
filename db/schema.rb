@@ -10,22 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_23_051013) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_24_223342) do
   create_table "chain_items", force: :cascade do |t|
     t.integer "chain_id", null: false
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.text "description"
-    t.string "emoji"
-    t.string "item_type", null: false
     t.integer "position", null: false
-    t.bigint "project_id"
+    t.bigint "target_project_id"
     t.string "title", null: false
     t.bigint "todo_id"
     t.datetime "updated_at", null: false
     t.index ["chain_id", "position"], name: "index_chain_items_on_chain_id_and_position", unique: true
     t.index ["chain_id"], name: "index_chain_items_on_chain_id"
-    t.index ["project_id"], name: "index_chain_items_on_project_id", where: "project_id IS NOT NULL"
+    t.index ["target_project_id"], name: "index_chain_items_on_target_project_id", where: "target_project_id IS NOT NULL"
     t.index ["todo_id"], name: "index_chain_items_on_todo_id", where: "todo_id IS NOT NULL"
   end
 
@@ -167,7 +165,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_051013) do
   end
 
   add_foreign_key "chain_items", "chains"
-  add_foreign_key "chain_items", "projects"
+  add_foreign_key "chain_items", "projects", column: "target_project_id"
   add_foreign_key "chain_items", "todos"
   add_foreign_key "chains", "users"
   add_foreign_key "daily_pages", "users"

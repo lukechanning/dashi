@@ -7,7 +7,7 @@ RSpec.describe "ChainItems", type: :request do
   before { sign_in(user) }
 
   describe "POST /chains/:chain_id/chain_items/:id/activate" do
-    let(:chain_item) { create(:chain_item, chain: chain, item_type: "todo", position: 0, title: "Do the thing") }
+    let(:chain_item) { create(:chain_item, chain: chain, position: 0, title: "Do the thing") }
 
     it "creates a todo for the chain item" do
       expect {
@@ -31,7 +31,7 @@ RSpec.describe "ChainItems", type: :request do
 
     context "when already activated" do
       let(:existing_todo) { create(:todo, user: user) }
-      let!(:activated_item) { create(:chain_item, chain: chain, item_type: "todo", position: 0, title: "Done", todo_id: existing_todo.id) }
+      let!(:activated_item) { create(:chain_item, chain: chain, position: 0, title: "Done", todo_id: existing_todo.id) }
 
       it "returns 422" do
         post activate_chain_chain_item_path(chain, activated_item),
@@ -45,7 +45,7 @@ RSpec.describe "ChainItems", type: :request do
     context "when chain belongs to another user" do
       let(:other_user) { create(:user) }
       let(:other_chain) { create(:chain, user: other_user) }
-      let(:other_item) { create(:chain_item, chain: other_chain, item_type: "todo", position: 0) }
+      let(:other_item) { create(:chain_item, chain: other_chain, position: 0) }
 
       it "returns not found" do
         post activate_chain_chain_item_path(other_chain, other_item),

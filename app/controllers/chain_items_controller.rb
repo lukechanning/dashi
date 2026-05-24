@@ -7,13 +7,13 @@ class ChainItemsController < ApplicationController
     due_date = begin
       Date.parse(due_date_str)
     rescue ArgumentError
-      render json: { errors: [ "due_date is not a valid date" ] }, status: :unprocessable_entity and return
+      return render json: { errors: [ "due_date is not a valid date" ] }, status: :unprocessable_entity
     end
 
     result = ChainItems::ActivateService.new(@chain_item, due_date: due_date).call
 
     if result.success?
-      render json: { todo_id: result.todo&.id, project_id: result.project&.id }
+      render json: { todo_id: result.todo&.id }
     else
       render json: { errors: result.errors }, status: :unprocessable_entity
     end

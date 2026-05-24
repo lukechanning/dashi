@@ -3,7 +3,7 @@ class Todo < ApplicationRecord
   belongs_to :project, optional: true
   belongs_to :habit, optional: true
   has_many :notes, as: :notable, dependent: :destroy
-  has_one :chain_item
+  has_one :chain_item, dependent: :nullify
 
   validates :title, presence: true
 

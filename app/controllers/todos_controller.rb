@@ -69,17 +69,16 @@ class TodosController < ApplicationController
     ci = todo.chain_item
     return nil unless ci
 
+    ci.complete!
     next_ci = ci.chain.next_item_after(ci)
     if next_ci
       {
         chain_id: ci.chain_id,
         chain_item_id: next_ci.id,
-        next_title: next_ci.title,
-        next_type: next_ci.item_type
+        next_title: next_ci.title
       }
     else
-      # Last item — mark this item and possibly the whole chain complete
-      ci.complete!
+      # Last item — mark the chain complete if all steps are done
       ci.chain.complete! if ci.chain.all_items_complete? && !ci.chain.complete?
       { chain_complete: true, chain_title: ci.chain.title }
     end

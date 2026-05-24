@@ -77,30 +77,6 @@ RSpec.describe "Projects", type: :request do
       expect(project.reload.title).to eq("Updated")
     end
 
-    context "when completing a project that finishes a chain" do
-      it "sets the celebration flash to the chain name" do
-        chain = create(:chain, user: user, title: "Launch sequence")
-        project = create(:project, user: user)
-        _item0 = create(:chain_item, :completed, chain: chain, position: 0, item_type: "todo")
-        _item1 = create(:chain_item, chain: chain, position: 1, item_type: "project", project_id: project.id)
-
-        patch project_path(project), params: { project: { status: "completed" } }
-
-        expect(flash[:celebration]).to include("Launch sequence")
-      end
-
-      it "uses the project name when it does not finish the chain" do
-        chain = create(:chain, user: user, title: "My chain")
-        project = create(:project, user: user, title: "Phase one")
-        _item0 = create(:chain_item, chain: chain, position: 0, item_type: "project", project_id: project.id)
-        _item1 = create(:chain_item, chain: chain, position: 1, item_type: "todo")
-
-        patch project_path(project), params: { project: { status: "completed" } }
-
-        expect(flash[:celebration]).to include("Phase one")
-        expect(flash[:celebration]).not_to include("My chain")
-      end
-    end
   end
 
   describe "DELETE /projects/:id" do
