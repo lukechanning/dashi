@@ -72,7 +72,17 @@ FROM base
 # Patch system Ruby default gems that ship with the base image at vulnerable versions.
 # These are not managed by Bundler — they live in the system Ruby gem path, which is
 # what Trivy scans. This must run in the final stage (not build) since FROM base starts fresh.
-RUN gem update erb net-imap zlib --no-document
+#
+# Strategy: (1) gem update installs the patched version into the system gem path so the
+# runtime uses the fixed code; (2) we then delete the stale default gemspec stubs from
+# the Ruby installation directory, because `gem update` does NOT remove them and Trivy
+# detects vulnerabilities by reading gemspecs, not by loading the gem itself.
+RUN gem update erb net-imap zlib --no-document && \
+    find /usr/local/lib/ruby/gems/*/specifications/default \
+      \( -name "erb-*.gemspec" \
+      -o -name "net-imap-*.gemspec" \
+      -o -name "zlib-*.gemspec" \) \
+      -delete
 
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \

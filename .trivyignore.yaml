@@ -40,21 +40,27 @@ vulnerabilities:
     statement: Thruster binary awaiting Go stdlib update; low risk — local HTTP proxy layer not exposed to arbitrary network inputs
     expired_at: 2026-12-01
 
-  # Ruby default gem CVEs (erb, net-imap) — stale gemspec artifacts from ruby:3.4-slim base image.
-  # Default gems ship bundled gemspecs that cannot be removed; gem update in the Dockerfile final stage
-  # installs the patched versions which are active at runtime. See Dockerfile: RUN gem update erb net-imap.
+  # Ruby default gem CVEs (erb, net-imap, zlib) — stale gemspec artifacts from ruby:3.4-slim base image.
+  # Default gems ship bundled gemspecs in /usr/local/lib/ruby/gems/*/specifications/default/. gem update
+  # installs the patched version into the system gem path (active at runtime) but does NOT remove the old
+  # stub gemspec — so Trivy still finds the old version metadata. The Dockerfile now explicitly deletes
+  # those stale stubs after gem update; these entries are belt-and-suspenders in case a path changes.
+  # See Dockerfile: RUN gem update erb net-imap zlib && find .../specifications/default -delete.
   - id: CVE-2026-41316
-    statement: erb patched via gem update in Dockerfile; stale default gemspec in ruby base image is a scanner artifact, not the active version
+    statement: erb patched via gem update + stale default gemspec deleted in Dockerfile; entry retained as safety net
     expired_at: 2027-01-01
   - id: CVE-2026-42246
-    statement: net-imap 0.6.4 (fixed) installed via gem update in Dockerfile; stale default gemspec in ruby base image is a scanner artifact
+    statement: net-imap 0.6.4 (fixed) via gem update + stale default gemspec deleted in Dockerfile; entry retained as safety net
     expired_at: 2027-01-01
   - id: CVE-2026-42245
-    statement: net-imap 0.6.4 (fixed) installed via gem update in Dockerfile; stale default gemspec in ruby base image is a scanner artifact
+    statement: net-imap 0.6.4 (fixed) via gem update + stale default gemspec deleted in Dockerfile; entry retained as safety net
     expired_at: 2027-01-01
   - id: CVE-2026-42257
-    statement: net-imap 0.6.4 (fixed) installed via gem update in Dockerfile; stale default gemspec in ruby base image is a scanner artifact
+    statement: net-imap 0.6.4 (fixed) via gem update + stale default gemspec deleted in Dockerfile; entry retained as safety net
     expired_at: 2027-01-01
   - id: CVE-2026-42258
-    statement: net-imap 0.6.4 (fixed) installed via gem update in Dockerfile; stale default gemspec in ruby base image is a scanner artifact
+    statement: net-imap 0.6.4 (fixed) via gem update + stale default gemspec deleted in Dockerfile; entry retained as safety net
+    expired_at: 2027-01-01
+  - id: CVE-2026-27820
+    statement: zlib 3.2.3 (fixed) via gem update + stale default gemspec deleted in Dockerfile; entry retained as safety net
     expired_at: 2027-01-01
