@@ -2,7 +2,7 @@
 
 **A quiet place to keep your days in order.**
 
-Dashi is a calm, focused productivity app for people who want a little more clarity in their day — not another system to maintain. Write down what matters, check things off, and move on.
+Dashi is a calm, focused space to guide your day — not manage it. Open it, write down what you need to do, check things off, close it. That's a complete use. Use as much or as little of it as you want.
 
 ![Daily page](docs/screenshots/daily_desktop.png)
 
@@ -12,7 +12,7 @@ Dashi is a calm, focused productivity app for people who want a little more clar
 
 Each morning your daily page is waiting: what's due today, anything that carried over, and your habits running quietly in the background. No dashboards, no friction. Just a clear list and a good feeling when it's done.
 
-If you want more structure, it's there. Todos can live under projects, projects under goals — so the small stuff connects to the bigger picture without you having to think too hard about it. Or skip all that and just write down what you need to do today. Both work fine.
+If all you do is write today's list and check it off, that's enough. But if you want more structure, it's there. Todos can live under projects, projects under goals — so the small stuff connects to the bigger picture without you having to think too hard about it. You can also build **Chains**: sequences of steps for routines or multi-part tasks, worked through one at a time.
 
 Dashi is deliberately unhurried. It won't ask for your attention. It'll just be there when you need it.
 
@@ -29,8 +29,9 @@ Dashi is deliberately unhurried. It won't ask for your attention. It'll just be 
 - **Daily page** — what's on for today, front and centre
 - **Carryover** — past-due items surface automatically; reschedule, dismiss, or just do them
 - **Focus sessions** — pick up to 3 tasks and drop into a distraction-free Pomodoro session
-- **Reflection** — a quiet end-of-day check-in to close out your day
+- **Reflection** — a quiet end-of-day check-in to close things out
 - **Habits** — recurring tasks that slot into your daily flow automatically
+- **Chains** — define a sequence of steps and work through them one at a time
 - **Goals & projects** — connect the small stuff to the bigger picture
 - **Activity heatmap** — notice your own momentum over time
 - **Upcoming view** — look ahead without losing sight of today
@@ -45,9 +46,9 @@ Dashi is deliberately unhurried. It won't ask for your attention. It'll just be 
 |---|---|
 | ![Daily page](docs/screenshots/daily_desktop.png) | ![Focus session](docs/screenshots/focus_session_desktop.png) |
 
-| Habits | Goals |
+| Habits | Chains |
 |---|---|
-| ![Habits](docs/screenshots/habits_desktop.png) | ![Goals](docs/screenshots/goals_desktop.png) |
+| ![Habits](docs/screenshots/habits_desktop.png) | ![Chains](docs/screenshots/chains_desktop.png) |
 
 ---
 

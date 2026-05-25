@@ -147,6 +147,32 @@ RSpec.describe "App Screenshots", type: :system do
   let!(:habit_eagles) { create(:habit, user:, title: "Check in with the Eagles", frequency: :weekdays) }
   let!(:habit_maps)   { create(:habit, user:, title: "Study ancient maps", frequency: :daily) }
 
+  # --- Chains ---
+  let!(:chain_morning) do
+    chain = create(:chain, user:, title: "Morning Routine", emoji: "🌅")
+    create(:chain_item, chain:, title: "Read the day's news from the ravens", position: 0, completed_at: 1.hour.ago)
+    create(:chain_item, chain:, title: "Review the day's agenda with Pippin", position: 1, completed_at: 30.minutes.ago)
+    create(:chain_item, chain:, title: "Send morning dispatch to Rivendell", position: 2)
+    create(:chain_item, chain:, title: "Sharpen staff and check supplies", position: 3)
+    chain
+  end
+  let!(:chain_siege) do
+    chain = create(:chain, user:, title: "Siege of Minas Tirith Checklist", emoji: "🏰")
+    create(:chain_item, chain:, title: "Coordinate with Faramir's rangers", position: 0)
+    create(:chain_item, chain:, title: "Deploy the trebuchets", position: 1)
+    create(:chain_item, chain:, title: "Signal the Rohirrim", position: 2)
+    create(:chain_item, chain:, title: "Guard the gate with Peregrin Took", position: 3)
+    create(:chain_item, chain:, title: "Await the Dead Men of Dunharrow", position: 4)
+    chain
+  end
+  let!(:chain_completed) do
+    chain = create(:chain, :completed, user:, title: "Recruit the Fellowship", emoji: "💍")
+    create(:chain_item, :completed, chain:, title: "Call the Council of Elrond", position: 0)
+    create(:chain_item, :completed, chain:, title: "Assign the Nine Walkers", position: 1)
+    create(:chain_item, :completed, chain:, title: "Depart from Rivendell", position: 2)
+    chain
+  end
+
   before do
     token = user.generate_magic_token!
     driven_by :screenshot_desktop
@@ -214,5 +240,10 @@ RSpec.describe "App Screenshots", type: :system do
     visit verify_session_path(token: token)
     visit habits_path
     page.save_screenshot("habits_mobile.png")
+  end
+
+  it "chains index — desktop" do
+    visit chains_path
+    page.save_screenshot("chains_desktop.png")
   end
 end
