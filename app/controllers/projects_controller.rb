@@ -26,10 +26,16 @@ class ProjectsController < ApplicationController
         todo = current_user.todos.find_by(id: params[:from_todo])
         todo&.destroy
       end
-      redirect_to @project, notice: "Project created."
+      respond_to do |format|
+        format.json { render json: { id: @project.id, redirect: project_path(@project) }, status: :created }
+        format.any { redirect_to @project, notice: "Project created." }
+      end
     else
       @from_todo = params[:from_todo]
-      render :new, status: :unprocessable_entity
+      respond_to do |format|
+        format.json { render json: { errors: @project.errors.full_messages }, status: :unprocessable_entity }
+        format.any { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -40,7 +46,13 @@ class ProjectsController < ApplicationController
     prev_status = @project.status
     if @project.update(project_params)
       if @project.completed? && prev_status != "completed"
-        flash[:celebration] = "\"#{@project.title}\" completed!"
+        chain = @project.chain_item&.chain
+        celebration_msg = if chain&.complete?
+          "Chain \"#{chain.title}\" complete! 🎉"
+        else
+          "\"#{@project.title}\" completed!"
+        end
+        flash[:celebration] = celebration_msg
         redirect_to projects_path
       elsif !@project.active? && prev_status == "active"
         redirect_to projects_path, notice: "Project archived."

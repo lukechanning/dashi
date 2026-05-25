@@ -45,6 +45,29 @@ RSpec.describe "Projects", type: :request do
       post projects_path, params: { project: { title: "Linked", goal_id: goal.id } }
       expect(Project.last.goal).to eq(goal)
     end
+
+    context "when requested as JSON (wizard)" do
+      it "returns the project id and redirect path" do
+        post projects_path,
+             params: { project: { title: "Wizard project" } }.to_json,
+             headers: { "Content-Type" => "application/json", "Accept" => "application/json" }
+
+        expect(response).to have_http_status(:created)
+        body = JSON.parse(response.body)
+        expect(body["id"]).to eq(Project.last.id)
+        expect(body["redirect"]).to be_present
+      end
+
+      it "returns errors for an invalid project" do
+        post projects_path,
+             params: { project: { title: "" } }.to_json,
+             headers: { "Content-Type" => "application/json", "Accept" => "application/json" }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        body = JSON.parse(response.body)
+        expect(body["errors"]).to be_present
+      end
+    end
   end
 
   describe "PATCH /projects/:id" do
@@ -53,6 +76,7 @@ RSpec.describe "Projects", type: :request do
       patch project_path(project), params: { project: { title: "Updated" } }
       expect(project.reload.title).to eq("Updated")
     end
+
   end
 
   describe "DELETE /projects/:id" do

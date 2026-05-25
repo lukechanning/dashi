@@ -31,6 +31,13 @@ Rails.application.routes.draw do
       patch :toggle
     end
   end
+  resources :chains, only: [ :index, :create, :show, :destroy ] do
+    resources :chain_items, only: [] do
+      member do
+        post :activate
+      end
+    end
+  end
   resources :habits do
     member do
       patch :toggle_active

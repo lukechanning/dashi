@@ -42,6 +42,29 @@ RSpec.describe "Goals", type: :request do
       post goals_path, params: { goal: { title: "" } }
       expect(response).to have_http_status(:unprocessable_entity)
     end
+
+    context "when requested as JSON (wizard)" do
+      it "returns the goal id and redirect path" do
+        post goals_path,
+             params: { goal: { title: "Wizard goal" } }.to_json,
+             headers: { "Content-Type" => "application/json", "Accept" => "application/json" }
+
+        expect(response).to have_http_status(:created)
+        body = JSON.parse(response.body)
+        expect(body["id"]).to eq(Goal.last.id)
+        expect(body["redirect"]).to be_present
+      end
+
+      it "returns errors for an invalid goal" do
+        post goals_path,
+             params: { goal: { title: "" } }.to_json,
+             headers: { "Content-Type" => "application/json", "Accept" => "application/json" }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        body = JSON.parse(response.body)
+        expect(body["errors"]).to be_present
+      end
+    end
   end
 
   describe "PATCH /goals/:id" do

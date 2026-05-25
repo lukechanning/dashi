@@ -61,6 +61,59 @@ RSpec.describe "Todos", type: :request do
       body = JSON.parse(response.body)
       expect(body["completed_at"]).to be_nil
     end
+
+    it "responds with null chain context for non-chained todos" do
+      todo = create(:todo, user: user)
+      patch toggle_todo_path(todo), headers: { "Accept" => "application/json" }
+      body = JSON.parse(response.body)
+      expect(body["chain"]).to be_nil
+    end
+
+    context "when completing a mid-chain todo" do
+      it "returns next chain item info" do
+        chain = create(:chain, user: user)
+        todo = create(:todo, user: user)
+        item0 = create(:chain_item, chain: chain, position: 0, title: "First step", todo_id: todo.id)
+        _item1 = create(:chain_item, chain: chain, position: 1, title: "Second step")
+
+        patch toggle_todo_path(todo), headers: { "Accept" => "application/json" }
+        body = JSON.parse(response.body)
+
+        expect(body["chain"]).to include(
+          "chain_id" => chain.id,
+          "next_title" => "Second step"
+        )
+        expect(body["chain"]["chain_complete"]).to be_nil
+      end
+    end
+
+    context "when completing the last todo in a chain" do
+      it "returns chain_complete: true and marks the chain complete" do
+        chain = create(:chain, user: user)
+        todo = create(:todo, user: user)
+        _item0 = create(:chain_item, :completed, chain: chain, position: 0, title: "Already done")
+        _item1 = create(:chain_item, chain: chain, position: 1, title: "Last step", todo_id: todo.id)
+
+        patch toggle_todo_path(todo), headers: { "Accept" => "application/json" }
+        body = JSON.parse(response.body)
+
+        expect(body["chain"]).to include("chain_complete" => true, "chain_title" => chain.title)
+        expect(chain.reload).to be_complete
+      end
+    end
+
+    context "when un-completing a chained todo" do
+      it "returns null chain context" do
+        chain = create(:chain, user: user)
+        todo = create(:todo, :completed, user: user)
+        _item = create(:chain_item, chain: chain, position: 0, todo_id: todo.id)
+
+        patch toggle_todo_path(todo), headers: { "Accept" => "application/json" }
+        body = JSON.parse(response.body)
+
+        expect(body["chain"]).to be_nil
+      end
+    end
   end
 
   describe "GET /todos/:id/edit" do

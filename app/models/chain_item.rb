@@ -1,0 +1,19 @@
+class ChainItem < ApplicationRecord
+  belongs_to :chain
+  belongs_to :todo, optional: true
+  belongs_to :target_project, class_name: "Project", optional: true
+
+  validates :title, presence: true
+
+  def activated?
+    todo_id.present?
+  end
+
+  def complete?
+    completed_at.present?
+  end
+
+  def complete!
+    update!(completed_at: Time.current)
+  end
+end

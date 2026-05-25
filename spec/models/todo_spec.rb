@@ -6,6 +6,7 @@ RSpec.describe Todo, type: :model do
     it { should belong_to(:project).optional }
     it { should belong_to(:habit).optional }
     it { should have_many(:notes).dependent(:destroy) }
+    it { should have_one(:chain_item) }
   end
 
   describe "validations" do

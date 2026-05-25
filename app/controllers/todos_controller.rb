@@ -13,7 +13,7 @@ class TodosController < ApplicationController
 
     if @todo.save
       respond_to do |format|
-        format.json { render json: { id: @todo.id }, status: :created }
+        format.json { render json: { id: @todo.id, redirect: root_path }, status: :created }
         format.any { redirect_to new_todo_path, notice: "Todo added." }
       end
     else
@@ -47,8 +47,9 @@ class TodosController < ApplicationController
       @todo.complete!
     end
 
+    chain_context = complete_chain_step_and_build_context(@todo)
     respond_to do |format|
-      format.json { render json: { completed_at: @todo.completed_at } }
+      format.json { render json: { completed_at: @todo.completed_at, chain: chain_context } }
       format.any { redirect_back fallback_location: root_path }
     end
   end
@@ -57,6 +58,30 @@ class TodosController < ApplicationController
 
   def set_todo
     @todo = current_user.todos.find(params[:id])
+  end
+
+  # Completes the chain item when the last step in a chain is checked off,
+  # then returns a hash of chain context for the JSON response.
+  # Only runs when the todo is being completed (not un-completed).
+  def complete_chain_step_and_build_context(todo)
+    return nil unless todo.complete?
+
+    ci = todo.chain_item
+    return nil unless ci
+
+    ci.complete!
+    next_ci = ci.chain.next_item_after(ci)
+    if next_ci
+      {
+        chain_id: ci.chain_id,
+        chain_item_id: next_ci.id,
+        next_title: next_ci.title
+      }
+    else
+      # Last item — mark the chain complete if all steps are done
+      ci.chain.complete! if ci.chain.all_items_complete? && !ci.chain.complete?
+      { chain_complete: true, chain_title: ci.chain.title }
+    end
   end
 
   def todo_params
