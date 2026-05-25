@@ -72,7 +72,7 @@ FROM base
 # Patch system Ruby default gems that ship with the base image at vulnerable versions.
 # These are not managed by Bundler — they live in the system Ruby gem path, which is
 # what Trivy scans. This must run in the final stage (not build) since FROM base starts fresh.
-RUN gem update erb net-imap --no-document
+RUN gem update erb net-imap zlib --no-document
 
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
