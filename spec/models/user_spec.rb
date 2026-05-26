@@ -131,4 +131,66 @@ RSpec.describe User, type: :model do
       expect(User.find_by_magic_token("bogus")).to be_nil
     end
   end
+
+  describe "preferences" do
+    let(:user) { create(:user) }
+
+    describe "defaults" do
+      it "defaults show_stale_banner to true" do
+        expect(user.show_stale_banner).to be true
+      end
+
+      it "defaults show_reflection_banner to true" do
+        expect(user.show_reflection_banner).to be true
+      end
+
+      it "defaults stale_threshold_days to 3" do
+        expect(user.stale_threshold_days).to eq(3)
+      end
+
+      it "defaults week_start_day to 1 (Monday)" do
+        expect(user.week_start_day).to eq(1)
+      end
+    end
+
+    describe "#week_start_day_sym" do
+      it "returns :monday when week_start_day is 1" do
+        user.week_start_day = 1
+        expect(user.week_start_day_sym).to eq(:monday)
+      end
+
+      it "returns :sunday when week_start_day is 0" do
+        user.week_start_day = 0
+        expect(user.week_start_day_sym).to eq(:sunday)
+      end
+    end
+
+    describe "validations" do
+      it "rejects stale_threshold_days outside allowed options" do
+        user.stale_threshold_days = 10
+        expect(user).not_to be_valid
+        expect(user.errors[:stale_threshold_days]).to be_present
+      end
+
+      it "accepts all valid stale_threshold_days options" do
+        User::STALE_THRESHOLD_OPTIONS.each do |days|
+          user.stale_threshold_days = days
+          expect(user).to be_valid
+        end
+      end
+
+      it "rejects week_start_day outside allowed options" do
+        user.week_start_day = 3
+        expect(user).not_to be_valid
+        expect(user.errors[:week_start_day]).to be_present
+      end
+
+      it "accepts week_start_day of 0 or 1" do
+        [ 0, 1 ].each do |day|
+          user.week_start_day = day
+          expect(user).to be_valid
+        end
+      end
+    end
+  end
 end

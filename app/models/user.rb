@@ -13,10 +13,21 @@ class User < ApplicationRecord
   has_many :invitations, foreign_key: :invited_by_id, dependent: :destroy
   has_many :chains, dependent: :destroy
 
+  STALE_THRESHOLD_OPTIONS = [ 3, 5, 7, 14 ].freeze
+  # Array of [label, value] pairs — order determines dropdown display order
+  WEEK_START_OPTIONS = [ [ "Monday", 1 ], [ "Sunday", 0 ] ].freeze
+  WEEK_START_SYMBOLS  = { 0 => :sunday, 1 => :monday }.freeze
+
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :name, presence: true
+  validates :stale_threshold_days, inclusion: { in: STALE_THRESHOLD_OPTIONS }
+  validates :week_start_day, inclusion: { in: WEEK_START_SYMBOLS.keys }
 
   normalizes :email, with: ->(email) { email.strip.downcase }
+
+  def week_start_day_sym
+    WEEK_START_SYMBOLS.fetch(week_start_day, :monday)
+  end
 
   def generate_habit_todos_for(date)
     habits.active.find_each do |habit|

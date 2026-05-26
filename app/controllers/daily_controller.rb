@@ -16,14 +16,14 @@ class DailyController < ApplicationController
 
     @upcoming_count = current_user.todos.incomplete.where(due_date: (Date.current + 1)..).count
     @done_count = current_user.todos.completed_on(Date.current).count
-    @stale_todos = if !@viewing_history && !stale_banner_dismissed?
-                     current_user.todos.stale.ordered.includes(:project)
+    @stale_todos = if !@viewing_history && current_user.show_stale_banner? && !stale_banner_dismissed?
+                     current_user.todos.stale(current_user.stale_threshold_days).ordered.includes(:project)
     else
                      []
     end
 
-    if !@viewing_history && @date.friday? && !reflection_banner_dismissed?
-      week_start = @date.beginning_of_week
+    if !@viewing_history && @date.friday? && current_user.show_reflection_banner? && !reflection_banner_dismissed?
+      week_start = @date.beginning_of_week(current_user.week_start_day_sym)
       week_todos = current_user.todos.where(habit_id: nil, due_date: week_start..@date)
       @show_reflection = true
       @week_stats = { completed: week_todos.complete.count, incomplete: week_todos.incomplete.count }

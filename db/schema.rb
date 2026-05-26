@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_24_223342) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_25_211832) do
   create_table "chain_items", force: :cascade do |t|
     t.integer "chain_id", null: false
     t.datetime "completed_at"
@@ -158,8 +158,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_24_223342) do
     t.string "magic_token"
     t.datetime "magic_token_expires_at"
     t.string "name"
+    t.boolean "show_reflection_banner", default: true, null: false
+    t.boolean "show_stale_banner", default: true, null: false
+    t.integer "stale_threshold_days", default: 3, null: false
     t.string "timezone"
     t.datetime "updated_at", null: false
+    t.integer "week_start_day", default: 1, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["magic_token"], name: "index_users_on_magic_token", unique: true
   end
