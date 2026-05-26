@@ -59,6 +59,27 @@ RSpec.describe "Daily", type: :request do
         get root_path(date: 7.days.ago.to_date.to_s)
         expect(response.body).not_to include("stale-banner")
       end
+
+      it "does not show the stale banner when the user has disabled it" do
+        user.update!(show_stale_banner: false)
+        create(:todo, :stale, user: user, title: "Old forgotten task")
+        get root_path
+        expect(response.body).not_to include("stale-banner")
+      end
+
+      it "respects a custom stale threshold — does not show banner if task is not old enough" do
+        user.update!(stale_threshold_days: 14)
+        create(:todo, user: user, title: "Week-old task", due_date: 7.days.ago.to_date)
+        get root_path
+        expect(response.body).not_to include("stale-banner")
+      end
+
+      it "respects a custom stale threshold — shows banner when task exceeds threshold" do
+        user.update!(stale_threshold_days: 14)
+        create(:todo, user: user, title: "Fortnight-old task", due_date: 15.days.ago.to_date)
+        get root_path
+        expect(response.body).to include("stale-banner")
+      end
     end
 
     context "stale wizard" do
@@ -94,6 +115,14 @@ RSpec.describe "Daily", type: :request do
         friday = Date.current.next_occurring(:friday)
         travel_to friday do
           get root_path(date: (friday - 7).to_s)
+          expect(response.body).not_to include("reflection-banner")
+        end
+      end
+
+      it "does not show the reflection banner when the user has disabled it" do
+        user.update!(show_reflection_banner: false)
+        travel_to Date.current.next_occurring(:friday) do
+          get root_path
           expect(response.body).not_to include("reflection-banner")
         end
       end

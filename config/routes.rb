@@ -57,7 +57,7 @@ Rails.application.routes.draw do
   patch "user/timezone", to: "users#update_timezone"
 
   # Account
-  resource :account, only: [ :show ], controller: "account" do
+  resource :account, only: [ :show, :update ], controller: "account" do
     resource :export, only: [ :show ], module: :account
     resource :import, only: [ :new, :create ], module: :account
   end

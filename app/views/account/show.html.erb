@@ -41,6 +41,81 @@
   <% end %>
 </div>
 
+<div class="mt-8" data-controller="preferences">
+  <div class="flex items-center justify-between mb-3">
+    <h2 class="text-sm font-semibold text-stone-500 uppercase tracking-wide">Preferences</h2>
+    <span class="text-xs text-green-600 opacity-0 transition-opacity duration-300" data-preferences-target="notice">✓ Saved</span>
+  </div>
+  <%= form_with model: current_user, url: account_path, method: :patch,
+        data: { action: "turbo:submit-end->preferences#saved" } do |f| %>
+    <div class="bg-white rounded-2xl border border-stone-200/60 shadow-sm divide-y divide-stone-100">
+
+      <%# Stale tasks banner toggle %>
+      <div class="p-5 flex items-center justify-between gap-4">
+        <div>
+          <p class="text-sm font-medium text-stone-700">Stale tasks banner</p>
+          <p class="text-stone-500 text-sm mt-0.5">Remind me to review tasks that haven't been touched in a while</p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer shrink-0">
+          <%= f.check_box :show_stale_banner,
+                class: "sr-only peer",
+                data: { action: "change->preferences#staleBannerChanged" } %>
+          <div class="w-11 h-6 bg-stone-200 rounded-full peer peer-checked:bg-violet-600 transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
+        </label>
+      </div>
+
+      <%# Stale threshold — dims when stale banner is off %>
+      <div class="p-5 flex items-center justify-between gap-4 transition-opacity"
+           data-preferences-target="thresholdRow">
+        <div>
+          <p class="text-sm font-medium text-stone-700">Stale after</p>
+          <p class="text-stone-500 text-sm mt-0.5">How many days before a task is considered stale</p>
+        </div>
+        <%= f.select :stale_threshold_days,
+              options_for_select(
+                User::STALE_THRESHOLD_OPTIONS.map { |d| ["#{d} days", d] },
+                current_user.stale_threshold_days
+              ),
+              {},
+              {
+                class: "text-sm border border-stone-200 rounded-lg px-3 py-1.5 text-stone-700 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent shrink-0",
+                data: { action: "change->preferences#save" }
+              } %>
+      </div>
+
+      <%# Friday reflection banner toggle %>
+      <div class="p-5 flex items-center justify-between gap-4">
+        <div>
+          <p class="text-sm font-medium text-stone-700">Friday reflection banner</p>
+          <p class="text-stone-500 text-sm mt-0.5">Show a weekly reflection prompt every Friday</p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer shrink-0">
+          <%= f.check_box :show_reflection_banner,
+                class: "sr-only peer",
+                data: { action: "change->preferences#save" } %>
+          <div class="w-11 h-6 bg-stone-200 rounded-full peer peer-checked:bg-violet-600 transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
+        </label>
+      </div>
+
+      <%# Week start day %>
+      <div class="p-5 flex items-center justify-between gap-4">
+        <div>
+          <p class="text-sm font-medium text-stone-700">Week starts on</p>
+          <p class="text-stone-500 text-sm mt-0.5">Affects weekly stats in the Friday reflection</p>
+        </div>
+        <%= f.select :week_start_day,
+              options_for_select(User::WEEK_START_OPTIONS, current_user.week_start_day),
+              {},
+              {
+                class: "text-sm border border-stone-200 rounded-lg px-3 py-1.5 text-stone-700 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent shrink-0",
+                data: { action: "change->preferences#save" }
+              } %>
+      </div>
+
+    </div>
+  <% end %>
+</div>
+
 <div class="mt-8">
   <h2 class="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-3">Data</h2>
   <div class="bg-white rounded-2xl border border-stone-200/60 shadow-sm divide-y divide-stone-100">
