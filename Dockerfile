@@ -69,6 +69,13 @@ RUN chmod +x bin/* && SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
+# Upgrade OS packages in the final stage to pick up any security patches that have
+# landed since the base image was built. Docker caches the base stage, so without this
+# the final image can ship stale system libraries even after a fresh build.
+RUN apt-get update -qq && \
+    apt-get upgrade -y --no-install-recommends && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
 # Patch system Ruby default gems that ship with the base image at vulnerable versions.
 # These are not managed by Bundler — they live in the system Ruby gem path, which is
 # what Trivy scans. This must run in the final stage (not build) since FROM base starts fresh.
