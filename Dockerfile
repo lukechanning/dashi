@@ -8,7 +8,7 @@
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
-ARG RUBY_VERSION=3.4
+ARG RUBY_VERSION=3.4.7
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
@@ -68,20 +68,6 @@ RUN chmod +x bin/* && SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 # Final stage for app image
 FROM base
-
-# Upgrade OS packages and remove stale default gemspec stubs for gems that CVEs have been
-# reported against. This app runs under Bundler, which resolves all gems from Gemfile.lock
-# into /usr/local/bundle — the system Ruby default gems are not used at runtime. Trivy
-# detects vulnerabilities by reading gemspecs, so deleting the outdated stdlib stubs
-# prevents false positives for gems already pinned to patched versions in Gemfile.lock.
-RUN apt-get update -qq && \
-    apt-get upgrade -y --no-install-recommends && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives && \
-    find /usr/local/lib/ruby/gems/*/specifications/default \
-      \( -name "erb-*.gemspec" \
-      -o -name "net-imap-*.gemspec" \
-      -o -name "zlib-*.gemspec" \) \
-      -delete
 
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
