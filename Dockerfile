@@ -69,18 +69,14 @@ RUN chmod +x bin/* && SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
-# Upgrade OS packages and patch vulnerable system Ruby default gems in a single layer so
-# neither step can be independently cached. Both must run fresh on every build to pick up
-# the latest OS and gem security patches.
-#
-# gem update strategy: installs patched versions into the system gem path, then deletes
-# the stale default gemspec stubs that `gem update` does NOT remove on its own. Trivy
-# detects vulnerabilities by reading gemspecs, not by loading gems, so both steps are
-# required. This is separate from Bundler-managed gems (those are locked via Gemfile.lock).
+# Upgrade OS packages and remove stale default gemspec stubs for gems that CVEs have been
+# reported against. This app runs under Bundler, which resolves all gems from Gemfile.lock
+# into /usr/local/bundle — the system Ruby default gems are not used at runtime. Trivy
+# detects vulnerabilities by reading gemspecs, so deleting the outdated stdlib stubs
+# prevents false positives for gems already pinned to patched versions in Gemfile.lock.
 RUN apt-get update -qq && \
     apt-get upgrade -y --no-install-recommends && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives && \
-    gem update erb net-imap zlib --no-document && \
     find /usr/local/lib/ruby/gems/*/specifications/default \
       \( -name "erb-*.gemspec" \
       -o -name "net-imap-*.gemspec" \
