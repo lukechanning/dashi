@@ -69,22 +69,18 @@ RUN chmod +x bin/* && SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
-# Upgrade OS packages in the final stage to pick up any security patches that have
-# landed since the base image was built. Docker caches the base stage, so without this
-# the final image can ship stale system libraries even after a fresh build.
+# Upgrade OS packages and patch vulnerable system Ruby default gems in a single layer so
+# neither step can be independently cached. Both must run fresh on every build to pick up
+# the latest OS and gem security patches.
+#
+# gem update strategy: installs patched versions into the system gem path, then deletes
+# the stale default gemspec stubs that `gem update` does NOT remove on its own. Trivy
+# detects vulnerabilities by reading gemspecs, not by loading gems, so both steps are
+# required. This is separate from Bundler-managed gems (those are locked via Gemfile.lock).
 RUN apt-get update -qq && \
     apt-get upgrade -y --no-install-recommends && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
-
-# Patch system Ruby default gems that ship with the base image at vulnerable versions.
-# These are not managed by Bundler — they live in the system Ruby gem path, which is
-# what Trivy scans. This must run in the final stage (not build) since FROM base starts fresh.
-#
-# Strategy: (1) gem update installs the patched version into the system gem path so the
-# runtime uses the fixed code; (2) we then delete the stale default gemspec stubs from
-# the Ruby installation directory, because `gem update` does NOT remove them and Trivy
-# detects vulnerabilities by reading gemspecs, not by loading the gem itself.
-RUN gem update erb net-imap zlib --no-document && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives && \
+    gem update erb net-imap zlib --no-document && \
     find /usr/local/lib/ruby/gems/*/specifications/default \
       \( -name "erb-*.gemspec" \
       -o -name "net-imap-*.gemspec" \
