@@ -26,7 +26,7 @@ class DailyController < ApplicationController
       week_start = @date.beginning_of_week(current_user.week_start_day_sym)
       week_completed = current_user.todos.where(habit_id: nil).complete
                                    .where(completed_at: week_start.beginning_of_day..@date.end_of_day)
-      all_incomplete = current_user.todos.where(habit_id: nil).incomplete.ordered
+      all_incomplete = current_user.todos.where(habit_id: nil).incomplete.where(due_date: ..@date).ordered
       @show_reflection = true
       @week_stats = { completed: week_completed.count, incomplete: all_incomplete.count }
       @week_incomplete_todos = all_incomplete
