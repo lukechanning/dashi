@@ -41,11 +41,14 @@ export default class extends Controller {
     this.#removeRow(todoId)
   }
 
-  // "Let it go" — the button_to generates a <form>; Turbo fires turbo:submit-end on it
-  letItGo(event) {
+  async letItGo(event) {
     const todoId = event.currentTarget.dataset.todoId
-    const form = event.currentTarget.closest("form")
-    form?.addEventListener("turbo:submit-end", () => this.#removeRow(todoId), { once: true })
+    const csrfToken = document.querySelector("meta[name='csrf-token']").content
+    const response = await fetch(`/todos/${todoId}`, {
+      method: "DELETE",
+      headers: { "X-CSRF-Token": csrfToken, "Accept": "application/json" },
+    })
+    if (response.ok) this.#removeRow(todoId)
   }
 
   async saveNote(event) {

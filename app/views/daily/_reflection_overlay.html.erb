@@ -53,11 +53,13 @@
                   >
                     Keep it
                   </button>
-                  <%= button_to todo_path(todo), method: :delete,
-                      data: { action: "reflection#letItGo", todo_id: todo.id, turbo_confirm: nil },
-                      class: "text-xs px-3 py-1.5 rounded-lg bg-white border border-stone-200 text-stone-400 hover:border-red-300 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer" do %>
+                  <button
+                    data-action="reflection#letItGo"
+                    data-todo-id="<%= todo.id %>"
+                    class="text-xs px-3 py-1.5 rounded-lg bg-white border border-stone-200 text-stone-400 hover:border-red-300 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
+                  >
                     Let it go
-                  <% end %>
+                  </button>
                 </div>
               </div>
             <% end %>
