@@ -29,15 +29,24 @@ class TodosController < ApplicationController
 
   def update
     if @todo.update(todo_params)
-      redirect_to root_path, notice: "Todo updated."
+      respond_to do |format|
+        format.json { head :ok }
+        format.any { redirect_to root_path, notice: "Todo updated." }
+      end
     else
-      render :edit, status: :unprocessable_entity
+      respond_to do |format|
+        format.json { render json: { errors: @todo.errors.full_messages }, status: :unprocessable_entity }
+        format.any { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 
   def destroy
     @todo.destroy!
-    redirect_to root_path, notice: "Todo deleted."
+    respond_to do |format|
+      format.json { head :no_content }
+      format.any { redirect_to root_path, notice: "Todo deleted." }
+    end
   end
 
   def toggle

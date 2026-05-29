@@ -24,10 +24,12 @@ class DailyController < ApplicationController
 
     if !@viewing_history && @date.friday? && current_user.show_reflection_banner? && !reflection_banner_dismissed?
       week_start = @date.beginning_of_week(current_user.week_start_day_sym)
-      week_todos = current_user.todos.where(habit_id: nil, due_date: week_start..@date)
+      week_completed = current_user.todos.where(habit_id: nil).complete
+                                   .where(completed_at: week_start.beginning_of_day..@date.end_of_day)
+      all_incomplete = current_user.todos.where(habit_id: nil).incomplete.ordered
       @show_reflection = true
-      @week_stats = { completed: week_todos.complete.count, incomplete: week_todos.incomplete.count }
-      @week_incomplete_todos = week_todos.incomplete.ordered
+      @week_stats = { completed: week_completed.count, incomplete: all_incomplete.count }
+      @week_incomplete_todos = all_incomplete
     end
   end
 
