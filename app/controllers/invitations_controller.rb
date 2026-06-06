@@ -9,7 +9,7 @@ class InvitationsController < ApplicationController
   end
 
   def new
-    @invitation = Invitation.new
+    @invitation = Invitation.new(email: params[:email])
   end
 
   def create

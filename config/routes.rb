@@ -21,10 +21,14 @@ Rails.application.routes.draw do
   end
 
   resources :goals, concerns: :notable do
-    resources :memberships, only: [ :create, :destroy ]
+    resources :memberships, only: [ :create, :destroy ] do
+      get :suggestions, on: :collection
+    end
   end
   resources :projects, concerns: :notable do
-    resources :memberships, only: [ :create, :destroy ]
+    resources :memberships, only: [ :create, :destroy ] do
+      get :suggestions, on: :collection
+    end
   end
   resources :todos, except: [ :index, :show ], concerns: :notable do
     member do

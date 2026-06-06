@@ -33,9 +33,40 @@
   </div>
 
   <%# Add member form %>
-  <%= form_with url: polymorphic_path([memberable, :memberships]), method: :post, class: "flex gap-2" do |f| %>
-    <%= f.email_field :email, placeholder: "Add by email address",
-        class: "flex-1 rounded-xl border border-app-border bg-app-surface px-3 py-2 text-sm text-app-text placeholder:text-app-faint focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent" %>
+  <%= form_with url: polymorphic_path([memberable, :memberships]),
+        method: :post,
+        class: "flex gap-2",
+        data: {
+          controller: "member-autocomplete",
+          member_autocomplete_suggestions_url_value: polymorphic_path([:suggestions, memberable, :memberships]),
+          member_autocomplete_invite_url_value: new_invitation_path
+        } do |f| %>
+    <div class="relative flex-1">
+      <%= f.email_field :email,
+          placeholder: "Add by email address",
+          autocomplete: "off",
+          class: "w-full rounded-xl border border-app-border bg-app-surface px-3 py-2 text-sm text-app-text placeholder:text-app-faint focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent",
+          data: {
+            member_autocomplete_target: "input",
+            action: "input->member-autocomplete#search focus->member-autocomplete#search keydown->member-autocomplete#navigate blur->member-autocomplete#deferHide"
+          } %>
+      <div
+        data-member-autocomplete-target="menu"
+        class="hidden absolute left-0 right-0 top-full z-20 mt-2 overflow-hidden rounded-xl border border-app-border bg-app-surface shadow-lg"
+      >
+        <div data-member-autocomplete-target="list" class="max-h-56 overflow-y-auto"></div>
+        <% if current_user.admin? %>
+          <div data-member-autocomplete-target="empty" class="hidden">
+            <%= link_to new_invitation_path,
+                data: { member_autocomplete_target: "inviteLink" },
+                class: "block px-3 py-3 text-left text-sm text-app-muted hover:bg-app-surface-muted transition-colors" do %>
+              <span class="block font-medium text-app-text">No matching user found</span>
+              <span class="text-xs text-app-faint">Click to invite them to Dashi</span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
     <%= f.submit "Add",
         class: primary_button_class("px-4 py-2 text-sm") %>
   <% end %>

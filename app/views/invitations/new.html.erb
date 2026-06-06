@@ -6,6 +6,7 @@
   <div>
     <%= f.label :email, "Email address", class: form_label_class %>
     <%= f.email_field :email, required: true, autofocus: true, placeholder: "friend@example.com",
+        value: @invitation.email,
         class: form_control_class %>
   </div>
 

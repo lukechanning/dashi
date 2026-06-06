@@ -35,6 +35,43 @@ RSpec.describe "Goals", type: :request do
 
       expect(response.body).to include("Archive this goal and all its projects?")
     end
+
+    it "renders the member autocomplete without embedding user emails" do
+      user.update!(admin: true)
+      goal = create(:goal, user: user)
+      eligible_user = create(:user, name: "Arwen Undomiel", email: "arwen@example.com")
+      existing_member = create(:user, name: "Legolas Greenleaf", email: "legolas@example.com")
+      goal.memberships.create!(user: existing_member)
+
+      get goal_path(goal)
+
+      expect(response.body).to include("member-autocomplete")
+      expect(response.body).not_to include("Arwen Undomiel")
+      expect(response.body).not_to include("arwen@example.com")
+      expect(response.body).not_to include("legolas@example.com")
+      expect(response.body).to include("No matching user found")
+      expect(response.body).to include(new_invitation_path)
+    end
+  end
+
+  describe "GET /goals/:goal_id/memberships/suggestions" do
+    it "returns matching non-members as JSON" do
+      goal = create(:goal, user: user)
+      matching_user = create(:user, name: "Arwen Undomiel", email: "arwen@example.com")
+      nonmatching_user = create(:user, name: "Boromir", email: "boromir@example.com")
+      existing_member = create(:user, name: "Aragorn", email: "aragorn@example.com")
+      goal.memberships.create!(user: existing_member)
+
+      get suggestions_goal_memberships_path(goal), params: { q: "arw" }
+
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body)).to eq([
+        { "name" => matching_user.name, "email" => matching_user.email }
+      ])
+      expect(response.body).not_to include(nonmatching_user.email)
+      expect(response.body).not_to include(existing_member.email)
+      expect(response.body).not_to include(user.email)
+    end
   end
 
   describe "POST /goals" do
