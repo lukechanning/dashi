@@ -76,7 +76,6 @@ RSpec.describe "Projects", type: :request do
       patch project_path(project), params: { project: { title: "Updated" } }
       expect(project.reload.title).to eq("Updated")
     end
-
   end
 
   describe "DELETE /projects/:id" do

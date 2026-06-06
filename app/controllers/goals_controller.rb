@@ -40,7 +40,9 @@ class GoalsController < ApplicationController
 
   def update
     prev_status = @goal.status
-    if @goal.update(goal_params)
+    archiving_goal = goal_params[:status] == "archived"
+
+    if update_goal_with_projects(archiving_goal)
       if @goal.completed? && prev_status != "completed"
         flash[:celebration] = "\"#{@goal.title}\" completed!"
         redirect_to goals_path
@@ -67,5 +69,18 @@ class GoalsController < ApplicationController
 
   def goal_params
     params.require(:goal).permit(:title, :description, :emoji, :status, :position)
+  end
+
+  def update_goal_with_projects(archiving_goal)
+    updated = false
+
+    Goal.transaction do
+      updated = @goal.update(goal_params)
+      next unless updated
+
+      @goal.projects.update_all(status: Project.statuses[:archived], updated_at: Time.current) if archiving_goal
+    end
+
+    updated
   end
 end

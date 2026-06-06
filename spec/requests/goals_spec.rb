@@ -27,6 +27,14 @@ RSpec.describe "Goals", type: :request do
       get goal_path(other_goal)
       expect(response).to have_http_status(:not_found)
     end
+
+    it "asks for confirmation before archiving the goal and its projects" do
+      goal = create(:goal, user: user, title: "Learn Spanish")
+
+      get goal_path(goal)
+
+      expect(response.body).to include("Archive this goal and all its projects?")
+    end
   end
 
   describe "POST /goals" do
@@ -72,6 +80,18 @@ RSpec.describe "Goals", type: :request do
       goal = create(:goal, user: user)
       patch goal_path(goal), params: { goal: { title: "Updated" } }
       expect(goal.reload.title).to eq("Updated")
+    end
+
+    it "archives the goal's projects when archiving the goal" do
+      goal = create(:goal, user: user)
+      active_project = create(:project, user: user, goal: goal, status: :active)
+      completed_project = create(:project, user: user, goal: goal, status: :completed)
+
+      patch goal_path(goal), params: { goal: { status: "archived" } }
+
+      expect(goal.reload).to be_archived
+      expect(active_project.reload).to be_archived
+      expect(completed_project.reload).to be_archived
     end
   end
 
