@@ -125,9 +125,10 @@ RSpec.describe "Todos", type: :request do
   end
 
   describe "DELETE /todos/:id" do
-    it "destroys the todo" do
+    it "soft-deletes the todo" do
       todo = create(:todo, user: user)
-      expect { delete todo_path(todo) }.to change(Todo, :count).by(-1)
+      expect { delete todo_path(todo) }.not_to change(Todo.unscoped, :count)
+      expect(todo.reload.deleted_at).to be_present
     end
   end
 end

@@ -53,19 +53,19 @@ export default class extends Controller {
 
     if (completed) {
       this.checkTarget.classList.add("bg-violet-500", "border-violet-500")
-      this.checkTarget.classList.remove("border-stone-300", "hover:border-violet-400")
+      this.checkTarget.classList.remove("border-app-border", "hover:border-violet-400")
       if (this.hasCheckIconTarget) this.checkIconTarget.classList.remove("hidden")
       if (this.hasTitleTarget) {
-        this.titleTarget.classList.add("line-through", "text-stone-400")
-        this.titleTarget.classList.remove("text-stone-800")
+        this.titleTarget.classList.add("line-through", "text-app-faint")
+        this.titleTarget.classList.remove("text-app-text")
       }
     } else {
       this.checkTarget.classList.remove("bg-violet-500", "border-violet-500")
-      this.checkTarget.classList.add("border-stone-300", "hover:border-violet-400")
+      this.checkTarget.classList.add("border-app-border", "hover:border-violet-400")
       if (this.hasCheckIconTarget) this.checkIconTarget.classList.add("hidden")
       if (this.hasTitleTarget) {
-        this.titleTarget.classList.remove("line-through", "text-stone-400")
-        this.titleTarget.classList.add("text-stone-800")
+        this.titleTarget.classList.remove("line-through", "text-app-faint")
+        this.titleTarget.classList.add("text-app-text")
       }
     }
   }
@@ -108,17 +108,17 @@ export default class extends Controller {
       <div
         data-controller="celebration"
         data-action="click->celebration#dismiss"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 backdrop-blur-sm opacity-0 transition-opacity duration-300"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-app-bg/70 backdrop-blur-sm opacity-0 transition-opacity duration-300"
       >
-        <div class="bg-white rounded-3xl shadow-2xl px-10 py-8 max-w-sm w-full mx-4 text-center">
-          <div class="w-16 h-16 rounded-2xl bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <div class="bg-app-surface border border-app-border rounded-3xl shadow-2xl px-10 py-8 max-w-sm w-full mx-4 text-center">
+          <div class="w-16 h-16 rounded-2xl bg-app-success-soft flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-app-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <p class="text-2xl font-bold text-stone-800">Chain complete! 🎉</p>
-          <p class="text-stone-500 mt-2 text-sm leading-relaxed">"${this.#escapeHtml(chainTitle)}" — every step done.</p>
-          <p class="text-xs text-stone-300 mt-5">Click anywhere to dismiss</p>
+          <p class="text-2xl font-bold text-app-text">Chain complete! 🎉</p>
+          <p class="text-app-muted mt-2 text-sm leading-relaxed">"${this.#escapeHtml(chainTitle)}" — every step done.</p>
+          <p class="text-xs text-app-faint mt-5">Click anywhere to dismiss</p>
         </div>
       </div>
     `

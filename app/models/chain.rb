@@ -1,4 +1,6 @@
 class Chain < ApplicationRecord
+  include SoftDeletable
+
   belongs_to :user
   has_many :chain_items, -> { order(:position) }, dependent: :destroy
 

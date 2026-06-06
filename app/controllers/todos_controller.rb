@@ -42,7 +42,7 @@ class TodosController < ApplicationController
   end
 
   def destroy
-    @todo.destroy!
+    @todo.discard!
     respond_to do |format|
       format.json { head :no_content }
       format.any { redirect_to root_path, notice: "Todo deleted." }

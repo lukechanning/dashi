@@ -1,6 +1,7 @@
 class Project < ApplicationRecord
   include ActivityTrackable
   include MomentumTrackable
+  include SoftDeletable
 
   belongs_to :user
   belongs_to :goal, optional: true
@@ -16,4 +17,13 @@ class Project < ApplicationRecord
 
   scope :ordered, -> { order(:position) }
   scope :standalone, -> { where(goal: nil) }
+
+  def discard!
+    transaction do
+      todos.find_each(&:discard!)
+      habits.find_each(&:discard!)
+      notes.find_each(&:discard!)
+      super
+    end
+  end
 end

@@ -1,4 +1,6 @@
 class Todo < ApplicationRecord
+  include SoftDeletable
+
   belongs_to :user
   belongs_to :project, optional: true
   belongs_to :habit, optional: true
@@ -21,6 +23,14 @@ class Todo < ApplicationRecord
     regular.or(from_habits).or(completed_on(date))
   }
   scope :standalone, -> { where(project: nil) }
+
+  def discard!
+    transaction do
+      notes.find_each(&:discard!)
+      chain_item&.update!(todo: nil)
+      super
+    end
+  end
 
   def complete!
     update!(completed_at: Time.current)

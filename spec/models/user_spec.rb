@@ -151,6 +151,10 @@ RSpec.describe User, type: :model do
       it "defaults week_start_day to 1 (Monday)" do
         expect(user.week_start_day).to eq(1)
       end
+
+      it "defaults appearance_theme to light" do
+        expect(user.appearance_theme).to eq("light")
+      end
     end
 
     describe "#week_start_day_sym" do
@@ -188,6 +192,19 @@ RSpec.describe User, type: :model do
       it "accepts week_start_day of 0 or 1" do
         [ 0, 1 ].each do |day|
           user.week_start_day = day
+          expect(user).to be_valid
+        end
+      end
+
+      it "rejects unsupported appearance themes" do
+        user.appearance_theme = "solarized"
+        expect(user).not_to be_valid
+        expect(user.errors[:appearance_theme]).to be_present
+      end
+
+      it "accepts light and dark appearance themes" do
+        %w[light dark].each do |theme|
+          user.appearance_theme = theme
           expect(user).to be_valid
         end
       end

@@ -21,13 +21,13 @@ RSpec.describe "Calendar", type: :request do
     it "shows completion indicators for days with completed todos" do
       create(:todo, :completed, user: user, due_date: Date.current)
       get calendar_path
-      expect(response.body).to include("bg-emerald-400")
+      expect(response.body).to include("bg-heatmap-medium")
     end
 
     it "does not show indicators for incomplete todos" do
       create(:todo, user: user, due_date: Date.current)
       get calendar_path
-      expect(response.body).not_to include("bg-emerald-400")
+      expect(response.body).not_to include("bg-heatmap-medium")
     end
 
     it "contains prev/next month navigation links" do

@@ -11,6 +11,11 @@ export default class extends Controller {
     this.element.querySelector("form").requestSubmit()
   }
 
+  themeChanged(event) {
+    document.body.classList.toggle("theme-dark", event.target.value === "dark")
+    this.save()
+  }
+
   // Called via turbo:submit-end on the form element
   saved(event) {
     if (!event.detail.success || !this.hasNoticeTarget) return

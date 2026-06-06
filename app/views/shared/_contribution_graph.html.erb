@@ -9,7 +9,7 @@
       <div class="flex mb-1 ml-7">
         <div class="flex gap-0.5">
           <% columns.each_with_index do |_week, wi| %>
-            <div class="w-3.5 text-[9px] text-stone-400 overflow-visible whitespace-nowrap">
+            <div class="w-3.5 text-[9px] text-app-faint overflow-visible whitespace-nowrap">
               <%= month_labels[wi] || "" %>
             </div>
           <% end %>
@@ -20,7 +20,7 @@
         <%# Day labels — sticky so they stay visible when scrolling on mobile %>
         <div class="flex flex-col mr-1 text-right w-6 shrink-0">
           <% [["Mon", false], ["", true], ["Wed", false], ["", true], ["Fri", false], ["", true], ["", true]].each do |label, hidden| %>
-            <div class="<%= hidden ? 'invisible' : '' %> text-[9px] text-stone-400 flex items-center justify-end" style="height: 18px;">
+            <div class="<%= hidden ? 'invisible' : '' %> text-[9px] text-app-faint flex items-center justify-end" style="height: 18px;">
               <%= label %>
             </div>
           <% end %>
@@ -32,10 +32,10 @@
             <div class="flex flex-col gap-0.5">
               <% week.each do |cell| %>
                 <% if cell[:future] %>
-                  <div class="w-3.5 h-3.5 rounded-sm bg-stone-100 shrink-0"></div>
+                  <div class="w-3.5 h-3.5 rounded-sm bg-heatmap-future border border-app-border/40 shrink-0"></div>
                 <% else %>
                   <% count = cell[:count] %>
-                  <% color = count >= 6 ? "bg-emerald-600" : count >= 3 ? "bg-emerald-400" : count >= 1 ? "bg-emerald-200" : "bg-stone-200" %>
+                  <% color = count >= 6 ? "bg-heatmap-high" : count >= 3 ? "bg-heatmap-medium" : count >= 1 ? "bg-heatmap-low" : "bg-heatmap-empty" %>
                   <div
                     data-heatmap-target="square"
                     data-date="<%= cell[:date].strftime('%a %b %-d') %>"
@@ -52,6 +52,6 @@
   </div>
 
   <div data-heatmap-target="tooltip"
-       class="hidden absolute -top-8 left-0 bg-stone-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap pointer-events-none z-10">
+       class="hidden absolute -top-8 left-0 bg-app-text text-app-bg text-xs rounded px-2 py-1 whitespace-nowrap pointer-events-none z-10">
   </div>
 </div>

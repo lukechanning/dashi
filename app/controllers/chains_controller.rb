@@ -22,7 +22,7 @@ class ChainsController < ApplicationController
   end
 
   def destroy
-    @chain.destroy
+    @chain.discard!
     redirect_to root_path, notice: "Chain deleted."
   end
 

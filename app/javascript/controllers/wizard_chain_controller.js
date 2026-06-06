@@ -19,11 +19,11 @@ export default class extends Controller {
     "previewList",
   ];
 
-  static TASK_ICON = `<svg class="w-4 h-4 text-violet-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+  static TASK_ICON = `<svg class="w-4 h-4 text-app-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
   </svg>`;
 
-  static DRAG_ICON = `<svg class="w-4 h-4 text-stone-300 shrink-0 cursor-grab" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+  static DRAG_ICON = `<svg class="w-4 h-4 text-app-faint shrink-0 cursor-grab" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
     <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16" />
   </svg>`;
 
@@ -193,20 +193,20 @@ export default class extends Controller {
         draggable="true"
         data-index="${index}"
         data-action="dragstart->wizard-chain#dragStart dragend->wizard-chain#dragEnd dragover->wizard-chain#dragOver drop->wizard-chain#drop"
-        class="flex items-center gap-3 bg-stone-50 rounded-xl px-4 py-3 select-none"
+        class="flex items-center gap-3 bg-app-surface-muted border border-app-border rounded-xl px-4 py-3 select-none"
       >
         ${this.constructor.DRAG_ICON}
-        <span class="w-6 h-6 rounded-full bg-violet-100 text-violet-700 text-xs font-bold flex items-center justify-center shrink-0">${index + 1}</span>
+        <span class="w-6 h-6 rounded-full bg-app-primary-soft text-app-primary text-xs font-bold flex items-center justify-center shrink-0">${index + 1}</span>
         ${this.constructor.TASK_ICON}
         <div class="flex-1 min-w-0">
-          <p class="font-medium text-stone-800 truncate">${this.#escapeHtml(item.title)}</p>
-          ${subtitle ? `<p class="text-xs text-stone-400">${subtitle}</p>` : ""}
+          <p class="font-medium text-app-text truncate">${this.#escapeHtml(item.title)}</p>
+          ${subtitle ? `<p class="text-xs text-app-faint">${subtitle}</p>` : ""}
         </div>
         <button
           type="button"
           data-index="${index}"
           data-action="click->wizard-chain#deleteStep"
-          class="text-stone-300 hover:text-red-400 transition-colors shrink-0 cursor-pointer"
+          class="text-app-faint hover:text-app-danger transition-colors shrink-0 cursor-pointer"
           aria-label="Remove step"
         >
           ${this.constructor.DELETE_ICON}

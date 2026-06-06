@@ -65,12 +65,13 @@ RSpec.describe "Habits", type: :request do
   end
 
   describe "DELETE /habits/:id" do
-    it "destroys the habit and nullifies generated todos" do
+    it "soft-deletes the habit and nullifies generated todos" do
       habit = create(:habit, user: user)
       todo = habit.generate_todo_for!(Date.current)
 
-      expect { delete habit_path(habit) }.to change(Habit, :count).by(-1)
+      expect { delete habit_path(habit) }.not_to change(Habit.unscoped, :count)
       expect(response).to redirect_to(habits_path)
+      expect(habit.reload.deleted_at).to be_present
       expect(todo.reload.habit_id).to be_nil
     end
   end

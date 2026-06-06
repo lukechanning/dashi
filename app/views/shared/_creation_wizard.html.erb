@@ -1,28 +1,35 @@
 <%# Unified creation wizard — fixed overlay, hidden by default. Opened by creation-wizard#open from body controller. %>
 <%# Locals: wizard_projects (Array), wizard_goals (Array) — preloaded by ApplicationController#set_wizard_data %>
+<%
+  wizard_icon_button_class = "text-app-faint hover:text-app-text transition-colors cursor-pointer p-1 rounded-lg hover:bg-app-surface-muted"
+  wizard_choice_class = "flex flex-col items-center gap-3 bg-creation-choice-surface hover:bg-app-primary-soft border-2 border-app-border hover:border-app-primary rounded-2xl p-5 transition-all cursor-pointer group"
+  wizard_choice_title_class = "font-semibold text-app-text"
+  wizard_choice_caption_class = "text-xs text-app-muted mt-0.5"
+  wizard_optional_class = "text-app-faint font-normal"
+%>
 <div
   data-creation-wizard-target="overlay"
-  class="hidden fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm"
+  class="hidden fixed inset-0 z-50 bg-app-bg/70 backdrop-blur-sm"
 >
   <div class="flex items-center justify-center h-full">
-  <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg mx-4 flex flex-col max-h-[90vh] overflow-hidden">
+  <div class="bg-app-surface rounded-3xl border border-app-border shadow-2xl w-full max-w-lg mx-4 flex flex-col max-h-[90vh] overflow-hidden">
 
     <%# Header: back button + title + close %>
-    <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-stone-100">
+    <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-app-border">
       <button
         data-action="creation-wizard#back"
         data-creation-wizard-target="backBtn"
-        class="hidden text-stone-400 hover:text-stone-600 transition-colors cursor-pointer p-1 rounded-lg hover:bg-stone-100"
+        class="hidden <%= wizard_icon_button_class %>"
         aria-label="Go back"
       >
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
       </button>
-      <h2 data-creation-wizard-target="stepTitle" class="text-lg font-semibold text-stone-800 flex-1 text-center">What are you creating?</h2>
+      <h2 data-creation-wizard-target="stepTitle" class="text-lg font-semibold text-app-text flex-1 text-center">What are you creating?</h2>
       <button
         data-action="creation-wizard#close"
-        class="text-stone-400 hover:text-stone-600 transition-colors cursor-pointer p-1 rounded-lg hover:bg-stone-100"
+        class="<%= wizard_icon_button_class %>"
         aria-label="Close"
       >
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -44,16 +51,16 @@
           <button
             data-action="creation-wizard#selectType"
             data-creation-wizard-type-param="task"
-            class="flex flex-col items-center gap-3 bg-stone-50 hover:bg-violet-50 border-2 border-stone-200 hover:border-violet-300 rounded-2xl p-5 transition-all cursor-pointer group"
+            class="<%= wizard_choice_class %>"
           >
-            <div class="w-12 h-12 rounded-xl bg-violet-100 group-hover:bg-violet-200 flex items-center justify-center transition-colors">
-              <svg class="w-6 h-6 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="w-12 h-12 rounded-xl bg-stat-lavender flex items-center justify-center transition-colors">
+              <svg class="w-6 h-6 text-stat-lavender-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
               </svg>
             </div>
             <div class="text-center">
-              <p class="font-semibold text-stone-800">Task</p>
-              <p class="text-xs text-stone-500 mt-0.5">A single to-do</p>
+              <p class="<%= wizard_choice_title_class %>">Task</p>
+              <p class="<%= wizard_choice_caption_class %>">A single to-do</p>
             </div>
           </button>
 
@@ -61,16 +68,16 @@
           <button
             data-action="creation-wizard#selectType"
             data-creation-wizard-type-param="project"
-            class="flex flex-col items-center gap-3 bg-stone-50 hover:bg-violet-50 border-2 border-stone-200 hover:border-violet-300 rounded-2xl p-5 transition-all cursor-pointer group"
+            class="<%= wizard_choice_class %>"
           >
-            <div class="w-12 h-12 rounded-xl bg-blue-100 group-hover:bg-blue-200 flex items-center justify-center transition-colors">
-              <svg class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="w-12 h-12 rounded-xl bg-card-3 flex items-center justify-center transition-colors">
+              <svg class="w-6 h-6 text-card-text-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
               </svg>
             </div>
             <div class="text-center">
-              <p class="font-semibold text-stone-800">Project</p>
-              <p class="text-xs text-stone-500 mt-0.5">Medium-term work</p>
+              <p class="<%= wizard_choice_title_class %>">Project</p>
+              <p class="<%= wizard_choice_caption_class %>">Medium-term work</p>
             </div>
           </button>
 
@@ -78,16 +85,16 @@
           <button
             data-action="creation-wizard#selectType"
             data-creation-wizard-type-param="goal"
-            class="flex flex-col items-center gap-3 bg-stone-50 hover:bg-violet-50 border-2 border-stone-200 hover:border-violet-300 rounded-2xl p-5 transition-all cursor-pointer group"
+            class="<%= wizard_choice_class %>"
           >
-            <div class="w-12 h-12 rounded-xl bg-amber-100 group-hover:bg-amber-200 flex items-center justify-center transition-colors">
-              <svg class="w-6 h-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="w-12 h-12 rounded-xl bg-stat-yellow flex items-center justify-center transition-colors">
+              <svg class="w-6 h-6 text-stat-yellow-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
               </svg>
             </div>
             <div class="text-center">
-              <p class="font-semibold text-stone-800">Goal</p>
-              <p class="text-xs text-stone-500 mt-0.5">Long-term aspiration</p>
+              <p class="<%= wizard_choice_title_class %>">Goal</p>
+              <p class="<%= wizard_choice_caption_class %>">Long-term aspiration</p>
             </div>
           </button>
 
@@ -95,16 +102,16 @@
           <button
             data-action="creation-wizard#selectType"
             data-creation-wizard-type-param="chain"
-            class="flex flex-col items-center gap-3 bg-stone-50 hover:bg-violet-50 border-2 border-stone-200 hover:border-violet-300 rounded-2xl p-5 transition-all cursor-pointer group"
+            class="<%= wizard_choice_class %>"
           >
-            <div class="w-12 h-12 rounded-xl bg-emerald-100 group-hover:bg-emerald-200 flex items-center justify-center transition-colors">
-              <svg class="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="w-12 h-12 rounded-xl bg-stat-mint flex items-center justify-center transition-colors">
+              <svg class="w-6 h-6 text-stat-mint-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
               </svg>
             </div>
             <div class="text-center">
-              <p class="font-semibold text-stone-800">Chain</p>
-              <p class="text-xs text-stone-500 mt-0.5">Sequential steps</p>
+              <p class="<%= wizard_choice_title_class %>">Chain</p>
+              <p class="<%= wizard_choice_caption_class %>">Sequential steps</p>
             </div>
           </button>
         </div>
@@ -120,30 +127,30 @@
         class="hidden p-6 space-y-4"
       >
         <div>
-          <label class="block text-sm font-medium text-stone-700 mb-1">What needs to get done?</label>
+          <label class="<%= form_label_class %>">What needs to get done?</label>
           <input
             data-wizard-task-form-target="title"
             type="text"
             placeholder="e.g. Review quarterly goals"
-            class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+            class="<%= form_control_class("px-4 py-3") %>"
             autocomplete="off"
           >
         </div>
         <div>
-          <label class="block text-sm font-medium text-stone-700 mb-1">Due date</label>
+          <label class="<%= form_label_class %>">Due date</label>
           <input
             data-wizard-task-form-target="dueDate"
             type="date"
             value="<%= Date.current %>"
-            class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+            class="<%= form_control_class("px-4 py-3") %>"
             autocomplete="off"
           >
         </div>
         <div>
-          <label class="block text-sm font-medium text-stone-700 mb-1">Project <span class="text-stone-400 font-normal">(optional)</span></label>
+          <label class="<%= form_label_class %>">Project <span class="<%= wizard_optional_class %>">(optional)</span></label>
           <select
             data-wizard-task-form-target="project"
-            class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition bg-white"
+            class="<%= form_control_class("px-4 py-3") %>"
             autocomplete="off"
           >
             <option value="">No project</option>
@@ -154,7 +161,7 @@
         </div>
         <button
           data-action="wizard-task-form#submit"
-          class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
+          class="<%= primary_button_class("w-full px-6 py-3 font-semibold") %>"
         >
           Add task
         </button>
@@ -171,42 +178,42 @@
       >
         <div class="flex gap-3">
           <div class="w-14 shrink-0">
-            <label class="block text-sm font-medium text-stone-700 mb-1">Icon</label>
+            <label class="<%= form_label_class %>">Icon</label>
             <input
               data-wizard-project-form-target="emoji"
               type="text"
               placeholder="📁"
               maxlength="2"
-              class="w-full rounded-xl border border-stone-300 px-2 py-3 text-center text-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+              class="<%= form_control_class("px-2 py-3 text-center text-xl") %>"
               autocomplete="off"
             >
           </div>
           <div class="flex-1">
-            <label class="block text-sm font-medium text-stone-700 mb-1">Project name</label>
+            <label class="<%= form_label_class %>">Project name</label>
             <input
               data-wizard-project-form-target="title"
               type="text"
               placeholder="e.g. Website redesign"
-              class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+              class="<%= form_control_class("px-4 py-3") %>"
               autocomplete="off"
             >
           </div>
         </div>
         <div>
-          <label class="block text-sm font-medium text-stone-700 mb-1">Description <span class="text-stone-400 font-normal">(optional)</span></label>
+          <label class="<%= form_label_class %>">Description <span class="<%= wizard_optional_class %>">(optional)</span></label>
           <textarea
             data-wizard-project-form-target="description"
             rows="2"
             placeholder="What's this project about?"
-            class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition resize-none"
+            class="<%= form_control_class("px-4 py-3 resize-none") %>"
             autocomplete="off"
           ></textarea>
         </div>
         <div>
-          <label class="block text-sm font-medium text-stone-700 mb-1">Goal <span class="text-stone-400 font-normal">(optional)</span></label>
+          <label class="<%= form_label_class %>">Goal <span class="<%= wizard_optional_class %>">(optional)</span></label>
           <select
             data-wizard-project-form-target="goal"
-            class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition bg-white"
+            class="<%= form_control_class("px-4 py-3") %>"
             autocomplete="off"
           >
             <option value="">No goal</option>
@@ -217,7 +224,7 @@
         </div>
         <button
           data-action="wizard-project-form#submit"
-          class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
+          class="<%= primary_button_class("w-full px-6 py-3 font-semibold") %>"
         >
           Create project
         </button>
@@ -234,40 +241,40 @@
       >
         <div class="flex gap-3">
           <div class="w-14 shrink-0">
-            <label class="block text-sm font-medium text-stone-700 mb-1">Icon</label>
+            <label class="<%= form_label_class %>">Icon</label>
             <input
               data-wizard-goal-form-target="emoji"
               type="text"
               placeholder="🎯"
               maxlength="2"
-              class="w-full rounded-xl border border-stone-300 px-2 py-3 text-center text-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+              class="<%= form_control_class("px-2 py-3 text-center text-xl") %>"
               autocomplete="off"
             >
           </div>
           <div class="flex-1">
-            <label class="block text-sm font-medium text-stone-700 mb-1">Goal name</label>
+            <label class="<%= form_label_class %>">Goal name</label>
             <input
               data-wizard-goal-form-target="title"
               type="text"
               placeholder="e.g. Get fit"
-              class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+              class="<%= form_control_class("px-4 py-3") %>"
               autocomplete="off"
             >
           </div>
         </div>
         <div>
-          <label class="block text-sm font-medium text-stone-700 mb-1">Description <span class="text-stone-400 font-normal">(optional)</span></label>
+          <label class="<%= form_label_class %>">Description <span class="<%= wizard_optional_class %>">(optional)</span></label>
           <textarea
             data-wizard-goal-form-target="description"
             rows="2"
             placeholder="Why does this matter to you?"
-            class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition resize-none"
+            class="<%= form_control_class("px-4 py-3 resize-none") %>"
             autocomplete="off"
           ></textarea>
         </div>
         <button
           data-action="wizard-goal-form#submit"
-          class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
+          class="<%= primary_button_class("w-full px-6 py-3 font-semibold") %>"
         >
           Create goal
         </button>
@@ -281,33 +288,33 @@
 
         <%# Chain: name step %>
         <div data-creation-wizard-target="step" data-step-name="chainName" class="hidden p-6 space-y-4">
-          <p class="text-sm text-stone-500">A chain is an ordered sequence of tasks. Complete one to unlock the next.</p>
+          <p class="text-sm text-app-muted">A chain is an ordered sequence of tasks. Complete one to unlock the next.</p>
           <div class="flex gap-3">
             <div class="w-14 shrink-0">
-              <label class="block text-sm font-medium text-stone-700 mb-1">Icon</label>
+              <label class="<%= form_label_class %>">Icon</label>
               <input
                 data-wizard-chain-target="emoji"
                 type="text"
                 placeholder="🔗"
                 maxlength="2"
-                class="w-full rounded-xl border border-stone-300 px-2 py-3 text-center text-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+                class="<%= form_control_class("px-2 py-3 text-center text-xl") %>"
                 autocomplete="off"
               >
             </div>
             <div class="flex-1">
-              <label class="block text-sm font-medium text-stone-700 mb-1">Chain name</label>
+              <label class="<%= form_label_class %>">Chain name</label>
               <input
                 data-wizard-chain-target="title"
                 type="text"
                 placeholder="e.g. Morning Routine"
-                class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+                class="<%= form_control_class("px-4 py-3") %>"
                 autocomplete="off"
               >
             </div>
           </div>
           <button
             data-action="wizard-chain#goToAddStep"
-            class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
+            class="<%= primary_button_class("w-full px-6 py-3 font-semibold") %>"
           >
             Add steps →
           </button>
@@ -315,22 +322,22 @@
 
         <%# Chain: step builder %>
         <div data-creation-wizard-target="step" data-step-name="chainStep" class="hidden p-6 space-y-4">
-          <div data-wizard-chain-target="stepCounter" class="text-xs font-semibold text-violet-600 uppercase tracking-wide">Step 1</div>
+          <div data-wizard-chain-target="stepCounter" class="text-xs font-semibold text-app-primary uppercase tracking-wide">Step 1</div>
           <div>
-            <label class="block text-sm font-medium text-stone-700 mb-1">Title</label>
+            <label class="<%= form_label_class %>">Title</label>
             <input
               data-wizard-chain-target="stepTitle"
               type="text"
               placeholder="e.g. Read for 30 minutes"
-              class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+              class="<%= form_control_class("px-4 py-3") %>"
               autocomplete="off"
             >
           </div>
           <div>
-            <label class="block text-sm font-medium text-stone-700 mb-1">Project <span class="text-stone-400 font-normal">(optional)</span></label>
+            <label class="<%= form_label_class %>">Project <span class="<%= wizard_optional_class %>">(optional)</span></label>
             <select
               data-wizard-chain-target="projectSelect"
-              class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition bg-white"
+              class="<%= form_control_class("px-4 py-3") %>"
             >
               <option value="">No project</option>
               <% current_user.projects.active.order(:title).each do |p| %>
@@ -339,18 +346,18 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-stone-700 mb-1">Start date <span class="text-stone-400 font-normal">(when should this begin?)</span></label>
+            <label class="<%= form_label_class %>">Start date <span class="<%= wizard_optional_class %>">(when should this begin?)</span></label>
             <input
               data-wizard-chain-target="dueDate"
               type="date"
               value="<%= Date.current %>"
-              class="w-full rounded-xl border border-stone-300 px-4 py-3 text-stone-800 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"
+              class="<%= form_control_class("px-4 py-3") %>"
               autocomplete="off"
             >
           </div>
           <button
             data-action="wizard-chain#addStep"
-            class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
+            class="<%= primary_button_class("w-full px-6 py-3 font-semibold") %>"
           >
             Save step
           </button>
@@ -359,7 +366,7 @@
         <%# Chain: review %>
         <div data-creation-wizard-target="step" data-step-name="chainReview" class="hidden p-6 space-y-4">
           <div>
-            <h3 data-wizard-chain-target="reviewTitle" class="font-semibold text-stone-800 mb-3"></h3>
+            <h3 data-wizard-chain-target="reviewTitle" class="font-semibold text-app-text mb-3"></h3>
             <ol data-wizard-chain-target="previewList" class="space-y-2">
               <%# Populated dynamically by wizard-chain controller %>
             </ol>
@@ -367,13 +374,13 @@
           <div class="flex flex-col gap-2">
             <button
               data-action="wizard-chain#addAnotherStep"
-              class="w-full border-2 border-stone-200 hover:border-violet-300 text-stone-700 hover:text-violet-700 font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
+              class="w-full border-2 border-app-border hover:border-app-primary text-app-text hover:text-app-primary font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
             >
               + Add another step
             </button>
             <button
               data-action="wizard-chain#submitChain"
-              class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl px-6 py-3 transition-colors cursor-pointer"
+              class="<%= primary_button_class("w-full px-6 py-3 font-semibold") %>"
             >
               Create chain ✓
             </button>
@@ -387,8 +394,8 @@
       <%# ─────────────────────────────────────────────────── %>
       <div data-creation-wizard-target="step" data-step-name="submitting" class="hidden p-12">
         <div class="flex flex-col items-center gap-4">
-          <div class="w-10 h-10 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin"></div>
-          <p class="text-stone-500 text-sm">Creating…</p>
+          <div class="w-10 h-10 border-4 border-app-primary-soft border-t-app-primary rounded-full animate-spin"></div>
+          <p class="text-app-muted text-sm">Creating…</p>
         </div>
       </div>
 

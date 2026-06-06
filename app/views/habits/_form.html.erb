@@ -2,51 +2,51 @@
   <%= render "shared/error_messages", model: habit %>
 
   <div>
-    <%= f.label :title, class: "block text-sm font-medium text-stone-700 mb-1.5" %>
+    <%= f.label :title, class: form_label_class %>
     <%= f.text_field :title, required: true, autofocus: true,
         placeholder: "e.g., Walk the dog",
-        class: "w-full rounded-xl border border-stone-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent" %>
+        class: form_control_class %>
   </div>
 
   <div>
-    <%= f.label :frequency, class: "block text-sm font-medium text-stone-700 mb-1.5" %>
+    <%= f.label :frequency, class: form_label_class %>
     <%= f.select :frequency, Habit.frequencies.keys.map { |s| [frequency_label(s), s] },
-        {}, class: "w-full rounded-xl border border-stone-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500",
+        {}, class: form_control_class,
         data: { habit_form_target: "frequency", action: "habit-form#toggle" } %>
   </div>
 
   <div data-habit-form-target="customDays" class="<%= 'hidden' unless habit.custom? %>">
-    <span class="block text-sm font-medium text-stone-700 mb-1.5">Days of the week</span>
+    <span class="<%= form_label_class %>">Days of the week</span>
     <div class="flex flex-wrap gap-2">
       <% Date::ABBR_DAYNAMES.each_with_index do |name, i| %>
-        <label class="inline-flex items-center gap-1.5 bg-stone-50 rounded-lg px-3 py-1.5 cursor-pointer hover:bg-stone-100 transition-colors">
+        <label class="inline-flex items-center gap-1.5 bg-app-surface-muted rounded-lg px-3 py-1.5 cursor-pointer hover:opacity-85 transition-colors">
           <%= check_box_tag "habit[days_of_week][]", i,
               habit.days_of_week.to_s.split(",").include?(i.to_s),
               id: "habit_days_of_week_#{i}",
-              class: "rounded border-stone-300 text-violet-600 focus:ring-violet-500" %>
-          <span class="text-sm text-stone-700"><%= name %></span>
+              class: "rounded border-app-border text-violet-600 focus:ring-violet-500" %>
+          <span class="text-sm text-app-text"><%= name %></span>
         </label>
       <% end %>
     </div>
   </div>
 
   <div>
-    <%= f.label :project_id, "Project (optional)", class: "block text-sm font-medium text-stone-700 mb-1.5" %>
+    <%= f.label :project_id, "Project (optional)", class: form_label_class %>
     <%= f.select :project_id,
         current_user.projects.active.ordered.map { |p| [[p.emoji, p.title].compact.join(" "), p.id] },
         { include_blank: "None" },
-        class: "w-full rounded-xl border border-stone-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500" %>
+        class: form_control_class %>
   </div>
 
   <div>
-    <%= f.label :start_date, class: "block text-sm font-medium text-stone-700 mb-1.5" %>
+    <%= f.label :start_date, class: form_label_class %>
     <%= f.date_field :start_date,
         value: habit.start_date || Date.current,
-        class: "w-full rounded-xl border border-stone-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent" %>
+        class: form_control_class %>
   </div>
 
   <div class="flex items-center gap-3">
-    <%= f.submit class: "bg-violet-600 text-white rounded-xl px-5 py-2.5 text-sm font-medium hover:bg-violet-700 cursor-pointer" %>
-    <%= link_to "Cancel", habits_path, class: "text-sm text-stone-500 hover:text-stone-700" %>
+    <%= f.submit class: primary_button_class("text-sm") %>
+    <%= link_to "Cancel", habits_path, class: muted_link_class("text-sm") %>
   </div>
 <% end %>

@@ -3,6 +3,20 @@ class MembershipsController < ApplicationController
 
   before_action :set_memberable
 
+  def suggestions
+    query = params[:q].to_s.strip.downcase
+    return render json: [] if query.length < 2
+
+    existing_member_ids = [ @memberable.user_id ] + @memberable.memberships.pluck(:user_id)
+    pattern = "%#{User.sanitize_sql_like(query)}%"
+    users = User.where.not(id: existing_member_ids)
+                .where("LOWER(name) LIKE :query OR LOWER(email) LIKE :query", query: pattern)
+                .order(:name, :email)
+                .limit(8)
+
+    render json: users.map { |user| { name: user.name, email: user.email } }
+  end
+
   def create
     user = User.find_by(email: params[:email].to_s.strip.downcase)
 

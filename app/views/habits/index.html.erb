@@ -1,6 +1,6 @@
 <div class="flex items-center justify-between mb-8">
-  <h1 class="text-3xl font-bold text-stone-800">Habits</h1>
-  <%= link_to "New habit", new_habit_path, class: "inline-flex items-center gap-1 bg-violet-600 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-violet-700 transition-colors" %>
+  <h1 class="text-3xl font-bold text-app-text">Habits</h1>
+  <%= link_to "New habit", new_habit_path, class: primary_button_class("inline-flex items-center gap-1 px-4 py-2 text-sm") %>
 </div>
 
 <% if @active_habits.any? %>
@@ -14,7 +14,7 @@
 <% end %>
 
 <% if @paused_habits.any? %>
-  <h2 class="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-3 mt-8">Paused</h2>
+  <h2 class="text-sm font-semibold text-app-muted uppercase tracking-wide mb-3 mt-8">Paused</h2>
   <div class="space-y-2">
     <% @paused_habits.each do |habit| %>
       <%= render "habit_card", habit: habit %>

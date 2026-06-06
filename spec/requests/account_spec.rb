@@ -10,6 +10,19 @@ RSpec.describe "Account", type: :request do
       get account_path
       expect(response).to have_http_status(:ok)
     end
+
+    it "renders the dark theme class for dark appearance users" do
+      user.update!(appearance_theme: "dark")
+      get account_path
+      expect(response.body).to include('class="theme-dark')
+    end
+
+    it "renders an appearance preference control" do
+      get account_path
+      expect(response.body).to include("Appearance")
+      expect(response.body).to include('name="user[appearance_theme]"')
+      expect(response.body).to include('value="dark"')
+    end
   end
 
   describe "PATCH /account" do
@@ -40,6 +53,12 @@ RSpec.describe "Account", type: :request do
         expect(user.reload.week_start_day).to eq(0)
       end
 
+      it "updates appearance_theme" do
+        patch account_path, params: { user: { appearance_theme: "dark" } }
+        expect(response).to redirect_to(account_path)
+        expect(user.reload.appearance_theme).to eq("dark")
+      end
+
       it "rejects an invalid stale_threshold_days" do
         patch account_path, params: { user: { stale_threshold_days: "99" } }
         expect(response).to have_http_status(:unprocessable_content)
@@ -50,6 +69,12 @@ RSpec.describe "Account", type: :request do
         patch account_path, params: { user: { week_start_day: "6" } }
         expect(response).to have_http_status(:unprocessable_content)
         expect(user.reload.week_start_day).to eq(1)
+      end
+
+      it "rejects an invalid appearance_theme" do
+        patch account_path, params: { user: { appearance_theme: "solarized" } }
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(user.reload.appearance_theme).to eq("light")
       end
     end
 

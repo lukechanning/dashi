@@ -33,7 +33,7 @@ class HabitsController < ApplicationController
   end
 
   def destroy
-    @habit.destroy!
+    @habit.discard!
     redirect_to habits_path, notice: "Habit deleted."
   end
 

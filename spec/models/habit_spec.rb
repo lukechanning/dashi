@@ -102,6 +102,13 @@ RSpec.describe Habit, type: :model do
       expect { habit.generate_todo_for!(Date.current) }.not_to change(Todo, :count)
     end
 
+    it "can regenerate a todo after the previous one was soft-deleted" do
+      todo = habit.generate_todo_for!(Date.current)
+      todo.discard!
+
+      expect { habit.generate_todo_for!(Date.current) }.to change(Todo, :count).by(1)
+    end
+
     it "does not create a todo when not scheduled" do
       habit = create(:habit, :paused)
       expect { habit.generate_todo_for!(Date.current) }.not_to change(Todo, :count)

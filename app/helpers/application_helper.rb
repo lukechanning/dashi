@@ -28,6 +28,60 @@ module ApplicationHelper
     )
   end
 
+  def app_body_class
+    classes = %w[min-h-screen bg-app-bg text-app-text]
+    classes.unshift("theme-dark") if current_user&.appearance_theme == "dark"
+    classes.join(" ")
+  end
+
+  def auth_body_class
+    "auth-theme min-h-screen bg-app-bg text-app-text"
+  end
+
+  def card_class(extra = "")
+    "app-card #{extra}".strip
+  end
+
+  def form_label_class(extra = "")
+    "form-label #{extra}".strip
+  end
+
+  def form_control_class(extra = "")
+    "form-control #{extra}".strip
+  end
+
+  def primary_button_class(extra = "")
+    "btn-primary #{extra}".strip
+  end
+
+  def select_control_class(extra = "")
+    "select-control #{extra}".strip
+  end
+
+  def primary_link_class(extra = "")
+    "link-primary #{extra}".strip
+  end
+
+  def muted_link_class(extra = "")
+    "link-muted #{extra}".strip
+  end
+
+  def switch_track_class(extra = "")
+    "switch-track #{extra}".strip
+  end
+
+  def section_label_class(extra = "")
+    "section-label #{extra}".strip
+  end
+
+  def detail_label_class(extra = "")
+    "detail-label #{extra}".strip
+  end
+
+  def detail_value_class(extra = "")
+    "detail-value #{extra}".strip
+  end
+
   def notable_link(note)
     notable = note.notable
     case note.notable_type

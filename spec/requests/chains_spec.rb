@@ -36,14 +36,15 @@ RSpec.describe "Chains", type: :request do
   end
 
   describe "DELETE /chains/:id" do
-    it "destroys the chain" do
-      expect { delete chain_path(chain) }.to change(Chain, :count).by(-1)
+    it "soft-deletes the chain" do
+      expect { delete chain_path(chain) }.not_to change(Chain.unscoped, :count)
       expect(response).to redirect_to(root_path)
+      expect(chain.reload.deleted_at).to be_present
     end
 
     it "does not destroy another user's chain" do
       other_chain = create(:chain)
-      expect { delete chain_path(other_chain) }.not_to change(Chain, :count)
+      expect { delete chain_path(other_chain) }.not_to change(Chain.unscoped, :count)
     end
   end
 

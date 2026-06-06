@@ -15,6 +15,15 @@ RSpec.describe "Invitations", type: :request do
       end
     end
 
+    describe "GET /invitations/new" do
+      it "prefills the email from the query string" do
+        get new_invitation_path(email: "friend@example.com")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('value="friend@example.com"')
+      end
+    end
+
     describe "POST /invitations" do
       it "creates an invitation and sends an email" do
         expect {
