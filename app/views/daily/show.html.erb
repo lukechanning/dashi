@@ -4,7 +4,7 @@
     <div class="flex-1">
       <%= render "shared/week_strip", selected_date: @date, today: Date.current %>
     </div>
-    <button data-action="calendar-panel#toggle" class="flex flex-col items-center justify-center w-10 h-10 rounded-xl text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors cursor-pointer" title="Calendar view">
+    <button data-action="calendar-panel#toggle" class="flex flex-col items-center justify-center w-10 h-10 rounded-xl text-app-faint hover:text-app-muted hover:bg-app-surface-muted transition-colors cursor-pointer" title="Calendar view">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
       </svg>
@@ -21,7 +21,7 @@
     <div class="overflow-hidden">
       <div class="pt-2 pb-1">
         <%= turbo_frame_tag "calendar", src: calendar_path(month: @date.strftime("%Y-%m")) do %>
-          <div class="h-20 flex items-center justify-center text-stone-300 text-sm">Loading...</div>
+          <div class="h-20 flex items-center justify-center text-app-faint text-sm">Loading...</div>
         <% end %>
       </div>
     </div>
@@ -30,17 +30,17 @@
 
 <div class="mb-8">
   <% if @viewing_history %>
-    <h1 class="text-3xl font-bold text-stone-800"><%= @date.strftime("%A, %B %-d") %></h1>
-    <p class="text-stone-500 mt-1">
-      <%= link_to "Back to today", root_path, class: "text-violet-600 hover:text-violet-800 font-medium" %>
+    <h1 class="text-3xl font-bold text-app-text"><%= @date.strftime("%A, %B %-d") %></h1>
+    <p class="text-app-muted mt-1">
+      <%= link_to "Back to today", root_path, class: "text-app-primary hover:opacity-85 font-medium" %>
     </p>
   <% else %>
-    <h1 class="text-3xl font-bold text-stone-800">Hello <%= current_user.name %>,</h1>
-    <p class="text-stone-500 mt-1">
+    <h1 class="text-3xl font-bold text-app-text">Hello <%= current_user.name %>,</h1>
+    <p class="text-app-muted mt-1">
       <%= Date.current.strftime("%A, %B %-d") %> &mdash;
       <% today_count = @todos.count { |t| !t.complete? } %>
       <% if today_count > 0 %>
-        You have <span class="font-medium text-stone-700"><%= pluralize(today_count, "task") %></span> today
+        You have <span class="font-medium text-app-text"><%= pluralize(today_count, "task") %></span> today
       <% else %>
         No tasks today
       <% end %>
@@ -101,19 +101,19 @@
 <%# Tasks heading — focus-mode controller wraps the heading + fixed overlays only %>
 <% if @viewing_history %>
   <div class="flex items-center justify-between mb-3">
-    <h2 class="text-sm font-semibold text-stone-500 uppercase tracking-wide">Tasks That Day</h2>
+    <h2 class="text-sm font-semibold text-app-muted uppercase tracking-wide">Tasks That Day</h2>
   </div>
 <% else %>
   <div data-controller="focus-mode">
     <%= render "daily/focus_panel" %>
     <%= render "daily/focus_view" %>
     <div class="flex items-center justify-between mb-3">
-      <h2 class="text-sm font-semibold text-stone-500 uppercase tracking-wide">Tasks</h2>
+      <h2 class="text-sm font-semibold text-app-muted uppercase tracking-wide">Tasks</h2>
       <div class="flex items-center gap-3">
         <button
           id="focus-mode-btn"
           data-action="focus-mode#openPanel"
-          class="inline-flex items-center gap-1 text-sm font-medium text-stone-400 hover:text-violet-600 transition-colors cursor-pointer"
+          class="inline-flex items-center gap-1 text-sm font-medium text-app-faint hover:text-app-primary transition-colors cursor-pointer"
           title="Enter focus mode"
         >
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -124,7 +124,7 @@
         </button>
         <button
           data-action="creation-wizard#open"
-          class="inline-flex items-center gap-1 text-sm font-medium text-violet-600 hover:text-violet-800 transition-colors cursor-pointer"
+          class="inline-flex items-center gap-1 text-sm font-medium text-app-primary hover:opacity-85 transition-colors cursor-pointer"
         >
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -148,21 +148,21 @@
       <%# Stack wrapper — adds ghost cards behind chain todos that have upcoming steps %>
       <div class="<%= future_steps.any? ? 'relative pb-3' : '' %>">
         <% if future_steps.size >= 2 %>
-          <div class="absolute bottom-0 left-4 right-4 h-4 bg-emerald-50/80 rounded-xl border border-emerald-200/50"></div>
+          <div class="absolute bottom-0 left-4 right-4 h-4 bg-app-success-soft rounded-xl border border-app-success/40"></div>
         <% end %>
         <% if future_steps.any? %>
-          <div class="absolute bottom-0 left-2 right-2 h-4 bg-emerald-50 rounded-xl border border-emerald-200/70"></div>
+          <div class="absolute bottom-0 left-2 right-2 h-4 bg-app-success-soft rounded-xl border border-app-success/60"></div>
         <% end %>
 
         <%# Main todo card — green left accent for chain items %>
         <%= tag.div(
-          class: "relative bg-white rounded-xl border border-stone-200/60 #{ci ? 'border-l-[3px] border-l-emerald-400' : ''} shadow-sm#{' hover:shadow transition-shadow' unless @viewing_history}",
+          class: "relative bg-app-surface rounded-xl border border-app-border #{ci ? 'border-l-[3px] border-l-app-success' : ''} shadow-sm#{' hover:shadow transition-shadow' unless @viewing_history}",
           data: @viewing_history ? {} : { controller: "todo-row", todo_row_toggle_url_value: toggle_todo_path(todo) }
         ) do %>
           <div class="flex items-center gap-3 p-3 flex-wrap">
             <% if @viewing_history %>
               <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0
-                <%= todo.complete? ? 'bg-violet-500 border-violet-500' : 'border-stone-300' %>">
+                <%= todo.complete? ? 'bg-violet-500 border-violet-500' : 'border-app-border' %>">
                 <% if todo.complete? %>
                   <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -175,7 +175,7 @@
                 data-action="todo-row#toggle"
                 data-todo-row-target="check"
                 class="shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors
-                  <%= todo.complete? ? 'bg-violet-500 border-violet-500' : 'border-stone-300 hover:border-violet-400' %>"
+                  <%= todo.complete? ? 'bg-violet-500 border-violet-500' : 'border-app-border hover:border-violet-400' %>"
                 aria-label="<%= todo.complete? ? 'Mark incomplete' : 'Mark complete' %>"
               >
                 <svg
@@ -189,18 +189,18 @@
             <% end %>
 
             <div class="flex-1 min-w-0">
-              <span data-todo-row-target="title" class="<%= todo.complete? ? 'line-through text-stone-400' : 'text-stone-800' %>">
+              <span data-todo-row-target="title" class="<%= todo.complete? ? 'line-through text-app-faint' : 'text-app-text' %>">
                 <%= todo.title %>
               </span>
               <%# Habit indicator %>
               <% if todo.from_habit? %>
-                <svg class="w-3.5 h-3.5 text-stone-400 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" title="Recurring habit">
+                <svg class="w-3.5 h-3.5 text-app-faint inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" title="Recurring habit">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
               <% end %>
               <%# Project badge %>
               <% if todo.project %>
-                <span class="inline-flex items-center text-xs bg-stone-100 text-stone-500 rounded-full px-2 py-0.5 ml-2"><%= [todo.project.emoji, todo.project.title].compact.join(" ") %></span>
+                <span class="inline-flex items-center text-xs bg-app-surface-muted text-app-muted rounded-full px-2 py-0.5 ml-2"><%= [todo.project.emoji, todo.project.title].compact.join(" ") %></span>
               <% end %>
             </div>
 
@@ -209,20 +209,20 @@
               <%= avatar_stack(todo_members, size: :xs, max: 3) %>
             <% end %>
             <% if @viewing_history && todo.complete? && todo.due_date && todo.due_date != @date %>
-              <span class="text-xs text-stone-400 shrink-0">due <%= todo.due_date.strftime("%b %-d") %></span>
+              <span class="text-xs text-app-faint shrink-0">due <%= todo.due_date.strftime("%b %-d") %></span>
             <% elsif !@viewing_history && todo.due_date %>
-              <span class="text-xs text-stone-400 shrink-0"><%= todo.due_date.strftime("%b %-d") %></span>
+              <span class="text-xs text-app-faint shrink-0"><%= todo.due_date.strftime("%b %-d") %></span>
             <% end %>
             <% unless @viewing_history %>
-              <%= link_to "Edit", edit_todo_path(todo), class: "text-xs text-stone-400 hover:text-stone-600 transition-colors flex-shrink-0" %>
+              <%= link_to "Edit", edit_todo_path(todo), class: "text-xs text-app-faint hover:text-app-muted transition-colors flex-shrink-0" %>
             <% end %>
 
             <%# Chain prompt — shown after completing a chained todo %>
             <% if ci && next_ci && !next_ci.activated? %>
-              <div data-todo-row-target="chainPrompt" class="hidden w-full pt-3 mt-1 border-t border-stone-100">
-                <p class="text-xs text-stone-500 mb-2">
+              <div data-todo-row-target="chainPrompt" class="hidden w-full pt-3 mt-1 border-t border-app-border">
+                <p class="text-xs text-app-muted mb-2">
                   Next in chain:
-                  <span class="font-semibold text-stone-700"><%= next_ci.title %></span>
+                  <span class="font-semibold text-app-text"><%= next_ci.title %></span>
                 </p>
                 <div class="flex items-center gap-2 flex-wrap">
                   <button
@@ -238,14 +238,14 @@
                     data-chain-date-input
                     value="<%= Date.tomorrow %>"
                     min="<%= Date.current %>"
-                    class="text-xs border border-stone-200 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-violet-400 focus:outline-none"
+                    class="text-xs border border-app-border bg-app-surface rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-violet-400 focus:outline-none"
                     autocomplete="off"
                   >
                   <button
                     data-action="todo-row#activateWithDate"
                     data-todo-row-chain-id-param="<%= ci.chain_id %>"
                     data-todo-row-chain-item-id-param="<%= next_ci.id %>"
-                    class="text-xs font-medium text-stone-500 hover:text-violet-600 transition-colors cursor-pointer"
+                    class="text-xs font-medium text-app-muted hover:text-app-primary transition-colors cursor-pointer"
                   >
                     Schedule for date
                   </button>
@@ -256,19 +256,19 @@
 
           <%# Chain peek footer — collapsible panel showing upcoming steps %>
           <% if ci && future_steps.any? %>
-            <div data-controller="chain-peek" class="border-t border-stone-100">
+            <div data-controller="chain-peek" class="border-t border-app-border">
               <button
                 data-action="chain-peek#toggle"
-                class="w-full flex items-center justify-between px-3 py-2 text-left hover:bg-stone-50 rounded-b-xl transition-colors cursor-pointer"
+                class="w-full flex items-center justify-between px-3 py-2 text-left hover:bg-app-surface-muted rounded-b-xl transition-colors cursor-pointer"
               >
                 <span class="flex items-center gap-1.5 min-w-0">
-                  <svg class="w-3 h-3 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <svg class="w-3 h-3 text-app-success shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                   </svg>
-                  <span class="text-xs font-medium text-emerald-600 truncate"><%= ci.chain.title %></span>
-                  <span class="text-xs text-stone-400 shrink-0">· Step <%= ci.position + 1 %> of <%= ci.chain.chain_items.size %></span>
+                  <span class="text-xs font-medium text-app-success truncate"><%= ci.chain.title %></span>
+                  <span class="text-xs text-app-faint shrink-0">· Step <%= ci.position + 1 %> of <%= ci.chain.chain_items.size %></span>
                 </span>
-                <svg data-chain-peek-target="chevron" class="w-3.5 h-3.5 text-stone-400 transition-transform duration-150 shrink-0 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg data-chain-peek-target="chevron" class="w-3.5 h-3.5 text-app-faint transition-transform duration-150 shrink-0 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
@@ -276,10 +276,10 @@
               <div data-chain-peek-target="panel" class="hidden px-3 pb-3 space-y-2">
                 <% future_steps.each_with_index do |step, i| %>
                   <div class="flex items-center gap-2">
-                    <span class="w-4 h-4 rounded-full bg-emerald-100 text-emerald-600 text-[10px] font-bold flex items-center justify-center shrink-0"><%= ci.position + i + 2 %></span>
-                    <span class="text-xs text-stone-500 truncate"><%= step.title %></span>
+                    <span class="w-4 h-4 rounded-full bg-app-success-soft text-app-success text-[10px] font-bold flex items-center justify-center shrink-0"><%= ci.position + i + 2 %></span>
+                    <span class="text-xs text-app-muted truncate"><%= step.title %></span>
                     <% if step.target_project %>
-                      <span class="text-xs text-stone-400 shrink-0 ml-auto">· <%= step.target_project.title %></span>
+                      <span class="text-xs text-app-faint shrink-0 ml-auto">· <%= step.target_project.title %></span>
                     <% end %>
                   </div>
                 <% end %>
@@ -299,8 +299,8 @@
 <% unless @viewing_history %>
   <%# Activity graph %>
   <div class="mt-8">
-    <h2 class="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-3">Activity</h2>
-    <div class="bg-white rounded-2xl p-5 shadow-sm">
+    <h2 class="text-sm font-semibold text-app-muted uppercase tracking-wide mb-3">Activity</h2>
+    <div class="bg-app-surface rounded-2xl p-5 shadow-sm border border-app-border">
       <%= render "shared/contribution_graph", record: current_user %>
     </div>
   </div>

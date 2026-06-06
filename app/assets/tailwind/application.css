@@ -2,34 +2,152 @@
 
 @theme {
   /* Stat card backgrounds */
-  --color-stat-lavender: #ede9fe;
-  --color-stat-yellow: #fef3c7;
-  --color-stat-mint: #d1fae5;
-  --color-stat-rose: #ffe4e6;
+  --color-stat-lavender: light-dark(#ede9fe, #1d1638);
+  --color-stat-yellow: light-dark(#fef3c7, #2b220b);
+  --color-stat-mint: light-dark(#d1fae5, #0c2a22);
+  --color-stat-rose: light-dark(#ffe4e6, #32151f);
 
   /* Stat card icon/accent colors */
-  --color-stat-lavender-accent: #7c3aed;
-  --color-stat-yellow-accent: #d97706;
-  --color-stat-mint-accent: #059669;
-  --color-stat-rose-accent: #e11d48;
+  --color-stat-lavender-accent: light-dark(#7c3aed, #b8a7ff);
+  --color-stat-yellow-accent: light-dark(#d97706, #ffd166);
+  --color-stat-mint-accent: light-dark(#059669, #5eead4);
+  --color-stat-rose-accent: light-dark(#e11d48, #fb7185);
 
   /* Pastel card palette (for goals/projects) */
-  --color-card-1: #ede9fe;
-  --color-card-2: #fce7f3;
-  --color-card-3: #dbeafe;
-  --color-card-4: #fef3c7;
-  --color-card-5: #dcfce7;
-  --color-card-6: #ffedd5;
+  --color-card-1: light-dark(#ede9fe, #151a35);
+  --color-card-2: light-dark(#fce7f3, #25172b);
+  --color-card-3: light-dark(#dbeafe, #102437);
+  --color-card-4: light-dark(#fef3c7, #27220d);
+  --color-card-5: light-dark(#dcfce7, #0d2b24);
+  --color-card-6: light-dark(#ffedd5, #2a1a10);
 
   /* Card text colors */
-  --color-card-text-1: #5b21b6;
-  --color-card-text-2: #9d174d;
-  --color-card-text-3: #1e40af;
-  --color-card-text-4: #92400e;
-  --color-card-text-5: #166534;
-  --color-card-text-6: #9a3412;
+  --color-card-text-1: light-dark(#5b21b6, #c4b5fd);
+  --color-card-text-2: light-dark(#9d174d, #f0abfc);
+  --color-card-text-3: light-dark(#1e40af, #93c5fd);
+  --color-card-text-4: light-dark(#92400e, #fcd34d);
+  --color-card-text-5: light-dark(#166534, #6ee7b7);
+  --color-card-text-6: light-dark(#9a3412, #fdba74);
 
   /* Warm background */
-  --color-warm-bg: #faf9f7;
-  --color-warm-text: #44403c;
+  --color-warm-bg: light-dark(#faf9f7, #06110f);
+  --color-warm-text: light-dark(#44403c, #d7efe7);
+
+  /* Semantic theme colors */
+  --color-app-bg: light-dark(#faf9f7, #06110f);
+  --color-app-surface: light-dark(#ffffff, #0d1f1d);
+  --color-app-surface-muted: light-dark(#f5f5f4, #142b28);
+  --color-app-border: light-dark(#e7e5e4, #1f514b);
+  --color-app-text: light-dark(#292524, #e8fff8);
+  --color-app-muted: light-dark(#78716c, #9dc4ba);
+  --color-app-faint: light-dark(#a8a29e, #6f9188);
+  --color-app-primary: light-dark(#7c3aed, #9d7cff);
+  --color-app-success: light-dark(#059669, #5eead4);
+  --color-app-warning: light-dark(#d97706, #ffd166);
+  --color-app-danger: light-dark(#dc2626, #fb7185);
+  --color-app-primary-soft: light-dark(#f5f3ff, #211a3f);
+  --color-app-success-soft: light-dark(#ecfdf5, #0e332b);
+  --color-app-warning-soft: light-dark(#fffbeb, #30270f);
+  --color-app-danger-soft: light-dark(#fef2f2, #351923);
+  --color-creation-choice-surface: light-dark(#fafafa, #102421);
+  --color-heatmap-empty: light-dark(#e7e5e4, #12302c);
+  --color-heatmap-future: light-dark(#f5f5f4, #0b1a18);
+  --color-heatmap-low: light-dark(#bbf7d0, #164e43);
+  --color-heatmap-medium: light-dark(#4ade80, #2dd4bf);
+  --color-heatmap-high: light-dark(#16a34a, #a7f3d0);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  .theme-dark {
+    color-scheme: dark;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .auth-theme {
+      color-scheme: dark;
+    }
+  }
+}
+
+@layer components {
+  .theme-dark,
+  .auth-theme {
+    background:
+      radial-gradient(circle at top left, rgb(20 184 166 / 0.08), transparent 34rem),
+      var(--color-warm-bg);
+    color: var(--color-warm-text);
+  }
+
+  .app-card {
+    @apply bg-app-surface rounded-2xl border border-app-border shadow-sm;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-app-text mb-1.5;
+  }
+
+  .form-control {
+    @apply w-full rounded-xl border border-app-border bg-app-surface px-3 py-2 text-app-text placeholder:text-app-faint focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent;
+  }
+
+  .btn-primary {
+    @apply bg-app-primary text-white rounded-xl px-5 py-2.5 font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 transition-colors cursor-pointer;
+  }
+
+  .select-control {
+    @apply text-sm border border-app-border rounded-lg px-3 py-1.5 text-app-text bg-app-surface focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent;
+  }
+
+  .link-primary {
+    @apply text-app-primary hover:opacity-80;
+  }
+
+  .link-muted {
+    @apply text-app-muted hover:text-app-text;
+  }
+
+  .switch-track {
+    position: relative;
+    width: 2.75rem;
+    height: 1.5rem;
+    border-radius: 9999px;
+    background-color: var(--color-app-surface-muted);
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .switch-track::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    background-color: white;
+    transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .peer:checked ~ .switch-track {
+    background-color: var(--color-app-primary);
+  }
+
+  .peer:checked ~ .switch-track::after {
+    transform: translateX(1.25rem);
+  }
+
+  .section-label {
+    @apply text-sm font-semibold text-app-muted uppercase tracking-wide;
+  }
+
+  .detail-label {
+    @apply text-sm font-medium text-app-text;
+  }
+
+  .detail-value {
+    @apply text-app-muted text-sm mt-0.5;
+  }
 }

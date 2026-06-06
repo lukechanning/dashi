@@ -10,32 +10,32 @@
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body class="bg-warm-bg min-h-screen"
+  <body class="<%= app_body_class %>"
         data-controller="timezone creation-wizard"
         data-timezone-current-value="<%= current_user&.timezone.to_s %>">
-    <nav class="bg-white/80 backdrop-blur-sm border-b border-stone-200">
+    <nav class="bg-app-surface/90 backdrop-blur-sm border-b border-app-border">
       <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
         <%= link_to root_path, class: "flex items-center gap-2" do %>
           <%= render "shared/logo", size: :sm %>
-          <span class="text-lg font-bold tracking-tight text-stone-800">Dashi</span>
+          <span class="text-lg font-bold tracking-tight text-app-text">Dashi</span>
         <% end %>
 
         <%# Desktop links (hidden on mobile — AppBar handles mobile nav) %>
         <div class="hidden sm:flex items-center gap-4 text-sm">
-          <%= link_to "Today", root_path, class: "text-stone-500 hover:text-stone-800 transition-colors" %>
-          <%= link_to "Projects", projects_path, class: "text-stone-500 hover:text-stone-800 transition-colors" %>
-          <%= link_to "Goals", goals_path, class: "text-stone-500 hover:text-stone-800 transition-colors" %>
-          <%= link_to "Habits", habits_path, class: "text-stone-500 hover:text-stone-800 transition-colors" %>
-          <%= link_to "Notes", notes_index_path, class: "text-stone-500 hover:text-stone-800 transition-colors" %>
+          <%= link_to "Today", root_path, class: muted_link_class("transition-colors") %>
+          <%= link_to "Projects", projects_path, class: muted_link_class("transition-colors") %>
+          <%= link_to "Goals", goals_path, class: muted_link_class("transition-colors") %>
+          <%= link_to "Habits", habits_path, class: muted_link_class("transition-colors") %>
+          <%= link_to "Notes", notes_index_path, class: muted_link_class("transition-colors") %>
           <% if current_user&.admin? %>
-            <%= link_to "Invitations", invitations_path, class: "text-stone-500 hover:text-stone-800 transition-colors" %>
+            <%= link_to "Invitations", invitations_path, class: muted_link_class("transition-colors") %>
           <% end %>
-          <span class="text-stone-300">|</span>
+          <span class="text-app-faint">|</span>
           <%= link_to account_path, class: "flex items-center gap-2 hover:opacity-80 transition-opacity" do %>
             <%= user_avatar(current_user, size: :sm) %>
-            <span class="text-stone-500"><%= current_user.name %></span>
+            <span class="text-app-muted"><%= current_user.name %></span>
           <% end %>
-          <%= button_to "Sign out", session_path, method: :delete, class: "text-stone-400 hover:text-stone-600 cursor-pointer transition-colors" %>
+          <%= button_to "Sign out", session_path, method: :delete, class: "text-app-faint hover:text-app-muted cursor-pointer transition-colors" %>
         </div>
       </div>
     </nav>
@@ -43,13 +43,13 @@
     <%# Main content — extra bottom padding on mobile to clear the AppBar %>
     <main class="max-w-4xl mx-auto px-4 py-8 pb-28 sm:pb-8">
       <% if flash[:notice] %>
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg p-3 mb-6 text-sm">
+        <div class="bg-app-success-soft border border-app-success text-app-success rounded-lg p-3 mb-6 text-sm">
           <%= flash[:notice] %>
         </div>
       <% end %>
 
       <% if flash[:alert] %>
-        <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-3 mb-6 text-sm">
+        <div class="bg-app-danger-soft border border-app-danger text-app-danger rounded-lg p-3 mb-6 text-sm">
           <%= flash[:alert] %>
         </div>
       <% end %>

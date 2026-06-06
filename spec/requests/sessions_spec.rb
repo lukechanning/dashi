@@ -6,6 +6,11 @@ RSpec.describe "Sessions", type: :request do
       get new_session_path
       expect(response).to have_http_status(:ok)
     end
+
+    it "renders the system-themed auth shell" do
+      get new_session_path
+      expect(response.body).to include('class="auth-theme')
+    end
   end
 
   describe "POST /session" do

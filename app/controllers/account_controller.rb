@@ -23,7 +23,8 @@ class AccountController < ApplicationController
       :show_stale_banner,
       :show_reflection_banner,
       :stale_threshold_days,
-      :week_start_day
+      :week_start_day,
+      :appearance_theme
     )
   end
 end

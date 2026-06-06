@@ -57,7 +57,7 @@ export default class extends Controller {
       this.selected.push({ id, title, toggleUrl })
       if (checkmark) {
         checkmark.classList.add("bg-violet-500", "border-violet-500")
-        checkmark.classList.remove("border-stone-300")
+        checkmark.classList.remove("border-app-border")
       }
       if (checkIcon) checkIcon.classList.remove("hidden")
     } else {
@@ -65,7 +65,7 @@ export default class extends Controller {
       this.selected = this.selected.filter(t => t.id !== id)
       if (checkmark) {
         checkmark.classList.remove("bg-violet-500", "border-violet-500")
-        checkmark.classList.add("border-stone-300")
+        checkmark.classList.add("border-app-border")
       }
       if (checkIcon) checkIcon.classList.add("hidden")
     }
@@ -79,14 +79,14 @@ export default class extends Controller {
     this.#renderTaskList()
     this.viewTarget.classList.remove("hidden")
     document.body.style.overflow = "hidden"
-    document.getElementById("fab-new-todo")?.classList.add("!hidden")
+    document.getElementById("fab-new-todo")?.classList.add("hidden")
   }
 
   endSession() {
     this.#clearTimer()
     this.viewTarget.classList.add("hidden")
     document.body.style.overflow = ""
-    document.getElementById("fab-new-todo")?.classList.remove("!hidden")
+    document.getElementById("fab-new-todo")?.classList.remove("hidden")
     // Reset timer state
     this.timerRemaining = POMODORO_SECONDS
     this.timerRunning = false
@@ -147,15 +147,15 @@ export default class extends Controller {
   #renderTaskList() {
     if (!this.hasTaskListTarget) return
     this.taskListTarget.innerHTML = this.selected.map(task => `
-      <div class="flex items-center gap-3 bg-stone-900 rounded-2xl p-4" data-todo-id="${task.id}">
+      <div class="flex items-center gap-3 bg-app-surface rounded-2xl border border-app-border p-4" data-todo-id="${task.id}">
         <button
           data-action="focus-mode#toggleTask"
           data-todo-id="${task.id}"
           data-toggle-url="${task.toggleUrl}"
-          class="flex-shrink-0 w-7 h-7 rounded-full border-2 border-stone-600 hover:border-violet-400 flex items-center justify-center transition-colors cursor-pointer"
+          class="flex-shrink-0 w-7 h-7 rounded-full border-2 border-app-border hover:border-violet-400 flex items-center justify-center transition-colors cursor-pointer"
         >
         </button>
-        <span class="text-white text-base flex-1">${task.title}</span>
+        <span class="text-app-text text-base flex-1">${task.title}</span>
       </div>
     `).join("")
   }
@@ -163,16 +163,16 @@ export default class extends Controller {
   #updateTaskRowState(btn, completed) {
     if (completed) {
       btn.classList.add("bg-violet-600", "border-violet-600")
-      btn.classList.remove("border-stone-600")
+      btn.classList.remove("border-app-border")
       btn.innerHTML = `<svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`
       const title = btn.closest("[data-todo-id]")?.querySelector("span")
-      if (title) title.classList.add("line-through", "text-stone-500")
+      if (title) title.classList.add("line-through", "text-app-faint")
     } else {
       btn.classList.remove("bg-violet-600", "border-violet-600")
-      btn.classList.add("border-stone-600")
+      btn.classList.add("border-app-border")
       btn.innerHTML = ""
       const title = btn.closest("[data-todo-id]")?.querySelector("span")
-      if (title) title.classList.remove("line-through", "text-stone-500")
+      if (title) title.classList.remove("line-through", "text-app-faint")
     }
   }
 

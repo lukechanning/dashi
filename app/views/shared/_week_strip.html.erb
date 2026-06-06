@@ -8,11 +8,11 @@
     <% is_selected = day == selected_date %>
     <% is_today = day == today %>
     <% link_target = is_today ? root_path : root_path(date: day.iso8601) %>
-    <%= link_to link_target, class: "flex-1 flex flex-col items-center py-2 px-1 rounded-xl transition-colors #{ is_selected ? 'bg-violet-600 text-white shadow-sm' : 'hover:bg-stone-100 text-stone-500' }" do %>
+    <%= link_to link_target, class: "flex-1 flex flex-col items-center py-2 px-1 rounded-xl transition-colors #{ is_selected ? 'bg-app-primary text-white shadow-sm' : 'hover:bg-app-surface-muted text-app-muted' }" do %>
       <span class="text-xs font-medium mb-1 uppercase tracking-wide"><%= day.strftime("%a")[0] %></span>
       <span class="text-base font-bold leading-none"><%= day.strftime("%-d") %></span>
       <% if is_today && !is_selected %>
-        <span class="w-1 h-1 rounded-full bg-violet-400 mt-1"></span>
+        <span class="w-1 h-1 rounded-full bg-app-primary mt-1"></span>
       <% elsif is_selected %>
         <span class="w-1 h-1 rounded-full bg-white/60 mt-1"></span>
       <% else %>

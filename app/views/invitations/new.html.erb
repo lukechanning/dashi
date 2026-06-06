@@ -1,16 +1,16 @@
-<h1 class="text-2xl font-bold mb-6">Invite someone</h1>
+<h1 class="text-2xl font-bold text-app-text mb-6">Invite someone</h1>
 
 <%= form_with model: @invitation, url: invitations_path, class: "space-y-4 max-w-sm" do |f| %>
   <%= render "shared/error_messages", model: @invitation %>
 
   <div>
-    <%= f.label :email, "Email address", class: "block text-sm font-medium text-stone-700 mb-1.5" %>
+    <%= f.label :email, "Email address", class: form_label_class %>
     <%= f.email_field :email, required: true, autofocus: true, placeholder: "friend@example.com",
-        class: "w-full rounded-xl border border-stone-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent" %>
+        class: form_control_class %>
   </div>
 
   <div class="flex items-center gap-3">
-    <%= f.submit "Send invitation", class: "bg-violet-600 text-white rounded-xl px-5 py-2.5 text-sm font-medium hover:bg-violet-700 cursor-pointer" %>
-    <%= link_to "Cancel", invitations_path, class: "text-sm text-stone-500 hover:text-stone-700" %>
+    <%= f.submit "Send invitation", class: primary_button_class("text-sm") %>
+    <%= link_to "Cancel", invitations_path, class: muted_link_class("text-sm") %>
   </div>
 <% end %>

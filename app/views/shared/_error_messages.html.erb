@@ -1,5 +1,5 @@
 <% if model.errors.any? %>
-  <div class="bg-red-50 border border-red-200 text-red-800 rounded-xl p-3 text-sm space-y-0.5">
+  <div class="bg-app-danger-soft border border-app-danger text-app-danger rounded-xl p-3 text-sm space-y-0.5">
     <% model.errors.full_messages.each do |msg| %>
       <p><%= msg %></p>
     <% end %>

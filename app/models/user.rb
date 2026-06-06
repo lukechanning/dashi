@@ -14,6 +14,7 @@ class User < ApplicationRecord
   has_many :chains, dependent: :destroy
 
   STALE_THRESHOLD_OPTIONS = [ 3, 5, 7, 14 ].freeze
+  APPEARANCE_THEME_OPTIONS = %w[light dark].freeze
   # Array of [label, value] pairs — order determines dropdown display order
   WEEK_START_OPTIONS = [ [ "Monday", 1 ], [ "Sunday", 0 ] ].freeze
   WEEK_START_SYMBOLS  = { 0 => :sunday, 1 => :monday }.freeze
@@ -22,6 +23,7 @@ class User < ApplicationRecord
   validates :name, presence: true
   validates :stale_threshold_days, inclusion: { in: STALE_THRESHOLD_OPTIONS }
   validates :week_start_day, inclusion: { in: WEEK_START_SYMBOLS.keys }
+  validates :appearance_theme, inclusion: { in: APPEARANCE_THEME_OPTIONS }
 
   normalizes :email, with: ->(email) { email.strip.downcase }
 

@@ -1,34 +1,34 @@
 <div class="mb-6">
   <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-bold"><%= [@goal.emoji, @goal.title].compact.join(" ") %></h1>
+    <h1 class="text-2xl font-bold text-app-text"><%= [@goal.emoji, @goal.title].compact.join(" ") %></h1>
     <div class="flex items-center gap-2">
-      <%= link_to "Edit", edit_goal_path(@goal), class: "text-sm text-gray-600 hover:text-gray-900" %>
+      <%= link_to "Edit", edit_goal_path(@goal), class: muted_link_class("text-sm") %>
       <%= button_to "Delete", goal_path(@goal), method: :delete,
           data: { turbo_confirm: "Delete this goal and all its projects?" },
-          class: "text-sm text-red-600 hover:text-red-800 cursor-pointer" %>
+          class: "text-sm text-app-danger hover:opacity-80 cursor-pointer" %>
     </div>
   </div>
 
   <% if @goal.description.present? %>
-    <p class="text-gray-600 mt-2"><%= @goal.description %></p>
+    <p class="text-app-muted mt-2"><%= @goal.description %></p>
   <% end %>
 
   <div class="flex items-center gap-2 mt-3">
     <% if @goal.active? %>
       <%= button_to "Mark complete", goal_path(@goal), method: :patch,
           params: { goal: { status: "completed" } },
-          class: "px-3 py-1.5 text-sm font-medium bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors cursor-pointer" %>
+          class: "px-3 py-1.5 text-sm font-medium bg-app-success-soft text-app-success rounded-xl hover:opacity-85 transition-colors cursor-pointer" %>
       <%= button_to "Archive", goal_path(@goal), method: :patch,
           params: { goal: { status: "archived" } },
           data: { turbo_confirm: "Archive this goal and all its projects?" },
-          class: "px-3 py-1.5 text-sm font-medium bg-stone-100 text-stone-600 rounded-xl hover:bg-stone-200 transition-colors cursor-pointer" %>
+          class: "px-3 py-1.5 text-sm font-medium bg-app-danger-soft text-app-danger rounded-xl hover:opacity-85 transition-colors cursor-pointer" %>
     <% else %>
-      <span class="text-xs px-2 py-1 rounded-full bg-stone-100 text-stone-500 font-medium">
+      <span class="text-xs px-2 py-1 rounded-full bg-app-surface-muted text-app-muted font-medium">
         <%= @goal.status.capitalize %>
       </span>
       <%= button_to "Reactivate", goal_path(@goal), method: :patch,
           params: { goal: { status: "active" } },
-          class: "px-3 py-1.5 text-sm font-medium bg-violet-600 text-white rounded-xl hover:bg-violet-700 transition-colors cursor-pointer" %>
+          class: primary_button_class("px-3 py-1.5 text-sm") %>
     <% end %>
   </div>
   <div class="mt-4">
@@ -39,16 +39,16 @@
 <%= render "shared/members_section", memberable: @goal %>
 
 <div class="flex items-center justify-between mb-4">
-  <h2 class="text-lg font-semibold">Projects</h2>
-  <%= link_to "New project", new_project_path(goal_id: @goal.id), class: "text-sm text-blue-600 hover:text-blue-800" %>
+  <h2 class="text-lg font-semibold text-app-text">Projects</h2>
+  <%= link_to "New project", new_project_path(goal_id: @goal.id), class: "text-sm text-app-primary hover:opacity-85" %>
 </div>
 
 <% if @projects.any? %>
   <div class="space-y-3">
     <% @projects.each do |project| %>
-      <%= link_to project_path(project), class: "block bg-white rounded-lg border border-gray-200 p-4 hover:border-gray-300 transition" do %>
+      <%= link_to project_path(project), class: "#{card_class('block p-4')} hover:border-app-muted transition" do %>
         <div class="flex items-center justify-between">
-          <h3 class="font-medium text-gray-900"><%= [project.emoji, project.title].compact.join(" ") %></h3>
+          <h3 class="font-medium text-app-text"><%= [project.emoji, project.title].compact.join(" ") %></h3>
           <div class="flex items-center gap-3">
             <% members = ([project.user] + project.members.to_a).uniq %>
             <% if members.size > 1 %>
@@ -61,20 +61,20 @@
     <% end %>
   </div>
 <% elsif !@show_all_projects %>
-  <div class="text-center py-8 text-gray-500 text-sm">
+  <div class="text-center py-8 text-app-muted text-sm">
     <p>No active projects yet.</p>
   </div>
 <% end %>
 
 <% if @show_all_projects %>
   <div class="mt-4 text-center">
-    <%= link_to goal_path(@goal), class: "text-sm text-stone-400 hover:text-stone-600 transition-colors" do %>
+    <%= link_to goal_path(@goal), class: "text-sm text-app-faint hover:text-app-muted transition-colors" do %>
       Hide completed &amp; archived projects
     <% end %>
   </div>
 <% elsif @inactive_projects_count&.positive? %>
   <div class="mt-4 text-center">
-    <%= link_to goal_path(@goal, show_all: 1), class: "text-sm text-stone-400 hover:text-stone-600 transition-colors" do %>
+    <%= link_to goal_path(@goal, show_all: 1), class: "text-sm text-app-faint hover:text-app-muted transition-colors" do %>
       Show completed &amp; archived projects (<%= @inactive_projects_count %>)
     <% end %>
   </div>
