@@ -3,9 +3,11 @@ class ProjectsController < ApplicationController
 
   def index
     @show_all = params[:show_all].present?
-    scope = @show_all ? current_user.projects : current_user.projects.active
-    @projects = scope.ordered.includes(:members, :goal)
-    @inactive_count = current_user.projects.where.not(status: :active).count unless @show_all
+    inactive_scope = current_user.projects.where.not(status: :active)
+
+    @projects = current_user.projects.active.ordered.includes(:members, :goal)
+    @inactive_count = inactive_scope.count
+    @inactive_projects = inactive_scope.ordered.includes(:goal) if @show_all
   end
 
   def show
@@ -24,7 +26,7 @@ class ProjectsController < ApplicationController
     if @project.save
       if params[:from_todo].present?
         todo = current_user.todos.find_by(id: params[:from_todo])
-        todo&.destroy
+        todo&.discard!
       end
       respond_to do |format|
         format.json { render json: { id: @project.id, redirect: project_path(@project) }, status: :created }
@@ -65,7 +67,7 @@ class ProjectsController < ApplicationController
   end
 
   def destroy
-    @project.destroy!
+    @project.discard!
     redirect_to @project.goal || projects_path, notice: "Project deleted."
   end
 

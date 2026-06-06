@@ -57,7 +57,7 @@ class GoalsController < ApplicationController
   end
 
   def destroy
-    @goal.destroy!
+    @goal.discard!
     redirect_to goals_path, notice: "Goal deleted."
   end
 
@@ -78,9 +78,16 @@ class GoalsController < ApplicationController
       updated = @goal.update(goal_params)
       next unless updated
 
-      @goal.projects.update_all(status: Project.statuses[:archived], updated_at: Time.current) if archiving_goal
+      archive_goal_projects_and_todos if archiving_goal
     end
 
     updated
+  end
+
+  def archive_goal_projects_and_todos
+    now = Time.current
+
+    @goal.projects.update_all(status: Project.statuses[:archived], updated_at: now)
+    @goal.todos.incomplete.find_each(&:discard!)
   end
 end

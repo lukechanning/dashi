@@ -30,7 +30,7 @@ class NotesController < ApplicationController
   end
 
   def destroy
-    @note.destroy!
+    @note.discard!
     redirect_back fallback_location: root_path, notice: "Note deleted."
   end
 

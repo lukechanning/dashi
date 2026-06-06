@@ -7,7 +7,7 @@
 </div>
 
 <% if @projects.any? %>
-  <div class="relative">
+  <div class="relative" data-testid="active-projects">
     <% @projects.each_with_index do |project, i| %>
       <% card_bg = pastel_cards[i % pastel_cards.length] %>
       <% card_text = card_texts[i % card_texts.length] %>
@@ -59,8 +59,47 @@
       <% end %>
     <% end %>
   </div>
-<% elsif !@show_all %>
+<% else %>
   <%= render "shared/empty_state", message: "No active projects. Create one to get started." %>
+<% end %>
+
+<% if @show_all && @inactive_projects.any? %>
+  <section class="mt-10" data-testid="inactive-projects">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-sm font-semibold text-stone-500 uppercase">Completed &amp; archived</h2>
+      <span class="text-xs text-stone-400"><%= pluralize(@inactive_projects.size, "project") %></span>
+    </div>
+
+    <div class="overflow-hidden rounded-lg border border-stone-200 bg-stone-50">
+      <table class="w-full text-sm">
+        <tbody class="divide-y divide-stone-200">
+          <% @inactive_projects.each do |project| %>
+            <% status_classes = project.archived? ? "bg-stone-200 text-stone-600" : "bg-emerald-50 text-emerald-700" %>
+            <tr class="hover:bg-white/70 transition-colors">
+              <td class="py-3 pl-4 pr-3 align-middle">
+                <%= link_to project_path(project), class: "flex items-center gap-3 min-w-0" do %>
+                  <span class="text-base shrink-0"><%= project.emoji.presence || "📁" %></span>
+                  <span class="font-medium text-stone-700 truncate"><%= project.title %></span>
+                <% end %>
+              </td>
+              <td class="hidden sm:table-cell px-3 py-3 text-stone-500 align-middle">
+                <% if project.goal %>
+                  <span class="inline-flex max-w-52 items-center rounded-full bg-white px-2 py-0.5 text-xs text-stone-500">
+                    <span class="truncate"><%= [project.goal.emoji, project.goal.title].compact.join(" ") %></span>
+                  </span>
+                <% end %>
+              </td>
+              <td class="py-3 pl-3 pr-4 text-right align-middle">
+                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium <%= status_classes %>">
+                  <%= project.status.capitalize %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
 <% end %>
 
 <%# Show/hide completed & archived footer %>

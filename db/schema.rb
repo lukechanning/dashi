@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_25_211832) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_06_192000) do
   create_table "chain_items", force: :cascade do |t|
     t.integer "chain_id", null: false
     t.datetime "completed_at"
@@ -30,11 +30,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_211832) do
   create_table "chains", force: :cascade do |t|
     t.datetime "completed_at"
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
     t.text "description"
     t.string "emoji"
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["deleted_at"], name: "index_chains_on_deleted_at"
     t.index ["user_id"], name: "index_chains_on_user_id"
   end
 
@@ -49,6 +51,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_211832) do
 
   create_table "goals", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
     t.text "description"
     t.string "emoji"
     t.integer "position"
@@ -56,6 +59,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_211832) do
     t.string "title"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["deleted_at"], name: "index_goals_on_deleted_at"
     t.index ["user_id"], name: "index_goals_on_user_id"
   end
 
@@ -63,6 +67,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_211832) do
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.string "days_of_week"
+    t.datetime "deleted_at"
     t.integer "frequency", default: 0, null: false
     t.integer "position"
     t.integer "project_id"
@@ -70,6 +75,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_211832) do
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["deleted_at"], name: "index_habits_on_deleted_at"
     t.index ["project_id"], name: "index_habits_on_project_id"
     t.index ["user_id", "active"], name: "index_habits_on_user_id_and_active"
     t.index ["user_id"], name: "index_habits_on_user_id"
@@ -101,16 +107,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_211832) do
   create_table "notes", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
     t.integer "notable_id", null: false
     t.string "notable_type", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["deleted_at"], name: "index_notes_on_deleted_at"
     t.index ["notable_type", "notable_id"], name: "index_notes_on_notable"
     t.index ["user_id"], name: "index_notes_on_user_id"
   end
 
   create_table "projects", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
     t.text "description"
     t.string "emoji"
     t.integer "goal_id"
@@ -119,6 +128,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_211832) do
     t.string "title"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["deleted_at"], name: "index_projects_on_deleted_at"
     t.index ["goal_id"], name: "index_projects_on_goal_id"
     t.index ["user_id"], name: "index_projects_on_user_id"
   end
@@ -126,6 +136,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_211832) do
   create_table "todos", force: :cascade do |t|
     t.datetime "completed_at"
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
     t.date "due_date"
     t.integer "habit_id"
     t.text "notes"
@@ -134,7 +145,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_211832) do
     t.string "title"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
-    t.index ["habit_id", "due_date"], name: "index_todos_on_habit_id_and_due_date", unique: true
+    t.index ["deleted_at"], name: "index_todos_on_deleted_at"
+    t.index ["habit_id", "due_date"], name: "index_todos_on_habit_id_and_due_date", unique: true, where: "deleted_at IS NULL"
     t.index ["habit_id"], name: "index_todos_on_habit_id"
     t.index ["project_id"], name: "index_todos_on_project_id"
     t.index ["user_id", "completed_at"], name: "index_todos_on_user_id_and_completed_at"

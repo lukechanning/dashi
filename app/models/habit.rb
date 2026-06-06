@@ -1,4 +1,6 @@
 class Habit < ApplicationRecord
+  include SoftDeletable
+
   belongs_to :user
   belongs_to :project, optional: true
   has_many :todos, dependent: :nullify
@@ -14,6 +16,13 @@ class Habit < ApplicationRecord
   scope :active, -> { where(active: true) }
   scope :paused, -> { where(active: false) }
   scope :ordered, -> { order(:position) }
+
+  def discard!
+    transaction do
+      todos.update_all(habit_id: nil, updated_at: Time.current)
+      super
+    end
+  end
 
   def scheduled_for?(date)
     return false unless active?

@@ -82,23 +82,29 @@ RSpec.describe "Goals", type: :request do
       expect(goal.reload.title).to eq("Updated")
     end
 
-    it "archives the goal's projects when archiving the goal" do
+    it "archives the goal's projects and soft-deletes open tasks when archiving the goal" do
       goal = create(:goal, user: user)
       active_project = create(:project, user: user, goal: goal, status: :active)
       completed_project = create(:project, user: user, goal: goal, status: :completed)
+      active_todo = create(:todo, user: user, project: active_project, completed_at: nil)
+      completed_todo = create(:todo, :completed, user: user, project: active_project)
 
       patch goal_path(goal), params: { goal: { status: "archived" } }
 
       expect(goal.reload).to be_archived
       expect(active_project.reload).to be_archived
       expect(completed_project.reload).to be_archived
+      expect(active_todo.reload.deleted_at).to be_present
+      expect(active_todo).not_to be_complete
+      expect(completed_todo.reload.deleted_at).to be_nil
     end
   end
 
   describe "DELETE /goals/:id" do
-    it "destroys the goal" do
+    it "soft-deletes the goal" do
       goal = create(:goal, user: user)
-      expect { delete goal_path(goal) }.to change(Goal, :count).by(-1)
+      expect { delete goal_path(goal) }.not_to change(Goal.unscoped, :count)
+      expect(goal.reload.deleted_at).to be_present
       expect(response).to redirect_to(goals_path)
     end
   end

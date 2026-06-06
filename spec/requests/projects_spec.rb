@@ -12,6 +12,19 @@ RSpec.describe "Projects", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("Run 3x/week")
     end
+
+    it "keeps inactive projects in a separate section when requested" do
+      create(:project, user: user, title: "Active Project", status: :active)
+      create(:project, user: user, title: "Archived Project", status: :archived)
+
+      get projects_path(show_all: 1)
+
+      expect(response.body).to include("data-testid=\"active-projects\"")
+      expect(response.body).to include("data-testid=\"inactive-projects\"")
+      expect(response.body).to match(
+        /data-testid="active-projects".*Active Project.*data-testid="inactive-projects".*Archived Project/m
+      )
+    end
   end
 
   describe "GET /projects/:id" do
@@ -44,6 +57,16 @@ RSpec.describe "Projects", type: :request do
       goal = create(:goal, user: user)
       post projects_path, params: { project: { title: "Linked", goal_id: goal.id } }
       expect(Project.last.goal).to eq(goal)
+    end
+
+    it "soft-deletes the source todo when creating a project from a todo" do
+      todo = create(:todo, user: user)
+
+      expect {
+        post projects_path, params: { from_todo: todo.id, project: { title: "From todo" } }
+      }.not_to change(Todo.unscoped, :count)
+
+      expect(todo.reload.deleted_at).to be_present
     end
 
     context "when requested as JSON (wizard)" do
@@ -79,9 +102,10 @@ RSpec.describe "Projects", type: :request do
   end
 
   describe "DELETE /projects/:id" do
-    it "destroys the project" do
+    it "soft-deletes the project" do
       project = create(:project, user: user)
-      expect { delete project_path(project) }.to change(Project, :count).by(-1)
+      expect { delete project_path(project) }.not_to change(Project.unscoped, :count)
+      expect(project.reload.deleted_at).to be_present
     end
   end
 end

@@ -1,6 +1,7 @@
 class Goal < ApplicationRecord
   include ActivityTrackable
   include MomentumTrackable
+  include SoftDeletable
 
   belongs_to :user
   has_many :projects, dependent: :destroy
@@ -14,4 +15,12 @@ class Goal < ApplicationRecord
   validates :title, presence: true
 
   scope :ordered, -> { order(:position) }
+
+  def discard!
+    transaction do
+      projects.find_each(&:discard!)
+      notes.find_each(&:discard!)
+      super
+    end
+  end
 end

@@ -29,9 +29,10 @@ RSpec.describe "Notes", type: :request do
   end
 
   describe "DELETE /goals/:goal_id/notes/:id" do
-    it "deletes a note" do
+    it "soft-deletes a note" do
       note = create(:note, user: user, notable: goal)
-      expect { delete goal_note_path(goal, note) }.to change(Note, :count).by(-1)
+      expect { delete goal_note_path(goal, note) }.not_to change(Note.unscoped, :count)
+      expect(note.reload.deleted_at).to be_present
     end
   end
 
