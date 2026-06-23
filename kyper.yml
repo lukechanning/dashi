@@ -6,7 +6,7 @@ category: productivity
 docker:
   dockerfile: ./Dockerfile
 processes:
-  web: "./bin/rails server -b 0.0.0.0 -p 3000"
+  web: "./bin/docker-entrypoint ./bin/rails server -b 0.0.0.0 -p 3000"
 pricing:
   subscription: 5
 resources:
@@ -17,7 +17,7 @@ deps:
 capabilities:
   - email
 hooks:
-  on_deploy: "bundle exec rails db:prepare"
+  release: "bundle exec rails db:prepare"
   on_update: "bundle exec rails db:migrate"
 healthcheck:
   path: /up
