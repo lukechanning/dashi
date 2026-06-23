@@ -1,5 +1,5 @@
 name: dashi
-version: 0.2.0
+version: 0.2.1
 description: │A calm, focused space for daily todos, projects, and the goals behind them.
 tagline: A quiet place to keep your days in order.
 category: productivity
@@ -14,10 +14,8 @@ resources:
   min_cpu: 1
 deps:
   - s3
-env:
-  - MAILER_FROM
-integrations:
-  - resend
+capabilities:
+  - email
 hooks:
   on_deploy: "bundle exec rails db:prepare"
   on_update: "bundle exec rails db:migrate"
