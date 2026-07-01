@@ -19,11 +19,6 @@ module Account
       raw = file.read
       data = JSON.parse(raw)
 
-      unless data.dig("meta", "user_email") == current_user.email
-        flash.now[:alert] = "This export file belongs to a different account."
-        return render :new, status: :unprocessable_entity
-      end
-
       result = ImportService.new(current_user, data).call
 
       if result.errors.any?
