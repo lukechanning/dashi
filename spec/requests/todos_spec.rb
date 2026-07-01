@@ -20,6 +20,14 @@ RSpec.describe "Todos", type: :request do
       expect(Todo.last.project).to eq(project)
     end
 
+    it "does not attach another user's project" do
+      other_project = create(:project, user: create(:user))
+
+      post todos_path, params: { todo: { title: "Run 5k", project_id: other_project.id, due_date: Date.current } }
+
+      expect(Todo.last.project).to be_nil
+    end
+
     it "rejects invalid todos" do
       post todos_path, params: { todo: { title: "" } }
       expect(response).to have_http_status(:unprocessable_entity)
@@ -31,6 +39,24 @@ RSpec.describe "Todos", type: :request do
       todo = create(:todo, user: user)
       patch todo_path(todo), params: { todo: { title: "Updated" } }
       expect(todo.reload.title).to eq("Updated")
+    end
+
+    it "updates the todo's project when it belongs to the user" do
+      project = create(:project, user: user)
+      todo = create(:todo, user: user)
+
+      patch todo_path(todo), params: { todo: { project_id: project.id } }
+
+      expect(todo.reload.project).to eq(project)
+    end
+
+    it "does not attach another user's project on update" do
+      other_project = create(:project, user: create(:user))
+      todo = create(:todo, user: user)
+
+      patch todo_path(todo), params: { todo: { project_id: other_project.id } }
+
+      expect(todo.reload.project).to be_nil
     end
   end
 

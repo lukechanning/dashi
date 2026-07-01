@@ -43,12 +43,22 @@ export default class extends Controller {
 
   async letItGo(event) {
     const todoId = event.currentTarget.dataset.todoId
-    const csrfToken = document.querySelector("meta[name='csrf-token']").content
-    const response = await fetch(`/todos/${todoId}`, {
-      method: "DELETE",
-      headers: { "X-CSRF-Token": csrfToken, "Accept": "application/json" },
-    })
-    if (response.ok) this.#removeRow(todoId)
+    event.currentTarget.disabled = true
+    try {
+      const response = await fetch(`/todos/${todoId}`, {
+        method: "DELETE",
+        headers: { "X-CSRF-Token": this.#csrfToken(), "Accept": "application/json" },
+      })
+      if (response.ok) {
+        this.#removeRow(todoId)
+      } else {
+        alert("Something went wrong removing this task. Please try again.")
+        event.currentTarget.disabled = false
+      }
+    } catch {
+      alert("Something went wrong removing this task. Please try again.")
+      event.currentTarget.disabled = false
+    }
   }
 
   async saveNote(event) {
@@ -91,14 +101,17 @@ export default class extends Controller {
   }
 
   #postNote(url, body) {
-    const csrfToken = document.querySelector("meta[name='csrf-token']").content
     return fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        "X-CSRF-Token": csrfToken,
+        "X-CSRF-Token": this.#csrfToken(),
       },
       body: new URLSearchParams({ "note[body]": body }),
     })
+  }
+
+  #csrfToken() {
+    return document.querySelector("meta[name='csrf-token']")?.content || ""
   }
 }

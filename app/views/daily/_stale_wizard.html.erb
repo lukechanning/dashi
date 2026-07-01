@@ -154,6 +154,7 @@
                   data-action="stale-wizard#submitBreakUp"
                   data-stale-wizard-todo-id-param="<%= todo.id %>"
                   data-stale-wizard-step-param="<%= i %>"
+                  <% if todo.project_id %>data-stale-wizard-project-id-param="<%= todo.project_id %>"<% end %>
                   class="<%= primary_button_class("mt-2 w-full px-3 py-2 text-sm rounded-lg") %>"
                 >
                   Create tasks &amp; remove this one

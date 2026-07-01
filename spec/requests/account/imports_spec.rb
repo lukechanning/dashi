@@ -49,6 +49,28 @@ RSpec.describe "Account::Imports", type: :request do
       end
     end
 
+    context "with missing import params" do
+      it "re-renders the form with an error" do
+        post account_import_path, params: {}
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "with an oversized file" do
+      it "re-renders the form with an error before importing" do
+        file = Rack::Test::UploadedFile.new(
+          StringIO.new("x" * (10.megabytes + 1)),
+          "application/json",
+          original_filename: "large-export.json"
+        )
+
+        post account_import_path, params: { import: { file: file } }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("larger than 10 MB")
+      end
+    end
+
     context "with invalid JSON" do
       it "re-renders the form with an error" do
         file = Rack::Test::UploadedFile.new(
@@ -61,11 +83,20 @@ RSpec.describe "Account::Imports", type: :request do
       end
     end
 
-    context "with a file from a different user" do
-      it "re-renders the form with an error" do
+    context "with a file exported under a different email" do
+      it "imports successfully" do
         other_export = {
           meta: { exported_at: Time.current.iso8601, user_email: "other@example.com" },
-          goals: [],
+          goals: [
+            {
+              id: 123,
+              title: "Restored goal",
+              status: "active",
+              created_at: Time.current.iso8601(6),
+              notes: [],
+              projects: []
+            }
+          ],
           standalone_todos: [],
           daily_pages: []
         }.to_json
@@ -75,7 +106,8 @@ RSpec.describe "Account::Imports", type: :request do
           original_filename: "export.json"
         )
         post account_import_path, params: { import: { file: file } }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to redirect_to(account_path)
+        expect(user.goals.find_by(title: "Restored goal")).to be_present
       end
     end
 

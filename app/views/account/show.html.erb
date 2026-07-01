@@ -140,14 +140,14 @@
     <div class="p-5 flex items-center justify-between">
       <div>
         <p class="<%= detail_label_class %>">Export</p>
-        <p class="<%= detail_value_class %>">Download all your data as a JSON file</p>
+        <p class="<%= detail_value_class %>">Download your personal content and preferences as a JSON file</p>
       </div>
       <%= link_to "Download", account_export_path, class: primary_link_class("text-sm font-medium shrink-0") %>
     </div>
     <div class="p-5 flex items-center justify-between">
       <div>
         <p class="<%= detail_label_class %>">Import</p>
-        <p class="<%= detail_value_class %>">Restore data from a previous export</p>
+        <p class="<%= detail_value_class %>">Restore personal content and preferences from a previous export</p>
       </div>
       <%= link_to "Upload", new_account_import_path, class: primary_link_class("text-sm font-medium shrink-0") %>
     </div>

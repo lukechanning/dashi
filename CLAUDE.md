@@ -9,7 +9,7 @@ Personal project management app for tracking daily todos, medium-term projects, 
 - **Database:** SQLite with Litestream for continuous backups to S3/Tigris
 - **Auth:** Magic link (passwordless) via Resend, invite-only registration
 - **Testing:** RSpec + FactoryBot + Shoulda Matchers + Capybara system tests
-- **Deployment:** Fly.io, single machine
+- **Deployment:** Containerized Rails app, currently set up for Kamal/single-machine hosting
 
 ## Architecture
 
@@ -93,38 +93,34 @@ bundle exec rspec spec/requests/     # Request/controller specs
 - Admin users can send invitations
 - No public registration — must be invited
 
-## Deployment (Fly.io)
+## Deployment
 
 ### Environment Variables
 - `SECRET_KEY_BASE` — Rails secret
 - `RESEND_API_KEY` — for sending magic link emails
-- `APP_HOST` — production hostname (e.g., `dashi.fly.dev`)
-- `LITESTREAM_ACCESS_KEY_ID` — S3/Tigris access key
-- `LITESTREAM_SECRET_ACCESS_KEY` — S3/Tigris secret key
+- `APP_HOST` — production hostname
+- `LITESTREAM_ACCESS_KEY_ID` — S3-compatible object storage access key
+- `LITESTREAM_SECRET_ACCESS_KEY` — S3-compatible object storage secret key
 - `LITESTREAM_BUCKET` — backup bucket name
-- `LITESTREAM_ENDPOINT` — S3-compatible endpoint (e.g., Tigris)
+- `LITESTREAM_ENDPOINT` — S3-compatible endpoint
 
 ### First Deploy
 ```bash
-fly launch                                           # Create app (skip db, use existing fly.toml)
-fly volumes create dashi_storage --region iad --size 1  # 1GB persistent volume
-fly secrets set SECRET_KEY_BASE=$(bin/rails secret)
-fly secrets set RESEND_API_KEY=re_xxxxx
-fly secrets set APP_HOST=dashi.fly.dev
-fly secrets set LITESTREAM_ACCESS_KEY_ID=xxxxx
-fly secrets set LITESTREAM_SECRET_ACCESS_KEY=xxxxx
-fly secrets set LITESTREAM_BUCKET=dashi-backups
-fly secrets set LITESTREAM_ENDPOINT=https://fly.storage.tigris.dev
-fly deploy
-fly ssh console -C "/rails/bin/rails 'users:create_admin EMAIL=you@example.com NAME=YourName'"
+cp config/deploy.yml config/deploy.yml.local        # Fill in servers/registry for your host
+bin/kamal setup                                     # Provision host and install accessories
+bin/kamal deploy                                    # Build and deploy the app
+bin/kamal app exec \
+  --interactive \
+  --reuse \
+  "bin/rails users:create_admin EMAIL=you@example.com NAME=YourName"
 ```
 
 ### Ongoing
 ```bash
-fly deploy           # Deploy to Fly.io
-fly ssh console      # SSH into the running machine
-fly logs             # Tail logs
+bin/kamal deploy     # Deploy
+bin/kamal shell      # Open a shell in the running container
+bin/kamal logs       # Tail logs
 ```
 
 ### How it works
-SQLite databases live in `/rails/storage/` on a persistent Fly volume. Litestream continuously replicates the WAL to object storage. On machine restart, `bin/docker-entrypoint` restores from the latest backup before Rails boots. The entrypoint then runs Litestream as a wrapper process that replicates in the background while Rails serves requests.
+SQLite databases live in `/rails/storage/` on persistent host storage. Litestream continuously replicates the WAL to object storage. On container start, `bin/docker-entrypoint` restores from the latest backup before Rails boots if no local database is present. The entrypoint then runs Litestream as a wrapper process that replicates in the background while Rails serves requests.

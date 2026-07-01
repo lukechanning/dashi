@@ -1,6 +1,8 @@
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
+  production_host = ENV["APP_HOST"].presence || (URI.parse(ENV["ORIGIN"]).host if ENV["ORIGIN"].present?)
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.
@@ -55,7 +57,7 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: ENV["APP_HOST"] || (URI.parse(ENV["ORIGIN"]).host if ENV["ORIGIN"].present?) || "dashi.fly.dev", protocol: "https" }
+  config.action_mailer.default_url_options = { host: production_host, protocol: "https" }.compact
 
   # Transactional email (magic links, invitations) via Resend
   config.action_mailer.delivery_method = :smtp
@@ -79,10 +81,7 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  config.hosts = [
-    ENV.fetch("APP_HOST", "dashi.fly.dev"),
-    (URI.parse(ENV["ORIGIN"]).host if ENV["ORIGIN"].present?)
-  ].compact
+  config.hosts = [ production_host ].compact
 
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }

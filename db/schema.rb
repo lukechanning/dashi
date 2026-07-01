@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_07_010000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_02_000000) do
   create_table "chain_items", force: :cascade do |t|
     t.integer "chain_id", null: false
     t.datetime "completed_at"
@@ -79,6 +79,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_07_010000) do
     t.index ["project_id"], name: "index_habits_on_project_id"
     t.index ["user_id", "active"], name: "index_habits_on_user_id_and_active"
     t.index ["user_id"], name: "index_habits_on_user_id"
+  end
+
+  create_table "import_mappings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "record_type", null: false
+    t.string "source_account_key", null: false
+    t.string "source_id", null: false
+    t.integer "target_id", null: false
+    t.string "target_type", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id", "source_account_key", "record_type", "source_id"], name: "index_import_mappings_on_user_source_and_record", unique: true
+    t.index ["user_id"], name: "index_import_mappings_on_user_id"
   end
 
   create_table "invitations", force: :cascade do |t|
@@ -189,6 +202,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_07_010000) do
   add_foreign_key "goals", "users"
   add_foreign_key "habits", "projects"
   add_foreign_key "habits", "users"
+  add_foreign_key "import_mappings", "users"
   add_foreign_key "invitations", "users", column: "invited_by_id"
   add_foreign_key "memberships", "users"
   add_foreign_key "notes", "users"
