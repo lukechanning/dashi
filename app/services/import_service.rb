@@ -408,19 +408,39 @@ class ImportService
       end
 
       Array(record["items"]).each do |item|
-        import_record(payload, "ChainItem", item) do
-          chain.chain_items.create!(
-            title: item["title"],
-            description: item["description"],
-            position: item["position"],
-            completed_at: parse_time(item["completed_at"]),
-            target_project: resolve(payload, "Project", item["target_project_source_id"]),
-            todo: resolve(payload, "Todo", item["todo_source_id"]),
-            created_at: parse_time(item["created_at"])
-          )
-        end
+        import_chain_item(payload, chain, item)
       end
     end
+  end
+
+  def import_chain_item(payload, chain, item)
+    source_id = item["source_id"].to_s
+    if (mapped = mapped_record(payload, "ChainItem", source_id))
+      @records["ChainItem"][source_id] = mapped
+      @skipped += 1
+      return mapped
+    end
+
+    if (matched = chain_item_fingerprint_match(chain, item))
+      create_mapping!(payload, "ChainItem", source_id, matched)
+      @records["ChainItem"][source_id] = matched
+      @skipped += 1
+      return matched
+    end
+
+    created = chain.chain_items.create!(
+      title: item["title"],
+      description: item["description"],
+      position: item["position"],
+      completed_at: parse_time(item["completed_at"]),
+      target_project: resolve(payload, "Project", item["target_project_source_id"]),
+      todo: resolve(payload, "Todo", item["todo_source_id"]),
+      created_at: parse_time(item["created_at"])
+    )
+    create_mapping!(payload, "ChainItem", source_id, created)
+    @records["ChainItem"][source_id] = created
+    @created += 1
+    created
   end
 
   def import_record(payload, type, record)
@@ -541,5 +561,13 @@ class ImportService
 
   def parse_date(value)
     value.present? ? Date.iso8601(value.to_s) : nil
+  end
+
+  def chain_item_fingerprint_match(chain, item)
+    chain.chain_items.find_by(
+      position: item["position"],
+      title: item["title"],
+      created_at: parse_time(item["created_at"])
+    )
   end
 end

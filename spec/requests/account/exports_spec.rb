@@ -122,6 +122,22 @@ RSpec.describe "Account::Exports", type: :request do
       expect(item_data["todo_source_id"]).to eq(todo.id.to_s)
     end
 
+    it "does not emit chain item references to records omitted from the export" do
+      project = create(:project, user: user, title: "Deleted project")
+      chain = create(:chain, user: user, title: "Launch")
+      create(:chain_item, chain: chain, title: "Step", target_project: project)
+      project.discard!
+
+      get account_export_path
+
+      data = JSON.parse(response.body)
+      expect(data["projects"].map { |p| p["source_id"] }).not_to include(project.id.to_s)
+      expect(data.dig("chains", 0, "items", 0, "target_project_source_id")).to be_nil
+
+      result = ImportService.new(create(:user), data).call
+      expect(result.errors).to be_empty
+    end
+
     it "exports source ids and source reference fields instead of nested database ids" do
       goal = create(:goal, user: user)
       project = create(:project, user: user, goal: goal)

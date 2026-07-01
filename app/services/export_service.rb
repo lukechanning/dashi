@@ -6,6 +6,19 @@ class ExportService
   end
 
   def call
+    goals = user.goals.ordered.to_a
+    projects = user.projects.ordered.to_a
+    todos = user.todos.where(habit_id: nil).ordered.to_a
+    habits = user.habits.ordered.to_a
+    daily_pages = user.daily_pages.order(:date).to_a
+    chains = user.chains.includes(chain_items: [ :target_project, :todo ]).order(:created_at).to_a
+
+    @exported_goal_ids = goals.map { |goal| goal.id.to_s }.to_set
+    @exported_project_ids = projects.map { |project| project.id.to_s }.to_set
+    @exported_todo_ids = todos.map { |todo| todo.id.to_s }.to_set
+    @exported_daily_page_ids = daily_pages.map { |page| page.date.iso8601 }.to_set
+    notes = user.notes.order(:created_at).select { |note| exportable_note?(note) }
+
     {
       meta: {
         schema_version: SCHEMA_VERSION,
@@ -15,13 +28,13 @@ class ExportService
         user_email: user.email
       },
       preferences: serialize_preferences,
-      goals: user.goals.ordered.includes(:notes).map { |goal| serialize_goal(goal) },
-      projects: user.projects.ordered.includes(:notes).map { |project| serialize_project(project) },
-      todos: user.todos.where(habit_id: nil).ordered.includes(:notes).map { |todo| serialize_todo(todo) },
-      habits: user.habits.ordered.map { |habit| serialize_habit(habit) },
-      daily_pages: user.daily_pages.order(:date).includes(:notes).map { |page| serialize_daily_page(page) },
-      notes: user.notes.order(:created_at).map { |note| serialize_note(note) },
-      chains: user.chains.includes(chain_items: [ :target_project, :todo ]).order(:created_at).map { |chain| serialize_chain(chain) }
+      goals: goals.map { |goal| serialize_goal(goal) },
+      projects: projects.map { |project| serialize_project(project) },
+      todos: todos.map { |todo| serialize_todo(todo) },
+      habits: habits.map { |habit| serialize_habit(habit) },
+      daily_pages: daily_pages.map { |page| serialize_daily_page(page) },
+      notes: notes.map { |note| serialize_note(note) },
+      chains: chains.map { |chain| serialize_chain(chain) }
     }
   end
 
@@ -64,7 +77,7 @@ class ExportService
       emoji: project.emoji,
       status: project.status,
       position: project.position,
-      goal_source_id: project.goal_id&.to_s,
+      goal_source_id: exported_source_id(project.goal_id, @exported_goal_ids),
       created_at: project.created_at.iso8601(6)
     }
   end
@@ -77,7 +90,7 @@ class ExportService
       due_date: todo.due_date&.iso8601,
       completed_at: todo.completed_at&.iso8601(6),
       position: todo.position,
-      project_source_id: todo.project_id&.to_s,
+      project_source_id: exported_source_id(todo.project_id, @exported_project_ids),
       created_at: todo.created_at.iso8601(6)
     }
   end
@@ -91,7 +104,7 @@ class ExportService
       active: habit.active,
       start_date: habit.start_date&.iso8601,
       position: habit.position,
-      project_source_id: habit.project_id&.to_s,
+      project_source_id: exported_source_id(habit.project_id, @exported_project_ids),
       created_at: habit.created_at.iso8601(6)
     }
   end
@@ -132,13 +145,34 @@ class ExportService
       description: item.description,
       position: item.position,
       completed_at: item.completed_at&.iso8601(6),
-      target_project_source_id: item.target_project_id&.to_s,
-      todo_source_id: item.todo_id&.to_s,
+      target_project_source_id: exported_source_id(item.target_project_id, @exported_project_ids),
+      todo_source_id: exported_source_id(item.todo_id, @exported_todo_ids),
       created_at: item.created_at.iso8601(6)
     }
   end
 
   def source_id_for_notable(notable)
     notable.is_a?(DailyPage) ? notable.date.iso8601 : notable.id.to_s
+  end
+
+  def exported_source_id(id, exported_ids)
+    source_id = id&.to_s
+    source_id if source_id.present? && exported_ids.include?(source_id)
+  end
+
+  def exportable_note?(note)
+    case note.notable_type
+    when "Goal"
+      @exported_goal_ids.include?(note.notable_id.to_s)
+    when "Project"
+      @exported_project_ids.include?(note.notable_id.to_s)
+    when "Todo"
+      @exported_todo_ids.include?(note.notable_id.to_s)
+    when "DailyPage"
+      notable = note.notable
+      notable.present? && @exported_daily_page_ids.include?(notable.date.iso8601)
+    else
+      false
+    end
   end
 end

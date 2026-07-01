@@ -176,6 +176,17 @@ RSpec.describe ImportService do
         expect(chain_item.todo).to eq(todo)
       end
 
+      it "skips existing chain items when importing a fresh export from the same account" do
+        chain = create(:chain, user: user, title: "Launch")
+        create(:chain_item, chain: chain, title: "First", position: 0, created_at: "2025-06-01T01:00:00Z")
+        data = ExportService.new(user).call.deep_stringify_keys
+
+        result = described_class.new(user, data).call
+
+        expect(result.errors).to be_empty
+        expect(chain.reload.chain_items.count).to eq(1)
+      end
+
       it "rolls back all records when a reference is unresolved" do
         data = build_v2_export(
           "goals" => [ {
