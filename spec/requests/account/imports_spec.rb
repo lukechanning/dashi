@@ -49,6 +49,28 @@ RSpec.describe "Account::Imports", type: :request do
       end
     end
 
+    context "with missing import params" do
+      it "re-renders the form with an error" do
+        post account_import_path, params: {}
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "with an oversized file" do
+      it "re-renders the form with an error before importing" do
+        file = Rack::Test::UploadedFile.new(
+          StringIO.new("x" * (10.megabytes + 1)),
+          "application/json",
+          original_filename: "large-export.json"
+        )
+
+        post account_import_path, params: { import: { file: file } }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("larger than 10 MB")
+      end
+    end
+
     context "with invalid JSON" do
       it "re-renders the form with an error" do
         file = Rack::Test::UploadedFile.new(

@@ -3,6 +3,26 @@ require 'rails_helper'
 RSpec.describe ImportService do
   let(:user) { create(:user) }
 
+  def build_v2_export(overrides = {})
+    {
+      "meta" => {
+        "schema_version" => 2,
+        "export_id" => "export-1",
+        "source_account_key" => "user:source",
+        "exported_at" => "2026-01-01T00:00:00.000000Z",
+        "user_email" => user.email
+      },
+      "preferences" => {},
+      "goals" => [],
+      "projects" => [],
+      "todos" => [],
+      "habits" => [],
+      "daily_pages" => [],
+      "notes" => [],
+      "chains" => []
+    }.deep_merge(overrides)
+  end
+
   def build_export(overrides = {})
     {
       "meta" => { "exported_at" => "2026-01-01T00:00:00Z", "user_email" => user.email },
@@ -19,6 +39,229 @@ RSpec.describe ImportService do
         expect(result.created).to eq(0)
         expect(result.skipped).to eq(0)
         expect(result.errors).to be_empty
+      end
+    end
+
+    context "importing v2 exports" do
+      it "creates records once and skips them on repeat import using import mappings" do
+        data = build_v2_export(
+          "goals" => [ {
+            "source_id" => "goal-1",
+            "title" => "Get fit",
+            "description" => "Stay healthy",
+            "emoji" => "💪",
+            "status" => "active",
+            "position" => 1,
+            "created_at" => "2025-06-01T00:00:00.000000Z"
+          } ]
+        )
+
+        first = described_class.new(user, data).call
+        second = described_class.new(user, data).call
+
+        expect(first.created).to eq(1)
+        expect(second.created).to eq(0)
+        expect(second.skipped).to eq(1)
+        expect(user.goals.count).to eq(1)
+        expect(ImportMapping.count).to eq(1)
+      end
+
+      it "does not treat unrelated local id collisions as already imported records" do
+        create(:goal, user: user, id: 123, title: "Local")
+        data = build_v2_export(
+          "goals" => [ {
+            "source_id" => "123",
+            "title" => "Imported",
+            "status" => "active",
+            "created_at" => "2025-06-01T00:00:00.000000Z"
+          } ]
+        )
+
+        result = described_class.new(user, data).call
+
+        expect(result.errors).to be_empty
+        expect(user.goals.pluck(:title)).to include("Local", "Imported")
+      end
+
+      it "restores preferences, standalone projects and habits, notes, chains, and active todo links" do
+        data = build_v2_export(
+          "preferences" => {
+            "timezone" => "Pacific/Auckland",
+            "week_start_day" => 0,
+            "appearance_theme" => "dark",
+            "stale_threshold_days" => 7,
+            "show_stale_banner" => false,
+            "show_reflection_banner" => false
+          },
+          "projects" => [ {
+            "source_id" => "project-1",
+            "title" => "Standalone project",
+            "description" => "A project",
+            "emoji" => "🚀",
+            "status" => "active",
+            "position" => 2,
+            "goal_source_id" => nil,
+            "created_at" => "2025-06-02T00:00:00.000000Z"
+          } ],
+          "todos" => [ {
+            "source_id" => "todo-1",
+            "title" => "Ship it",
+            "notes_text" => "Details",
+            "due_date" => "2025-06-10",
+            "completed_at" => nil,
+            "position" => 1,
+            "project_source_id" => "project-1",
+            "created_at" => "2025-06-10T00:00:00.000000Z"
+          } ],
+          "habits" => [ {
+            "source_id" => "habit-1",
+            "title" => "Stretch",
+            "frequency" => "custom",
+            "days_of_week" => "1,3,5",
+            "active" => true,
+            "start_date" => "2025-06-02",
+            "position" => 1,
+            "project_source_id" => nil,
+            "created_at" => "2025-06-02T00:00:00.000000Z"
+          } ],
+          "daily_pages" => [ { "source_id" => "daily-2025-06-10", "date" => "2025-06-10" } ],
+          "notes" => [ {
+            "source_id" => "note-1",
+            "body" => "A note",
+            "notable_type" => "Project",
+            "notable_source_id" => "project-1",
+            "created_at" => "2025-06-03T00:00:00.000000Z"
+          } ],
+          "chains" => [ {
+            "source_id" => "chain-1",
+            "title" => "Launch",
+            "description" => "Steps",
+            "emoji" => "✅",
+            "completed_at" => nil,
+            "created_at" => "2025-06-01T00:00:00.000000Z",
+            "items" => [ {
+              "source_id" => "chain-item-1",
+              "title" => "First",
+              "description" => nil,
+              "position" => 0,
+              "completed_at" => nil,
+              "target_project_source_id" => "project-1",
+              "todo_source_id" => "todo-1",
+              "created_at" => "2025-06-01T01:00:00.000000Z"
+            } ]
+          } ]
+        )
+
+        result = described_class.new(user, data).call
+
+        expect(result.errors).to be_empty
+        expect(user.reload).to have_attributes(
+          timezone: "Pacific/Auckland",
+          week_start_day: 0,
+          appearance_theme: "dark",
+          stale_threshold_days: 7,
+          show_stale_banner: false,
+          show_reflection_banner: false
+        )
+        project = user.projects.find_by!(title: "Standalone project")
+        todo = user.todos.find_by!(title: "Ship it")
+        habit = user.habits.find_by!(title: "Stretch")
+        chain_item = user.chains.find_by!(title: "Launch").chain_items.first
+        expect(project.goal).to be_nil
+        expect(todo.project).to eq(project)
+        expect(habit.project).to be_nil
+        expect(project.notes.first.body).to eq("A note")
+        expect(user.daily_pages.find_by!(date: Date.new(2025, 6, 10))).to be_present
+        expect(chain_item.target_project).to eq(project)
+        expect(chain_item.todo).to eq(todo)
+      end
+
+      it "rolls back all records when a reference is unresolved" do
+        data = build_v2_export(
+          "goals" => [ {
+            "source_id" => "goal-1",
+            "title" => "Get fit",
+            "status" => "active",
+            "created_at" => "2025-06-01T00:00:00.000000Z"
+          } ],
+          "projects" => [ {
+            "source_id" => "project-1",
+            "title" => "Broken",
+            "status" => "active",
+            "goal_source_id" => "missing-goal",
+            "created_at" => "2025-06-02T00:00:00.000000Z"
+          } ]
+        )
+
+        expect {
+          result = described_class.new(user, data).call
+          expect(result.errors).not_to be_empty
+        }.not_to change(Goal, :count)
+      end
+
+      it "rejects duplicate source ids without mutation" do
+        data = build_v2_export(
+          "goals" => [
+            { "source_id" => "goal-1", "title" => "One", "status" => "active", "created_at" => "2025-06-01T00:00:00.000000Z" },
+            { "source_id" => "goal-1", "title" => "Two", "status" => "active", "created_at" => "2025-06-02T00:00:00.000000Z" }
+          ]
+        )
+
+        expect {
+          result = described_class.new(user, data).call
+          expect(result.errors.join).to include("Duplicate source_id")
+        }.not_to change(Goal, :count)
+      end
+
+      it "rejects invalid enum and date values without mutation" do
+        data = build_v2_export(
+          "goals" => [ {
+            "source_id" => "goal-1",
+            "title" => "Get fit",
+            "status" => "bogus",
+            "created_at" => "not-a-time"
+          } ]
+        )
+
+        expect {
+          result = described_class.new(user, data).call
+          expect(result.errors).not_to be_empty
+        }.not_to change(Goal, :count)
+      end
+
+      it "rejects unsupported notable types without mutation" do
+        data = build_v2_export(
+          "notes" => [ {
+            "source_id" => "note-1",
+            "body" => "Nope",
+            "notable_type" => "Membership",
+            "notable_source_id" => "1",
+            "created_at" => "2025-06-01T00:00:00.000000Z"
+          } ]
+        )
+
+        expect {
+          result = described_class.new(user, data).call
+          expect(result.errors.join).to include("Unsupported notable_type")
+        }.not_to change(Note, :count)
+      end
+
+      it "rejects unsupported schema versions without mutation" do
+        data = build_v2_export("meta" => { "schema_version" => 3 })
+
+        expect {
+          result = described_class.new(user, data).call
+          expect(result.errors.join).to include("Unsupported schema_version")
+        }.not_to change(Goal, :count)
+      end
+
+      it "rejects incomplete v2 top-level shape without mutation" do
+        data = build_v2_export.except("todos")
+
+        expect {
+          result = described_class.new(user, data).call
+          expect(result.errors.join).to include("Missing top-level todos")
+        }.not_to change(Goal, :count)
       end
     end
 

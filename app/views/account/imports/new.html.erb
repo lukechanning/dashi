@@ -16,7 +16,7 @@
 <% end %>
 
 <div class="<%= card_class("p-6") %>">
-  <p class="text-sm text-app-muted mb-1">Upload a previously exported Dashi JSON file to restore your data.</p>
+  <p class="text-sm text-app-muted mb-1">Upload a previously exported Dashi JSON file to restore personal content and preferences.</p>
   <p class="text-sm text-app-muted mb-6">Import is additive — it will not delete or overwrite any existing records.</p>
 
   <%= form_with url: account_import_path, multipart: true do |f| %>

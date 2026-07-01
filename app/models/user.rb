@@ -12,6 +12,7 @@ class User < ApplicationRecord
   has_many :notes, dependent: :destroy
   has_many :invitations, foreign_key: :invited_by_id, dependent: :destroy
   has_many :chains, dependent: :destroy
+  has_many :import_mappings, dependent: :destroy
 
   STALE_THRESHOLD_OPTIONS = [ 3, 5, 7, 14 ].freeze
   APPEARANCE_THEME_OPTIONS = %w[light dark].freeze
