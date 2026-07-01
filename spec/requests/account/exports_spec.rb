@@ -43,6 +43,30 @@ RSpec.describe "Account::Exports", type: :request do
       expect(data["standalone_todos"].map { |t| t["title"] }).to include("Buy milk")
     end
 
+    it "does not include habit-generated standalone todos" do
+      habit = create(:habit, user: user, project: nil)
+      create(:todo, user: user, habit: habit, project: nil, title: "Walk the dog")
+
+      get account_export_path
+
+      data = JSON.parse(response.body)
+      expect(data["standalone_todos"].map { |t| t["title"] }).not_to include("Walk the dog")
+    end
+
+    it "does not include habit-generated project todos but keeps the habit definition" do
+      goal = create(:goal, user: user)
+      project = create(:project, user: user, goal: goal, title: "Health")
+      habit = create(:habit, user: user, project: project, title: "Walk the dog")
+      create(:todo, user: user, project: project, habit: habit, title: "Walk the dog")
+      create(:todo, user: user, project: project, habit: nil, title: "Buy shoes")
+
+      get account_export_path
+
+      project_data = JSON.parse(response.body).dig("goals", 0, "projects", 0)
+      expect(project_data["todos"].map { |t| t["title"] }).to contain_exactly("Buy shoes")
+      expect(project_data["habits"].map { |h| h["title"] }).to include("Walk the dog")
+    end
+
     it "includes daily pages" do
       create(:daily_page, user: user, date: Date.new(2026, 1, 15))
       get account_export_path

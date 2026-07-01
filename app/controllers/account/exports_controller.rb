@@ -16,7 +16,7 @@ module Account
           user_email: user.email
         },
         goals: user.goals.includes(:notes, projects: [ :notes, :todos, { todos: :notes }, :habits ]).map { |g| serialize_goal(g) },
-        standalone_todos: user.todos.standalone.includes(:notes).map { |t| serialize_todo(t) },
+        standalone_todos: user.todos.standalone.where(habit_id: nil).includes(:notes).map { |t| serialize_todo(t) },
         daily_pages: user.daily_pages.includes(:notes).map { |p| serialize_daily_page(p) }
       }
     end
@@ -45,7 +45,7 @@ module Account
         position: project.position,
         created_at: project.created_at.iso8601(6),
         notes: project.notes.map { |n| serialize_note(n) },
-        todos: project.todos.map { |t| serialize_todo(t) },
+        todos: project.todos.select { |t| t.habit_id.nil? }.map { |t| serialize_todo(t) },
         habits: project.habits.map { |h| serialize_habit(h) }
       }
     end

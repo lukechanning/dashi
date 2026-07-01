@@ -145,6 +145,48 @@ RSpec.describe ImportService do
       end
     end
 
+    context "importing habits without generated todos" do
+      let(:export_data) do
+        build_export("goals" => [ {
+          "id" => 1,
+          "title" => "Get fit",
+          "description" => nil,
+          "emoji" => nil,
+          "status" => "active",
+          "position" => 1,
+          "created_at" => "2025-06-01T00:00:00.000000Z",
+          "notes" => [],
+          "projects" => [ {
+            "id" => 1,
+            "title" => "Walk daily",
+            "description" => nil,
+            "emoji" => nil,
+            "status" => "active",
+            "position" => 1,
+            "created_at" => "2025-06-02T00:00:00.000000Z",
+            "notes" => [],
+            "todos" => [],
+            "habits" => [ {
+              "id" => 1,
+              "title" => "Walk the dog",
+              "frequency" => "daily",
+              "days_of_week" => nil,
+              "active" => true,
+              "start_date" => "2025-06-02",
+              "position" => 1,
+              "created_at" => "2025-06-02T00:00:00.000000Z"
+            } ]
+          } ]
+        } ])
+      end
+
+      it "creates the habit without creating old todo instances" do
+        expect {
+          expect { described_class.new(user, export_data).call }.to change(Habit, :count).by(1)
+        }.not_to change(Todo, :count)
+      end
+    end
+
     context "importing notes" do
       let(:export_data) do
         build_export("goals" => [ {

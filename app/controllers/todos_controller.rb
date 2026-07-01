@@ -94,6 +94,14 @@ class TodosController < ApplicationController
   end
 
   def todo_params
-    params.require(:todo).permit(:title, :due_date, :project_id, :notes, :position)
+    permitted = params.require(:todo).permit(:title, :due_date, :project_id, :notes, :position)
+    permitted[:project_id] = authorized_project_id(permitted[:project_id]) if permitted.key?(:project_id)
+    permitted
+  end
+
+  def authorized_project_id(project_id)
+    return nil if project_id.blank?
+
+    current_user.projects.exists?(id: project_id) ? project_id : nil
   end
 end

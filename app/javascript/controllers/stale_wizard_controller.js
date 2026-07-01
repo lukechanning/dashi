@@ -76,75 +76,94 @@ export default class extends Controller {
     this.#togglePanel(`breakUpForm${step}`)
   }
 
-  async submitDelete({ params: { todoId } }) {
-    const csrfToken = document.querySelector("meta[name='csrf-token']").content
-    const response = await fetch(`/todos/${todoId}`, {
-      method: "DELETE",
-      headers: { "X-CSRF-Token": csrfToken, "Accept": "application/json" },
+  async submitDelete(event) {
+    const { todoId } = event.params
+    await this.#withDisabledActions(event.currentTarget, async () => {
+      try {
+        const response = await fetch(`/todos/${todoId}`, {
+          method: "DELETE",
+          headers: { "X-CSRF-Token": this.#csrfToken(), "Accept": "application/json" },
+        })
+        if (response.ok) {
+          this.advance()
+        } else {
+          alert("Something went wrong removing this task. Please try again.")
+        }
+      } catch {
+        alert("Something went wrong removing this task. Please try again.")
+      }
     })
-    if (response.ok) {
-      this.advance()
-    } else {
-      alert("Something went wrong removing this task. Please try again.")
-    }
   }
 
-  async submitDelay({ params: { todoId, step } }) {
+  async submitDelay(event) {
+    const { todoId, step } = event.params
     const input = this.element.querySelector(`[data-stale-wizard-target="delayDateInput${step}"]`)
     const dueDate = input?.value
     if (!dueDate) return
 
-    const csrfToken = document.querySelector("meta[name='csrf-token']").content
-    const response = await fetch(`/todos/${todoId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": csrfToken,
-        "Accept": "application/json",
-      },
-      body: JSON.stringify({ todo: { due_date: dueDate } }),
+    await this.#withDisabledActions(event.currentTarget, async () => {
+      try {
+        const response = await fetch(`/todos/${todoId}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": this.#csrfToken(),
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({ todo: { due_date: dueDate } }),
+        })
+        if (response.ok) {
+          this.advance()
+        } else {
+          alert("Something went wrong updating the due date. Please try again.")
+        }
+      } catch {
+        alert("Something went wrong updating the due date. Please try again.")
+      }
     })
-    if (response.ok) {
-      this.advance()
-    } else {
-      alert("Something went wrong updating the due date. Please try again.")
-    }
   }
 
-  async submitBreakUp({ params: { todoId, step } }) {
+  async submitBreakUp(event) {
+    const { todoId, step, projectId } = event.params
     const input = this.element.querySelector(`[data-stale-wizard-target="breakUpInput${step}"]`)
     const lines = input.value.split("\n").map(l => l.trim()).filter(Boolean)
     if (lines.length === 0) return
 
-    const csrfToken = document.querySelector("meta[name='csrf-token']").content
+    await this.#withDisabledActions(event.currentTarget, async () => {
+      try {
+        // Create each subtask; abort if any request fails to avoid losing the original.
+        for (const title of lines) {
+          const todo = { title, due_date: new Date().toISOString().split("T")[0] }
+          if (projectId) todo.project_id = projectId
 
-    // Create each subtask — abort if any request fails to avoid losing the original
-    for (const title of lines) {
-      const response = await fetch("/todos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": csrfToken,
-          "Accept": "application/json",
-        },
-        body: JSON.stringify({ todo: { title, due_date: new Date().toISOString().split("T")[0] } }),
-      })
-      if (!response.ok) {
+          const response = await fetch("/todos", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": this.#csrfToken(),
+              "Accept": "application/json",
+            },
+            body: JSON.stringify({ todo }),
+          })
+          if (!response.ok) {
+            alert("Something went wrong creating a subtask. Your original task has not been removed.")
+            return
+          }
+        }
+
+        const deleteResponse = await fetch(`/todos/${todoId}`, {
+          method: "DELETE",
+          headers: { "X-CSRF-Token": this.#csrfToken(), "Accept": "application/json" },
+        })
+        if (deleteResponse.ok) {
+          this.advance()
+        } else {
+          alert("Subtasks were created but the original task could not be removed. You can delete it manually.")
+        }
+      } catch {
         alert("Something went wrong creating a subtask. Your original task has not been removed.")
-        return
       }
-    }
-
-    // All subtasks created — safe to delete the original
-    const deleteResponse = await fetch(`/todos/${todoId}`, {
-      method: "DELETE",
-      headers: { "X-CSRF-Token": csrfToken, "Accept": "application/json" },
     })
-    if (!deleteResponse.ok) {
-      alert("Subtasks were created but the original task could not be removed. You can delete it manually.")
-    }
-
-    this.advance()
   }
 
   showStep(index) {
@@ -159,11 +178,33 @@ export default class extends Controller {
   showDone() {
     this.stepTargets.forEach(step => step.classList.add("hidden"))
     this.doneTarget.classList.remove("hidden")
-    setTimeout(() => { if (this.element.isConnected) Turbo.visit(window.location.href) }, 1200)
+    setTimeout(() => {
+      if (!this.element.isConnected) return
+      if (window.Turbo?.visit) {
+        window.Turbo.visit(window.location.href)
+      } else {
+        window.location.reload()
+      }
+    }, 1200)
   }
 
   #togglePanel(targetName) {
     const panel = this.element.querySelector(`[data-stale-wizard-target="${targetName}"]`)
     if (panel) panel.classList.toggle("hidden")
+  }
+
+  #csrfToken() {
+    return document.querySelector("meta[name='csrf-token']")?.content || ""
+  }
+
+  async #withDisabledActions(button, callback) {
+    const step = button.closest("[data-stale-wizard-target='step']")
+    const buttons = Array.from(step?.querySelectorAll("button") || [button])
+    buttons.forEach((actionButton) => { actionButton.disabled = true })
+    try {
+      await callback()
+    } finally {
+      buttons.forEach((actionButton) => { actionButton.disabled = false })
+    }
   }
 }

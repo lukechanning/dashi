@@ -94,6 +94,15 @@ RSpec.describe "Daily", type: :request do
         get root_path
         expect(response.body).not_to include("stale-wizard-overlay")
       end
+
+      it "includes the stale todo project id for break-up replacement tasks" do
+        project = create(:project, user: user)
+        create(:todo, :stale, user: user, project: project, title: "Old project task")
+
+        get root_path
+
+        expect(response.body).to include(%(data-stale-wizard-project-id-param="#{project.id}"))
+      end
     end
 
     context "weekly reflection" do
